@@ -1,6 +1,37 @@
-scenario_chart SCENARIOS
+scenario_chart USE_SCENARIOS
 explanation
-	"Common scenarios at an election, related to the voter lists"
-scenario "DEVELOPMENT ENVIRONMENT"
-	description "You must have installed BONc and Visual Studio 2010."
+	"Common scenarios at an election, related to the voter lists, from a users view."
+scenario "USER REQUEST FOR INFORMATION"
+	description "The user can request information regarding his/her voting status. If the information is not available yet, the user can get an estimate on when it will be available. Otherwise the user can see if they are eligible to vote and if he/she has voted."
+scenario "COLLECT DATA"
+	description "Data regarding elegible voters and their personal details must be gathered and filtered from various, preferably secure, data sources."
+scenario "PRINT VOTER CARDS"
+	description "Data must be collected just before printing voter cards. Voter cards are printed based on collected data."
+scenario "REGISTER VOTERS WITH VOTER CARD"
+	description "When a voter arrives at the voting venue, he/she must present his/her voter card, enters one personal information (eg. last four digits of CPR-number) and answer one or more security questions in order to recieve their ballot."
+scenario "MANUAL REGISTRATION OF VOTER WITHOUT A VOTER CARD"
+	description "If a voter has no voter card, a manual validation process is performed. The voter must show picture-id or documents of authentication of similair quality. The voter is then evaluated by the election-staff, who determines wether they should be given a ballot. This process is only handled by special, highly trusted election staff."
 end
+
+scenario_chart SYSTEM_SCENARIOS
+explanation
+	"Common scenarios at an election, related to the voter lists, from a system view. This is an overview description, omitting technical details."
+scenario "USER REQUEST FOR INFORMATION"
+	description "A request is sent to the central database. If the information is available, it is returned."
+scenario "COLLECT DATA"
+	description "Retrieve data from various data sources. Filter and merge the information to the best possible set of data. Store useful information in the central database."
+scenario "PRINT VOTER CARDS"
+	description "Data must be collected just before printing. A random key phrase is attached to each voter in the central database. For each eligible voter, a voter card is printed with the necessary information and keyphrase from the central database."
+scenario "VALIDATION OF VOTERS WITH VOTER CARD"
+	description "Voter card is scanned. If key-phrase is found in central database, a security question (for the election official to ask) is returned. To validate, the voter must enter a personal information that is unknown to the election official (eg. last four digits of CPR-number). If the key phrase is not found in the central database, the voter can't be validated by his/her voter card and must go to manual validation."
+scenario "MANUAL VALIDATION OF VOTER WITHOUT A VOTER CARD"
+	description "For the manual validation the election-staff representative can look-up information for the given citizen, based on his/her CPR-number. If manual validation is successfull, a manual registration in the system is performed. This process is handled by authorized staff, and only they can perform the manual regeistration after authenticating themself."
+scenario "REGISTER VOTER"
+	description "A voter must be validated by his/her voter card, or manually by authorized staff, in order to be registered and handed a ballot. A registration can only happen if the voter has not all ready been registered. The registration happens in the central database."
+end
+
+scenario_chart SYSTEM_PROCESS_CHART
+explanation
+	"Description of core system processes, and how they interact. Important for understanding the system arcitechture."
+scenario ""
+	
