@@ -1,1 +1,6 @@
-Test
+scenario_chart SCENARIOS
+explanation
+	"Common scenarios at an election, related to the voter lists"
+scenario "DEVELOPMENT ENVIRONMENT"
+	description "You must have installed BONc and Visual Studio 2010."
+end
