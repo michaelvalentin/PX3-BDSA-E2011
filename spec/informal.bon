@@ -1,4 +1,4 @@
-system_chart PX3 - Digital voter list
+system_chart PX3_DIGITAL_VOTER_LIST
 indexing
 	authors: "Jens Dahl Møllerhøj <jdmo@itu.dk>, Morten Hyllekilde Andersen <mhyl@itu.dk> & Michael Valentin <mier@itu.dk>";
 	course: "BDSA";
@@ -36,7 +36,6 @@ class BARCODE
 	description "An optical, machine readable, representation of simple data"
 class QUESTION
 	description ""
-class 
 end
 
 cluster_chart ADMINISTRATION
@@ -46,11 +45,9 @@ class VOTER_CARD_PRINTER
 	description ""
 class DATA_COLLECTOR
 	description ""
-class DATA ANALYZER
+class DATA_ANALYZER
 	description ""
 end
-
-
 
 class_chart BARCODE
 indexing
@@ -69,3 +66,108 @@ constraint
 	"The optical representation must represent the data exactly and unambiguously."
 end
 	
+class_chart CITIZEN
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"A formal decision-making process by which a population chooses and individual to hold public office."
+query
+	"What is your name?",
+	"What is your address?",
+	"When is your birthday",
+	"In what city have you been born?",
+	"What is your CPR-number?",
+	"What is your Voter-Card-ID?",
+	"Are you eligible to vote?",
+	"Have you been handed a ballot?",
+	"What is your password?",
+	"Which questions do you have?"
+command
+	"Change your eligibility to vote!",
+	"Set your status whether or not you have been handed a ballot!"
+constraint
+	"Must have a CPR-number",
+	"Must have a name",
+	"Must have a birthday"
+end
+
+class_chart ELECTION_REPRESENTATIVE
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"The election representatives at the election venue and people adminitrating the electing, whom have different priviledges."
+inherit
+	CITIZEN
+query
+	"What is your status?",
+	"What is your username?",
+	"What is your password?",
+	"",
+	""
+command
+	"Change your status!",
+	"Change your password!"
+constraint
+	"Must have a status",
+	"Must have a username",
+	"Must have a password"
+end
+
+class_chart VOTER_CARD
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"The voter card being sent to citizens who are eligibe to vote."
+query
+	"Can I have a new voter card for this citizen?",
+	"Which election event have you been made for?",
+	"Who are you addressed to?"
+constraint
+	"Must have a citizen",
+	"Must have an election event"
+end
+
+class_chart ELECTION_EVENT
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"An event containing data of an election."
+query
+	"Can I have a new election with this date?",
+	"When are you scheduled to be?"
+command
+	"Change your scheduled election date!"
+constraint
+	"Must have a scheduled election date",
+	""
+end
+
+class_chart DATA_ACCESS_OBJECT
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"An object to access the database containing the citizens."
+query
+	"What is the name of this specific citizen?",
+	"What is the address of this specific citizen?",
+	"When the birthday of this specific citizen?",
+	"what is the CPR-number of this specific citizen?",
+	"Is this specific citizen allowed to vote?",
+	"What is the password of specific election representative?",
+	"What is the username of specific election representative?"
+command
+	"Change the status of the specific election representative!",
+	"Change whether or not the specific citizen is allowed to vote!"
+constraint
+	""
+end
