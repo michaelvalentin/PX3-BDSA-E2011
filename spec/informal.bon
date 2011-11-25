@@ -1,0 +1,135 @@
+system_chart DIGITAL VOTING LIST
+indexing
+	authors: "Jens Dahl Møllerhøj <jdmo@itu.dk>, Morten Hyllekilde Andersen <mhyl@itu.dk> & Michael Valentin <mier@itu.dk>";
+	course: "BDSA";
+	university: "IT University of Copenhagen";
+	created: "25-11-2011";
+explanation
+	"An answer for BDSA-2011 assignment #3 at the ITU."
+cluster 
+	description "Elements holding other elements."
+end
+
+cluster_chart COLLECTIONS
+explanation
+	"Minimal cluster of elements holding other elements based on a simple stack implementation."
+class MSTACK
+	description "A data structure that behaves similair to a stack of plates."
+class MSEQUENCE
+	description "An ordered collection of items."
+class MSET
+	description "A collection of items that contains no duplicates."
+class COLLECTION_EVENT
+	description "An enum to represent the type of an event from a collection."
+class COLLECTION_CHANGED_EVENT_ARGS
+	description "Wrapper to hold the event args for an collection event."
+class EVENT_HANDLER
+	description "A generic event handler class."
+end
+
+class_chart MSTACK
+indexing
+	in_cluster: "COLLECTIONS";
+	created: "2011-10-03";
+	revised: "2011-10-24"
+explanation
+	"A collection of elements, that maintains order and acts much like a stack of plates, with the ability to add/remove only to/from the top."
+query
+	"How many elements are in this stack?",
+	"What is the top element of the stack?",
+	"Is this equal to this other stack?",
+	"Can i have the ordered string representation of all elements in this stack?"
+command
+	"Put this element on top of the stack!",
+	"Take the top element of the stack!",
+	"Remove the first occurence of this element from the stack!"
+end
+	
+class_chart MSEQUENCE
+indexing
+	in_cluster: "COLLECTIONS";
+	created: "2011-10-03";
+	revised: "2011-10-03";
+explanation
+	"A collection data structure of zero or more ordered elements, also known as a list."
+query
+	"May i have the element at this position?",
+	"How many elements do you hold?",
+	"May i have an iterator of all your elements in order?",
+	"What collection results from performing this function on every element in the collection?",
+	"Can you notify me whenever the collection is changed?",
+	"Is this expression true for all elements in the collection?",
+	"Is this expression true for at least on element in the collection?",
+	"Is this expression true for on and ONLY on element in the collection?"
+command
+	"Add this element to the collection!",
+	"Replace the element at this position with this element!",
+	"Remove this element!"
+constraint
+	"Must retain order of elements",
+	"All elements must have an index >= 0 and < the size of the collection",
+	"Iteration must happen in order from first to last",
+	"It's illegal to set an element at a position that does not allready have an element",
+	"Elements must be added with an index one higher than the former, highest index; that is the size before insertion as the indexes starts from zero.",
+	"Removing an element decreases the index of all elements with an index larger than the removed element by one",
+	"An element added must increase the number of elements by 1",
+	"It's illegal to remove from an index with no element",
+	"Removing an element must descrease the number of elements by 1"
+end
+
+class_chart MSET
+indexing
+	in_cluster: "COLLECTIONS";
+	created: "2011-10-03";
+	revised: "2011-10-03";
+explanation
+	"A collection data structure that holds zero or more elements, amongst which no duplicates exist."
+inherit BAG
+query
+	"Do you contain this element?",
+	"May i have an iterator of all your elements?",
+	"How many elements do you hold?",
+	"What collection results from performing this function on every element in the collection?",
+	"Can you notify me whenever the collection is changed?",
+	"Is this expression true for all elements in the collection?",
+	"Is this expression true for at least on element in the collection?",
+	"Is this expression true for on and ONLY on element in the collection?"
+command
+	"Add this element to the MSET!",
+	"Remove this element from the MSET!"
+constraint
+	"Iterator must return all elements excactly once",
+	"Must not have duplicates",
+	"All elements in the collection must be able to determine wether they are equal",
+	"Adding an element that is not contained allready must increase the number of elements by one",
+	"Removing an element that is contained in the collection must decrease the number of by one",
+	"An element that has been added must be contained just afterwards",
+	"An element that has been removed must not be contained just afterwards"
+end
+
+class_chart BAG
+indexing
+	in_cluster: "COLLECTIONS";
+	created: "2011-10-03";
+	revised: "2011-10-03";
+explanation
+	"A collection data structure that holds zero or more elements."
+query
+	"Do you contain this element?",
+	"May i have an iterator of all your elements?",
+	"How many elements do you hold?",
+	"What collection results from performing this function on every element in the collection?",
+	"Can you notify me whenever the collection is changed?",
+	"Is this expression true for all elements in the collection?",
+	"Is this expression true for at least on element in the collection?",
+	"Is this expression true for on and ONLY on element in the collection?"
+command
+	"Add this element to the bag!",
+	"Remove this element from the bag!"
+constraint
+	"Iterator must return all elements excactly once",
+	"Removing an element that is contained in the collection must decrease the number of by one",
+	"An element that has been added must be contained just afterwards",
+	"Must contain a non-negative number of elements",
+	"Must hold a specific type of elements"
+end
