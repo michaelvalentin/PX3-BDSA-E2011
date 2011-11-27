@@ -2,49 +2,15 @@ static_diagram CLASS_INTERFACES
 component
 	class CITIZEN
 		feature 
-			Size : INTEGER
-				ensure
-					Result >= 0;
-				end
-			Top : T
+			Name : STRING
+			Address : STRING
+			Birthday : STRING
+			Age : INTEGER
 				require
-					Size > 0;
+					birthday /= Void;
 				ensure
-					Result /= Void;
-				end
-			Push : Void -> elem : T
-				require 
-					elem /= Void;
-				ensure
-					Size = old Size + 1;
-					Top = elem;
-				end
-			Pop : T
-				require
-					Size > 0;
-				ensure
-					Result /= Void;
-					Size = old Size - 1;
-				end
-			Extract : INTEGER -> elem : T
-				require
-					elem /= Void;
-				ensure
-					Result > 0 -> Size = old Size - 1;
-					Result < 0 -> Size = old Size;
-				end
-			Equals : BOOLEAN -> s : MSTACK
-				require
-					s /= Void;
-				ensure
-					Result -> s.Size = Size;
-					-- Result -> for_all e member_of s it_holds Extract(e) > 0; -- BONc don't like?
-				end
-			GetEnumerator : IENUMERATOR
-		invariant
-			Size >= 0;
-			-- for_all e member_of Current it_holds e /= Void
-			-- No elements may be void.
+					result > 0;
+			end	
 		end
 				
 	class ELECTION_REPRESENTATIVE
