@@ -34,8 +34,10 @@ explanation
 	"Various generic utilities for acomplishing simple and/or trivial tasks easier."
 class BARCODE
 	description "An optical, machine readable, representation of simple data"
-class QUESTION
-	description ""
+class QUIZ
+	description "A linguistic expression used to make a request for information"
+class DATABASE
+	description "A class in charge of adminstrating a database"
 end
 
 cluster_chart ADMINISTRATION
@@ -65,7 +67,7 @@ constraint
 	"The data must not be longer than 10 charachters",
 	"The optical representation must represent the data exactly and unambiguously."
 end
-	
+
 class_chart CITIZEN
 indexing
 	in_cluster: "ELECTION";
@@ -168,6 +170,77 @@ query
 command
 	"Change the status of the specific election representative!",
 	"Change whether or not the specific citizen is allowed to vote!"
+constraint
+	""
+end
+
+class_chart DATABASE
+indexing
+	in_cluster: "UTILITIES";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"A class in charge of administrating the database."
+command
+	"Open connection to database",
+	"Close connection to database",
+	"Send this message to the database",
+	"Retrieve this message from the database"
+constraint
+	""
+end
+	
+class_chart QUIZ
+indexing
+	in_cluster: "UTILITIES";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"A brief assessment used as an authenticator"
+query
+	"What is the question",
+	"What is the answer?"
+constraint
+	"The answer must be the answer to the question."
+end
+
+class_chart VOTER_CARD_PRINTER
+indexing
+	in_cluster: "ADMINISTRATION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"A printer used to create the physical voter cards"
+query
+	"May I have a voter card passed on this voter information",
+constraint
+	""
+end
+
+class_chart DATA_COLLECTOR
+indexing
+	in_cluster: "ADMINISTRATION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"A system used to collect information about all citizens"
+query
+	"",
+	""
+constraint
+	""
+end
+
+class_chart DATA_ANALYZER
+indexing
+	in_cluster: "ADMINISTRATION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"A system used to analyze the data of the election"
+query
+	"",
+	""
 constraint
 	""
 end
