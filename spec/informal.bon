@@ -5,18 +5,18 @@ indexing
 	university: "IT University of Copenhagen";
 	created: "25-11-2011";
 explanation
-	"A system for managing and using digital voter lists at an election for at parlament or similair"
+	"A system for managing and using digital voter lists at an election for at parlament or similar"
 cluster ELECTION
-	description "Things related to an election to a parlament or similair"
+	description "Things related to an election to a parlament or similar"
 cluster UTILITIES
-	description "Various generic utilities for acomplishing simple and/or trivial tasks easier."
+	description "Various generic utilities for accomplishing simple and/or trivial tasks easier"
 end
 
 cluster_chart ELECTION
 explanation
 	"Things related to an election for a parlament or similair"
 class PERSON
-	description "A humanbeing with a name"
+	description "A human being with a name"
 class CITIZEN
 	description "A person with a valid and unique ID-number (CPR-number)"
 class ELECTION_REPRESENTATIVE
@@ -54,23 +54,6 @@ class DATA_ANALYZER
 	description "A system that can analyze the turnout results after an election."
 end
 
-class_chart BARCODE
-indexing
-	in_cluster: "UTILITIES";
-	created: "2011-11-25";
-	revised: "2011-11-25"
-explanation
-	"An optical, machine readable, representation of simple data, with the ability to output both the data and the optical representation."
-query
-	"May i have a new barcode object, representing this data?",
-	"May i have a new barcode, that will produce this optical representation?",
-	"What data do you hold?",
-	"Can i have a optical representation of the data you hold?"
-constraint
-	"The data must not be longer than 10 charachters",
-	"The optical representation must represent the data exactly and unambiguously."
-end
-
 class_chart PERSON
 indexing
 	in_cluster: "ELECTION";
@@ -85,9 +68,7 @@ query
 	"In what city have you been born?",
 	"What is your Voter-Card-ID?",
 	"Are you eligible to vote?",
-	"Have you been handed a ballot?",
-	"What is your password?",
-	"Which questions do you have?"
+	"Have you been handed a ballot?"
 command
 	"Change your eligibility to vote!",
 	"Set your status whether or not you have been handed a ballot!"
@@ -103,6 +84,8 @@ indexing
 	revised: "2011-11-25"
 explanation
 	"A formal decision-making process by which a population chooses and individual to hold public office."
+inherit
+	PERSON
 query
 	"What is your CPR-number?",
 command
@@ -118,13 +101,11 @@ indexing
 explanation
 	"The election representatives at the election venue and people adminitrating the electing, whom have different priviledges."
 inherit
-	CITIZEN
+	PERSON
 query
 	"What is your status?",
 	"What is your username?",
-	"What is your password?",
-	"",
-	""
+	"What is your password?"
 command
 	"Change your status!",
 	"Change your password!"
@@ -142,7 +123,7 @@ indexing
 explanation
 	"The voter card being sent to citizens who are eligibe to vote."
 query
-	"Can I have a new voter card for this citizen?",
+"Can I have a new voter card for this citizen?",
 	"Which election event have you been made for?",
 	"Who are you addressed to?"
 constraint
@@ -163,8 +144,7 @@ query
 command
 	"Change your scheduled election date!"
 constraint
-	"Must have a scheduled election date",
-	""
+	"Must have a scheduled election date"
 end
 
 class_chart DATA_ACCESS_OBJECT
@@ -205,6 +185,23 @@ command
 	"Retrieve this message from the database"
 constraint
 	""
+end
+
+class_chart BARCODE
+indexing
+	in_cluster: "UTILITIES";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"An optical, machine readable, representation of simple data, with the ability to output both the data and the optical representation."
+query
+	"May i have a new barcode object, representing this data?",
+	"May i have a new barcode, that will produce this optical representation?",
+	"What data do you hold?",
+	"Can i have a optical representation of the data you hold?"
+constraint
+	"The data must not be longer than 10 charachters",
+	"The optical representation must represent the data exactly and unambiguously."
 end
 	
 class_chart QUIZ

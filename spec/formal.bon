@@ -1,6 +1,7 @@
 static_diagram CLASS_INTERFACES
 component
-	class CITIZEN
+  cluster ELECTION
+	class PERSON
 		feature 
 			Name : STRING
 			Address : STRING
@@ -11,11 +12,42 @@ component
 			ensure
 				result > 0;
 			end	
+				require
+					birthday /= Void;
+				ensure
+					result > 0;
+			end
+			CityOfBirth : STRING
+			EligibleVoter : BOOLEAN
+			BallotHanded : BOOLEAN
 		end
-				
+	class CITIZEN
+	  inherit PERSON
+		feature
+			Cpr : INTEGER
+				require
+					-- cpr.length = 10
+			end
+		end
 	class ELECTION_REPRESENTATIVE
-	
+	  inherit PERSON
+		feature
+			Status : STRING
+			Username : STRING
+			Password : INTEGER
+		end
 	class VOTER_CARD
+		feature
+			ElectionEvent
+				-> ELECTION_EVENT
+			Citizen
+				-> CITIZEN
+			Voter_card : VOTER_CARD
+				-> c : CITIZEN
+				require
+				c /= Void
+			end
+		end
 	
 	class ELECTION_EVENT
 		feature
@@ -70,6 +102,15 @@ component
 			ensure
 				Result /= Void
 			end
+			Election : DATE
+				-> e : ELECTION
+			Date : DATE
+			ChangeDate
+				-> d : DATE
+		end
+	class DATA_ACCESS_OBJECT
+  end
+  cluster UTILITIES
 	class DATABASE
 	
 	class BARCODE
@@ -92,7 +133,8 @@ component
 			Answer: STRING
 		end
 	end
-	
+  end
+  cluster ADMINISTRATION
 	class VOTER_CARD_PRINTER
 		feature
 			Print: Void
@@ -101,4 +143,5 @@ component
 	class DATA_COLLECTOR
 	
 	class DATA_ANALYZER
+  end
 end
