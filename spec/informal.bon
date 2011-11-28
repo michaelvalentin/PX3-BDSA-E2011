@@ -14,11 +14,12 @@ end
 
 cluster_chart ELECTION
 explanation
-	"Things related to an election for a parlament or similar"
+	"Things related to an election for a parlament or similair"
+class PERSON
+	description "A human being with a name"
 class CITIZEN
-	description "A person living in a country with a valid and unique ID-number (CPR-number)"
+	description "A person with a valid and unique ID-number (CPR-number)"
 class ELECTION_REPRESENTATIVE
-	--MV: BØR IKKE NEDARVE FRA CITIZEN! Det kan jo godt være en der f.eks. ikke har DK CPR-nummer... Kan evt. nedarve fra en generisk "PERSON" som citizen også nedarver fra, men tænker at det er overkill..
 	description "A person responsible of helping out at an election"
 class VOTER_CARD
 	description "A ticket to be exchanged for a ballot, that is send out to the voter as a part of the validation process."
@@ -70,19 +71,18 @@ constraint
 	"The optical representation must represent the data exactly and unambiguously."
 end
 
-class_chart CITIZEN
+class_chart PERSON
 indexing
 	in_cluster: "ELECTION";
 	created: "2011-11-25";
 	revised: "2011-11-25"
 explanation
-	"A formal decision-making process by which a population chooses and individual to hold public office."
+	"A human being"
 query
 	"What is your name?",
 	"What is your address?",
 	"When is your birthday",
 	"In what city have you been born?",
-	"What is your CPR-number?",
 	"What is your Voter-Card-ID?",
 	"Are you eligible to vote?",
 	"Have you been handed a ballot?",
@@ -92,9 +92,22 @@ command
 	"Change your eligibility to vote!",
 	"Set your status whether or not you have been handed a ballot!"
 constraint
-	"Must have a CPR-number",
 	"Must have a name",
 	"Must have a birthday"
+end
+
+class_chart CITIZEN
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"A formal decision-making process by which a population chooses and individual to hold public office."
+query
+	"What is your CPR-number?",
+command
+constraint
+	"Must have a CPR-number",
 end
 
 class_chart ELECTION_REPRESENTATIVE
@@ -203,7 +216,7 @@ query
 	"What is the question",
 	"What is the answer?"
 constraint
-	"The answer must be the answer to the question" --MV : LIKE!
+	"The answer must be the answer to the question.", --MV : LIKE!
 end
 
 class_chart VOTER_CARD_PRINTER
@@ -214,7 +227,7 @@ indexing
 explanation
 	"A printer used to create the physical voter cards"
 query
-	"May I have a voter card based on this voter information"
+	"May I have a voter card based on this voter information",
 constraint
 	""
 end
@@ -228,8 +241,6 @@ explanation
 	"A system used to collect information about all citizens"
 query
 	"",
-	""
-command
 	""
 constraint
 	""
