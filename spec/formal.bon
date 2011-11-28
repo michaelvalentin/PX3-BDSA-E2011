@@ -51,6 +51,7 @@ component
 			Date : DATE
 			ChangeDate
 				-> d : DATE
+				-> e : ELECTION
 		end
 	class DATA_ACCESS_OBJECT
   end
