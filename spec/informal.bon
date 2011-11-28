@@ -29,7 +29,7 @@ class DATA_ACCESS_OBJECT
 	description "A standardized interface for querieing a data source."
 class DAO_PERMISSION_PROXY
 	description "An object that insures that the user have permissions to call functions in the database."
-class MYSQL_DAO
+class DAO_MYSQL
 	description "A DAO specific for mySQL databases."
 class DAO_FACTORY
 	description "An object to ensure you get the right database object"
@@ -84,7 +84,7 @@ indexing
 explanation
 	"A human being"
 query
-	"May I have a new person?"
+	"May I have a new person?",
 	"What is your name?",
 	"When is your birthday?",
 	"Are you eligible to vote?",
@@ -198,13 +198,13 @@ query
 	"May I have a new DAO permission proxy for this DAO with this users permissions" 
 end
 
-class_chart MYSQL_DAO
+class_chart DAO_MYSQL
 indexing
 	in_cluster: "ELECTION";
 	created: "2011-11-25";
 	revised: "2011-11-25"
 explanation
-	"A DAO specific for mySQL databases"
+	"A DAO specific for MySQL databases"
 inherit DATA_ACCESS_OBJECT
 query
 	"Give me a data access object that this user can use." 
