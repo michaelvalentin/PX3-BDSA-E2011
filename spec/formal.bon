@@ -6,14 +6,7 @@ component
 		feature 
 			Name : STRING
 			Address : STRING
-			Birthday : STRING
-			Age : INTEGER
-			require
-				birthday /= Void;
-			ensure
-				Result > 0;
 			end	
-			CityOfBirth : STRING
 			EligibleVoter : BOOLEAN
 			BallotHanded : BOOLEAN
 		end
@@ -26,91 +19,67 @@ component
 				
 			end
 		end
-	class ELECTION_REPRESENTATIVE
+		invariant
+			Cpr /= Void;
+		end
+	class USER
 	  inherit PERSON
 		feature
-			Status : STRING
+			Title : STRING
 			Username : STRING
-			Password : INTEGER
+			Privilleges : SET[STRING]
 		end
 	class VOTER_CARD
 		feature
-			ElectionEvent
-				-> e : ELECTION_EVENT
-				require
-				e /= Void
+			ElectionEvent : ELECTION_EVENT
+				ensure
+					result /= Void
 			end
-			Citizen
-				-> c : CITIZEN
-				require
-				c /= Void
+			Citizen : CITIZEN
+				ensure
+					result /= Void
 			end
 			Voter_card : VOTER_CARD
 				-> c : CITIZEN
+				-> e : ELECTION_EVENT
 				require
-				c /= Void
+					c /= Void;
+					e /= Void;
 			end
 		end
 	class ELECTION_EVENT
 		feature
-			ElectionEvent: Void
-			-> d: DATE
+			ElectionEvent : ELECTION_EVENT
+				-> d: DATE
 			require
 				d /= Void
 			ensure
 				Result /= Void
 			end
 		end
+		
 	class DATA_ACCESS_OBJECT
 		feature
-			CitizenName: STRING
-			-> c: Citizen
-			require
-				c /= Void
-			ensure
-				Result /= Void
-			end
-			CitizenAddress: STRING
-			-> c: Citizen
-			CitizenBirthday: DATE
-			-> c: Citizen
-			require
-				c /= Void
-			ensure
-				Result /= Void
-			end
-			
-			CitizenAllowedToVote: BOOLEAN
-			-> c: Citizen
-			require
-				c /= Void
-			end
-			
-			ElectionRepresentivePassword: STRING
-			-> e: ElectionRepresentive
-			require
-				e /= Void
-			ensure
-				Result /= Void
-			end
-			
-			
-			ElectionRepresentiveUsername: STRING
-			-> e: ElectionRepresentive
-			require
-				e /= Void
-			ensure
-				Result /= Void
-			end
-			Election : DATE
-				-> e : ELECTION
-			Date : DATE
-			ChangeDate
-				-> d : DATE
-				-> e : ELECTION
-		end
-	class DATA_ACCESS_OBJECT
+			Save : BOOLEAN
+				-> p : PERSON
+			Save : BOOLEAN
+				-> u : USER
+			Save : BOOLEAN
+				-> v : VOTER_CARD
+			Find : SET[PERSON]
+				-> p : PERSON
+			Find : SET[USER]
+				-> p : USER
+			Find : SET[VOTER_CARD]
+				-> p : VOTER_CARD
+			LoadPerson : PERSON
+				-> INTEGER : id
+			LoadUser : USER
+				-> INTEGER : id
+			LoadVoterCard : VOTER_CARD
+				-> INTEGER : id
   end
+  
   cluster UTILITIES
   component
 	class DATABASE
@@ -148,8 +117,8 @@ component
 			Print: Void
 		end
 	end
-	class DATA_COLLECTOR
-	
-	class DATA_ANALYZER
+	class DATA_COLLECTOR --Not designed yet...
+		
+	class DATA_ANALYZER --Not designed yet...
   end
 end
