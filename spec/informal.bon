@@ -5,20 +5,21 @@ indexing
 	university: "IT University of Copenhagen";
 	created: "25-11-2011";
 explanation
-	"A system for managing and using digital voter lists at an election for at parlament or similair"
+	"A system for managing and using digital voter lists at an election for at parlament or similar"
 cluster ELECTION
-	description "Things related to an election to a parlament or similair"
+	description "Things related to an election to a parlament or similar"
 cluster UTILITIES
-	description "Various generic utilities for acomplishing simple and/or trivial tasks easier."
+	description "Various generic utilities for accomplishing simple and/or trivial tasks easier"
 end
 
 cluster_chart ELECTION
 explanation
 	"Things related to an election for a parlament or similair"
+class PERSON
+	description "A human being with a name"
 class CITIZEN
-	description "A person living in a country with a valid and unique ID-number (CPR-number)"
+	description "A person with a valid and unique ID-number (CPR-number)"
 class ELECTION_REPRESENTATIVE
-	--MV: BØR IKKE NEDARVE FRA CITIZEN! Det kan jo godt være en der f.eks. ikke har DK CPR-nummer... Kan evt. nedarve fra en generisk "PERSON" som citizen også nedarver fra, men tænker at det er overkill..
 	description "A person responsible of helping out at an election"
 class VOTER_CARD
 	description "A ticket to be exchanged for a ballot, that is send out to the voter as a part of the validation process."
@@ -69,6 +70,124 @@ constraint
 	"The data must not be longer than 10 charachters",
 	"The optical representation must represent the data exactly and unambiguously."
 end
+
+class_chart PERSON
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"A human being"
+query
+	"What is your name?",
+	"What is your address?",
+	"When is your birthday",
+	"In what city have you been born?",
+	"What is your Voter-Card-ID?",
+	"Are you eligible to vote?",
+	"Have you been handed a ballot?",
+	"What is your password?",
+	"Which questions do you have?"
+command
+	"Change your eligibility to vote!",
+	"Set your status whether or not you have been handed a ballot!"
+constraint
+	"Must have a name",
+	"Must have a birthday"
+end
+
+class_chart CITIZEN
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"A formal decision-making process by which a population chooses and individual to hold public office."
+query
+	"What is your CPR-number?",
+command
+constraint
+	"Must have a CPR-number",
+end
+
+class_chart ELECTION_REPRESENTATIVE
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"The election representatives at the election venue and people adminitrating the electing, whom have different priviledges."
+inherit
+	CITIZEN
+query
+	"What is your status?",
+	"What is your username?",
+	"What is your password?",
+	"",
+	""
+command
+	"Change your status!",
+	"Change your password!"
+constraint
+	"Must have a status",
+	"Must have a username",
+	"Must have a password"
+end
+
+class_chart VOTER_CARD
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"The voter card being sent to citizens who are eligibe to vote."
+query
+	"Can I have a new voter card for this citizen?",
+	"Which election event have you been made for?",
+	"Who are you addressed to?"
+constraint
+	"Must have a citizen",
+	"Must have an election event"
+end
+
+class_chart ELECTION_EVENT
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"An event containing data of an election."
+query
+	"Can I have a new election with this date?",
+	"When are you scheduled to be?"
+command
+	"Change your scheduled election date!"
+constraint
+	"Must have a scheduled election date",
+	""
+end
+
+class_chart DATA_ACCESS_OBJECT
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"An object to access the database containing the citizens."
+query
+	"What is the name of this specific citizen?",
+	"What is the address of this specific citizen?",
+	"When the birthday of this specific citizen?",
+	"what is the CPR-number of this specific citizen?",
+	"Is this specific citizen allowed to vote?",
+	"What is the password of specific election representative?",
+	"What is the username of specific election representative?"
+command
+	"Change the status of the specific election representative!",
+	"Change whether or not the specific citizen is allowed to vote!"
+constraint
+	""
+end
 	
 class_chart QUIZ
 indexing
@@ -79,7 +198,7 @@ explanation
 	"A brief assessment used as an authenticator"
 query
 	"What is the question",
-	"What is the answer?",
+	"What is the answer?"
 constraint
 	"The answer must be the answer to the question."
 end
@@ -94,7 +213,7 @@ explanation
 query
 	"May I have a voter card based on this voter information",
 constraint
-	"",
+	""
 end
 
 class_chart DATA_COLLECTOR
@@ -106,9 +225,9 @@ explanation
 	"A system used to collect information about all citizens"
 query
 	"",
-	"",
+	""
 constraint
-	"",
+	""
 end
 
 class_chart DATA_ANALYZER
@@ -120,8 +239,7 @@ explanation
 	"A system used to analyze the data of the election"
 query
 	"",
-	"",
+	""
 constraint
-	"",
+	""
 end
-	
