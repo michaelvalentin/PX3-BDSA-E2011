@@ -54,23 +54,6 @@ class DATA_ANALYZER
 	description "A system that can analyze the turnout results after an election."
 end
 
-class_chart BARCODE
-indexing
-	in_cluster: "UTILITIES";
-	created: "2011-11-25";
-	revised: "2011-11-25"
-explanation
-	"An optical, machine readable, representation of simple data, with the ability to output both the data and the optical representation."
-query
-	"May i have a new barcode object, representing this data?",
-	"May i have a new barcode, that will produce this optical representation?",
-	"What data do you hold?",
-	"Can i have a optical representation of the data you hold?"
-constraint
-	"The data must not be longer than 10 charachters",
-	"The optical representation must represent the data exactly and unambiguously."
-end
-
 class_chart PERSON
 indexing
 	in_cluster: "ELECTION";
@@ -86,8 +69,7 @@ query
 	"What is your Voter-Card-ID?",
 	"Are you eligible to vote?",
 	"Have you been handed a ballot?",
-	"What is your password?",
-	"Which questions do you have?"
+	"What is your password?"
 command
 	"Change your eligibility to vote!",
 	"Set your status whether or not you have been handed a ballot!"
@@ -103,6 +85,8 @@ indexing
 	revised: "2011-11-25"
 explanation
 	"A formal decision-making process by which a population chooses and individual to hold public office."
+inherit
+	PERSON
 query
 	"What is your CPR-number?",
 command
@@ -118,13 +102,11 @@ indexing
 explanation
 	"The election representatives at the election venue and people adminitrating the electing, whom have different priviledges."
 inherit
-	CITIZEN
+	PERSON
 query
 	"What is your status?",
 	"What is your username?",
-	"What is your password?",
-	"",
-	""
+	"What is your password?"
 command
 	"Change your status!",
 	"Change your password!"
@@ -142,7 +124,7 @@ indexing
 explanation
 	"The voter card being sent to citizens who are eligibe to vote."
 query
-	"Can I have a new voter card for this citizen?",
+"Can I have a new voter card for this citizen?",
 	"Which election event have you been made for?",
 	"Who are you addressed to?"
 constraint
@@ -163,8 +145,7 @@ query
 command
 	"Change your scheduled election date!"
 constraint
-	"Must have a scheduled election date",
-	""
+	"Must have a scheduled election date"
 end
 
 class_chart DATA_ACCESS_OBJECT
@@ -204,6 +185,23 @@ command
 constraint
 	""
 end
+
+class_chart BARCODE
+indexing
+	in_cluster: "UTILITIES";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"An optical, machine readable, representation of simple data, with the ability to output both the data and the optical representation."
+query
+	"May i have a new barcode object, representing this data?",
+	"May i have a new barcode, that will produce this optical representation?",
+	"What data do you hold?",
+	"Can i have a optical representation of the data you hold?"
+constraint
+	"The data must not be longer than 10 charachters",
+	"The optical representation must represent the data exactly and unambiguously."
+end
 	
 class_chart QUIZ
 indexing
@@ -216,7 +214,7 @@ query
 	"What is the question",
 	"What is the answer?"
 constraint
-	"The answer must be the answer to the question.", --MV : LIKE!
+	"The answer must be the answer to the question."
 end
 
 class_chart VOTER_CARD_PRINTER
