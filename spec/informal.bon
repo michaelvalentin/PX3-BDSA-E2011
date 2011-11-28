@@ -92,9 +92,6 @@ query
 command
 	"Change your eligibility to vote!",
 	"Set your status whether or not you have been handed a ballot!"
-constraint
-	"Must have a name",
-	"Must have a birthday"
 end
 
 class_chart CITIZEN
@@ -145,7 +142,8 @@ query
 	"What is your ID?"
 constraint
 	"Must have a citizen",
-	"Must have an election event"
+	"Must have an election event",
+	"Must have an ID"
 end
 
 class_chart ELECTION_EVENT
@@ -156,13 +154,13 @@ indexing
 explanation
 	"An event containing data of an election."
 query
-	"Can I have a new election with this date?",
+	"Can I have a new election with this name and date?",
 	"When are you scheduled to be?"
 command
-	"Change your scheduled election date!"
+	"Change your scheduled election date!",
+	"Change your name!"
 constraint
-	"Must have a scheduled election date",
-	""
+	"Must have a scheduled election date, and a name"
 end
 
 class_chart DATA_ACCESS_OBJECT
