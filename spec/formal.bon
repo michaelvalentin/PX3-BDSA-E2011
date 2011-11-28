@@ -1,6 +1,7 @@
 static_diagram CLASS_INTERFACES
 component
   cluster ELECTION
+  component
 	class PERSON
 		feature 
 			Name : STRING
@@ -10,13 +11,8 @@ component
 			require
 				birthday /= Void;
 			ensure
-				result > 0;
+				Result > 0;
 			end	
-				require
-					birthday /= Void;
-				ensure
-					result > 0;
-			end
 			CityOfBirth : STRING
 			EligibleVoter : BOOLEAN
 			BallotHanded : BOOLEAN
@@ -27,6 +23,7 @@ component
 			Cpr : INTEGER
 				require
 					-- cpr.length = 10
+				
 			end
 		end
 	class ELECTION_REPRESENTATIVE
@@ -39,16 +36,21 @@ component
 	class VOTER_CARD
 		feature
 			ElectionEvent
-				-> ELECTION_EVENT
+				-> e : ELECTION_EVENT
+				require
+				e /= Void
+			end
 			Citizen
-				-> CITIZEN
+				-> c : CITIZEN
+				require
+				c /= Void
+			end
 			Voter_card : VOTER_CARD
 				-> c : CITIZEN
 				require
 				c /= Void
 			end
 		end
-	
 	class ELECTION_EVENT
 		feature
 			ElectionEvent: Void
@@ -57,7 +59,8 @@ component
 				d /= Void
 			ensure
 				Result /= Void
-	
+			end
+		end
 	class DATA_ACCESS_OBJECT
 		feature
 			CitizenName: STRING
@@ -67,11 +70,8 @@ component
 			ensure
 				Result /= Void
 			end
-			
 			CitizenAddress: STRING
 			-> c: Citizen
-			end
-			
 			CitizenBirthday: DATE
 			-> c: Citizen
 			require
@@ -107,18 +107,25 @@ component
 			Date : DATE
 			ChangeDate
 				-> d : DATE
+				-> e : ELECTION
 		end
 	class DATA_ACCESS_OBJECT
   end
   cluster UTILITIES
+  component
 	class DATABASE
-	
 	class BARCODE
 		feature
-			Barcode:
-			-> STRING
-			Barcode:
-			-> IMAGE
+			Barcode
+			-> s : STRING
+			require
+			s /= Void
+			end
+			Barcode
+			-> i : IMAGE
+			require
+			i /= Void
+			end
 			Data : STRING
 			Image : IMAGE		
 			
@@ -135,6 +142,7 @@ component
 	end
   end
   cluster ADMINISTRATION
+  component
 	class VOTER_CARD_PRINTER
 		feature
 			Print: Void
