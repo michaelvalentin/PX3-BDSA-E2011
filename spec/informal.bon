@@ -68,8 +68,7 @@ query
 	"In what city have you been born?",
 	"What is your Voter-Card-ID?",
 	"Are you eligible to vote?",
-	"Have you been handed a ballot?",
-	"What is your password?"
+	"Have you been handed a ballot?"
 command
 	"Change your eligibility to vote!",
 	"Set your status whether or not you have been handed a ballot!"
