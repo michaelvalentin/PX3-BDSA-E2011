@@ -1,6 +1,7 @@
 static_diagram CLASS_INTERFACES
 component
   cluster ELECTION
+  component
 	class PERSON
 		feature 
 			Name : STRING
@@ -22,6 +23,7 @@ component
 			Cpr : INTEGER
 				require
 					-- cpr.length = 10
+				
 			end
 		end
 	class ELECTION_REPRESENTATIVE
@@ -58,6 +60,7 @@ component
 			ensure
 				Result /= Void
 			end
+		end
 	class DATA_ACCESS_OBJECT
 		feature
 			CitizenName: STRING
@@ -109,16 +112,16 @@ component
 	class DATA_ACCESS_OBJECT
   end
   cluster UTILITIES
+  component
 	class DATABASE
-	
 	class BARCODE
 		feature
-			Barcode:
+			Barcode
 			-> s : STRING
 			require
 			s /= Void
 			end
-			Barcode:
+			Barcode
 			-> i : IMAGE
 			require
 			i /= Void
@@ -139,6 +142,7 @@ component
 	end
   end
   cluster ADMINISTRATION
+  component
 	class VOTER_CARD_PRINTER
 		feature
 			Print: Void
