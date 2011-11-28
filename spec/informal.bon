@@ -196,7 +196,7 @@ explanation
 	"An object that insures that the user have permissions to call functions in the database"
 inherit DATA_ACCESS_OBJECT
 query
-	"May I have a new DAO permission proxy for this DAO with this users permissions" 
+	"May I have a new DAO permission proxy for this DAO with this users permissions"
 end
 
 class_chart DAO_MYSQL
@@ -208,7 +208,9 @@ explanation
 	"A DAO specific for mySQL databases"
 inherit DATA_ACCESS_OBJECT
 query
-	"Give me a data access object that this user can use." 
+	"Give me a data access object that this user can use."
+constraint
+	"Must be constructed from factory method"
 end
 
 class_chart DAO_FACTORY
