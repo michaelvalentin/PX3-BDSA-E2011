@@ -92,9 +92,6 @@ query
 command
 	"Change your eligibility to vote!",
 	"Set your status whether or not you have been handed a ballot!"
-constraint
-	"Must have a name",
-	"Must have a birthday"
 end
 
 class_chart CITIZEN
