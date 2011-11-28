@@ -155,18 +155,20 @@ indexing
 explanation
 	"An object to access the database containing the citizens."
 query
+	"What citizen has this voter-card-id?"
 	"What is the name of this specific citizen?",
 	"What is the address of this specific citizen?",
 	"When the birthday of this specific citizen?",
-	"what is the CPR-number of this specific citizen?",
+	"What is the CPR-number of this specific citizen?",
 	"Is this specific citizen allowed to vote?",
 	"What is the password of specific election representative?",
 	"What is the username of specific election representative?"
 command
-	"Change the status of the specific election representative!",
-	"Change whether or not the specific citizen is allowed to vote!"
+	"Register this citizen",
+	"Register this election representive",
+	
 constraint
-	""
+	"Citizen to register must have name, birthday and cpr-nr"
 end
 
 class_chart DATABASE
