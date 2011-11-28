@@ -69,22 +69,6 @@ constraint
 	"The data must not be longer than 10 charachters",
 	"The optical representation must represent the data exactly and unambiguously."
 end
-
-class_chart DATABASE
-indexing
-	in_cluster: "UTILITIES";
-	created: "2011-11-25";
-	revised: "2011-11-25"
-explanation
-	"A class in charge of administrating the database."
-command
-	"Open connection to database",
-	"Close connection to database",
-	"Send this message to the database",
-	"Retrieve this message from the database"
-constraint
-	"",
-end
 	
 class_chart QUIZ
 indexing
@@ -97,7 +81,7 @@ query
 	"What is the question",
 	"What is the answer?",
 constraint
-	"The answer must be the answer to the question.", --MV : LIKE!
+	"The answer must be the answer to the question."
 end
 
 class_chart VOTER_CARD_PRINTER
