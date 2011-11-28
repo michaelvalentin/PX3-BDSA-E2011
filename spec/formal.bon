@@ -6,10 +6,10 @@ component
 			Address : STRING
 			Birthday : STRING
 			Age : INTEGER
-				require
-					birthday /= Void;
-				ensure
-					result > 0;
+			require
+				birthday /= Void;
+			ensure
+				result > 0;
 			end	
 		end
 				
@@ -18,17 +18,86 @@ component
 	class VOTER_CARD
 	
 	class ELECTION_EVENT
+		feature
+			ElectionEvent: Void
+			-> d: DATE
+			require
+				d /= Void
+			ensure
+				Result /= Void
 	
 	class DATA_ACCESS_OBJECT
-	
+		feature
+			CitizenName: STRING
+			-> c: Citizen
+			require
+				c /= Void
+			ensure
+				Result /= Void
+			end
+			
+			CitizenAddress: STRING
+			-> c: Citizen
+			end
+			
+			CitizenBirthday: DATE
+			-> c: Citizen
+			require
+				c /= Void
+			ensure
+				Result /= Void
+			end
+			
+			CitizenAllowedToVote: BOOLEAN
+			-> c: Citizen
+			require
+				c /= Void
+			end
+			
+			ElectionRepresentivePassword: STRING
+			-> e: ElectionRepresentive
+			require
+				e /= Void
+			ensure
+				Result /= Void
+			end
+			
+			
+			ElectionRepresentiveUsername: STRING
+			-> e: ElectionRepresentive
+			require
+				e /= Void
+			ensure
+				Result /= Void
+			end
 	class DATABASE
 	
 	class BARCODE
+		feature
+			Barcode:
+			-> STRING
+			Barcode:
+			-> IMAGE
+			Data : STRING
+			Image : IMAGE		
+			
+			invariant
+					1=1;	-- The data must not be longer than 10 charachters
+			end	
+		end
 	
 	class QUIZ
+		feature
+			Question: STRING
+			Answer: STRING
+		end
+	end
 	
 	class VOTER_CARD_PRINTER
-	
+		feature
+			Print: Void
+		end
+	end
 	class DATA_COLLECTOR
 	
 	class DATA_ANALYZER
