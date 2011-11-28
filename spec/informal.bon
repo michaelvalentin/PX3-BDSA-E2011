@@ -19,7 +19,7 @@ class PERSON
 	description "A humanbeing with a name"
 class CITIZEN
 	description "A person with a valid and unique ID-number (CPR-number)"
-class ELECTION_REPRESENTATIVE
+class USER
 	description "A person responsible of helping out at an election"
 class VOTER_CARD
 	description "A ticket to be exchanged for a ballot, that is send out to the voter as a part of the validation process."
@@ -29,7 +29,7 @@ class DATA_ACCESS_OBJECT
 	description "A standardized interface for querieing a data source."
 class DAO_PERMISSION_PROXY
 	description "An object that insures that the user have permissions to call functions in the database."
-class MYSQL_DAO
+class DAO_MYSQL
 	description "A DAO specific for mySQL databases."
 class DAO_FACTORY
 	description "An object to ensure you get the right database object"
@@ -84,7 +84,7 @@ indexing
 explanation
 	"A human being"
 query
-	"May I have a new person?"
+	"May I have a new person?",
 	"What is your name?",
 	"When is your birthday?",
 	"Are you eligible to vote?",
@@ -110,24 +110,23 @@ constraint
 	"Must have a CPR-number",
 end
 
-class_chart ELECTION_REPRESENTATIVE
+class_chart USER
 indexing
 	in_cluster: "ELECTION";
 	created: "2011-11-25";
 	revised: "2011-11-25"
 explanation
-	"The election representatives at the election venue and people adminitrating the electing, whom have different priviledges."
+	"The users at the election venue and people adminitrating the electing, whom have different priviledges."
 inherit
 	CITIZEN
 query
-	"What is your status?",
+	"What is your title?",
 	"What is your username?",
 	"What is your password?"
 command
-	"Change your status!",
 	"Change your password!"
 constraint
-	"Must have a status",
+	"Must have a titel",
 	"Must have a username",
 	"Must have a password"
 end
@@ -185,7 +184,9 @@ command
 	"Register this user!",
 	"Register this votercard!",
 constraint
-	"Person to register must have a name"
+	"Person to register must have a name",
+	"User to register must have a username",
+	"User to register must have a password"
 end
 
 class_chart DAO_PERMISSION_PROXY
@@ -200,7 +201,7 @@ query
 	"May I have a new DAO permission proxy for this DAO with this users permissions" 
 end
 
-class_chart MYSQL_DAO
+class_chart DAO_MYSQL
 indexing
 	in_cluster: "ELECTION";
 	created: "2011-11-25";
