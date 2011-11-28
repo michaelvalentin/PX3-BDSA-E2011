@@ -10,13 +10,8 @@ component
 			require
 				birthday /= Void;
 			ensure
-				result > 0;
+				Result > 0;
 			end	
-				require
-					birthday /= Void;
-				ensure
-					result > 0;
-			end
 			CityOfBirth : STRING
 			EligibleVoter : BOOLEAN
 			BallotHanded : BOOLEAN
@@ -39,16 +34,21 @@ component
 	class VOTER_CARD
 		feature
 			ElectionEvent
-				-> ELECTION_EVENT
+				-> e : ELECTION_EVENT
+				require
+				e /= Void
+			end
 			Citizen
-				-> CITIZEN
+				-> c : CITIZEN
+				require
+				c /= Void
+			end
 			Voter_card : VOTER_CARD
 				-> c : CITIZEN
 				require
 				c /= Void
 			end
 		end
-	
 	class ELECTION_EVENT
 		feature
 			ElectionEvent: Void
@@ -57,7 +57,7 @@ component
 				d /= Void
 			ensure
 				Result /= Void
-	
+			end
 	class DATA_ACCESS_OBJECT
 		feature
 			CitizenName: STRING
@@ -67,11 +67,8 @@ component
 			ensure
 				Result /= Void
 			end
-			
 			CitizenAddress: STRING
 			-> c: Citizen
-			end
-			
 			CitizenBirthday: DATE
 			-> c: Citizen
 			require
@@ -117,9 +114,15 @@ component
 	class BARCODE
 		feature
 			Barcode:
-			-> STRING
+			-> s : STRING
+			require
+			s /= Void
+			end
 			Barcode:
-			-> IMAGE
+			-> i : IMAGE
+			require
+			i /= Void
+			end
 			Data : STRING
 			Image : IMAGE		
 			
