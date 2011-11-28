@@ -26,8 +26,13 @@ class VOTER_CARD
 class ELECTION_EVENT
 	description "An actual election, that runs at a specific time, in a specific area and with a specific set of elegible voters."
 class DATA_ACCESS_OBJECT
-	-- MV: Skal dette egentlig være med i BON?? Både godt og skidt...
 	description "A standardized interface for querieing a data source."
+class DAO_PERMISSION_PROXY
+	description "An object that insures that the user have permissions to call functions in the database."
+class MYSQL_DAO
+	description "A DAO specific for mySQL databases."
+class DAO_FACTORY
+	description "An object to ensure you get the right database object"
 cluster ADMINISTRATION
 	description "Things related to the administration of an election"
 end
@@ -79,15 +84,11 @@ indexing
 explanation
 	"A human being"
 query
+	"May I have a new person?"
 	"What is your name?",
-	"What is your address?",
-	"When is your birthday",
-	"In what city have you been born?",
-	"What is your Voter-Card-ID?",
+	"When is your birthday?",
 	"Are you eligible to vote?",
-	"Have you been handed a ballot?",
-	"What is your password?",
-	"Which questions do you have?"
+	"Have you been handed a ballot?"
 command
 	"Change your eligibility to vote!",
 	"Set your status whether or not you have been handed a ballot!"
@@ -105,7 +106,6 @@ explanation
 	"A formal decision-making process by which a population chooses and individual to hold public office."
 query
 	"What is your CPR-number?",
-command
 constraint
 	"Must have a CPR-number",
 end
@@ -142,7 +142,7 @@ explanation
 query
 	"Can I have a new voter card for this citizen?",
 	"Which election event have you been made for?",
-	"Who are you addressed to?"
+	"Who are you addressed to?",
 	"What is your ID?"
 constraint
 	"Must have a citizen",
@@ -174,11 +174,11 @@ indexing
 explanation
 	"An object to access the database containing the citizens."
 query
-	"What person has this id?"
-	"What persons exists with data similiar to this person?"
-	"What user has this id?"
-	"What users exists with data similiar to this user?"
-	"What votercard has this id?"
+	"What person has this id?",
+	"What persons exists with data similiar to this person?",
+	"What user has this id?",
+	"What users exists with data similiar to this user?",
+	"What votercard has this id?",
 	"What votercards exists with data similiar to this votercard?"
 command
 	"Register this person!",
@@ -186,23 +186,41 @@ command
 	"Register this votercard!",
 constraint
 	"Person to register must have a name"
-	""
 end
 
-class_chart DATABASE
+class_chart DAO_PERMISSION_PROXY
 indexing
-	in_cluster: "UTILITIES";
+	in_cluster: "ELECTION";
 	created: "2011-11-25";
 	revised: "2011-11-25"
 explanation
-	"A class in charge of administrating the database."
-command
-	"Open connection to database",
-	"Close connection to database",
-	"Send this message to the database",
-	"Retrieve this message from the database"
-constraint
-	""
+	"An object that insures that the user have permissions to call functions in the database"
+inherit DATA_ACCESS_OBJECT
+query
+	"May I have a new DAO permission proxy for this DAO with this users permissions" 
+end
+
+class_chart MYSQL_DAO
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"A DAO specific for mySQL databases"
+inherit DATA_ACCESS_OBJECT
+query
+	"Give me a data access object that this user can use." 
+end
+
+class_chart DAO_FACTORY
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"An object to ensure you get the right database object"
+query
+	"Give me the right DAO"
 end
 	
 class_chart QUIZ
