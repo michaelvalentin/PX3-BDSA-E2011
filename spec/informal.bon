@@ -5,16 +5,16 @@ indexing
 	university: "IT University of Copenhagen";
 	created: "25-11-2011";
 explanation
-	"A system for managing and using digital voter lists at an election for at parlament or similair"
+	"A system for managing and using digital voter lists at an election for at parlament or similar"
 cluster ELECTION
-	description "Things related to an election to a parlament or similair"
+	description "Things related to an election to a parlament or similar"
 cluster UTILITIES
-	description "Various generic utilities for acomplishing simple and/or trivial tasks easier."
+	description "Various generic utilities for accomplishing simple and/or trivial tasks easier"
 end
 
 cluster_chart ELECTION
 explanation
-	"Things related to an election for a parlament or similair"
+	"Things related to an election for a parlament or similar"
 class CITIZEN
 	description "A person living in a country with a valid and unique ID-number (CPR-number)"
 class ELECTION_REPRESENTATIVE
@@ -203,7 +203,7 @@ query
 	"What is the question",
 	"What is the answer?"
 constraint
-	"The answer must be the answer to the question.", --MV : LIKE!
+	"The answer must be the answer to the question" --MV : LIKE!
 end
 
 class_chart VOTER_CARD_PRINTER
@@ -214,7 +214,7 @@ indexing
 explanation
 	"A printer used to create the physical voter cards"
 query
-	"May I have a voter card based on this voter information",
+	"May I have a voter card based on this voter information"
 constraint
 	""
 end
@@ -228,6 +228,8 @@ explanation
 	"A system used to collect information about all citizens"
 query
 	"",
+	""
+command
 	""
 constraint
 	""
