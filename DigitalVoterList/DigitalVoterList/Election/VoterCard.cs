@@ -3,6 +3,7 @@
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
+using System.Diagnostics.Contracts;
 
 namespace DigitalVoterList.Election
 {
@@ -12,5 +13,39 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class VoterCard
     {
+        private readonly ElectionEvent _electionEvent;
+        private readonly Citizen _citizen;
+        private readonly string _id;
+
+        public VoterCard(ElectionEvent electionEvent, Citizen citizen, string id)
+        {
+            _electionEvent = electionEvent;
+            _citizen = citizen;
+            _id = id;
+        }
+
+        public ElectionEvent ElectionEvent
+        {
+            get
+            {
+                return _electionEvent;
+            }
+        }
+
+        public Citizen Citizen
+        {
+            get
+            {
+                return _citizen;
+            }
+        }
+
+        public string Id
+        {
+            get
+            {
+                return _id;
+            }
+        }
     }
 }
