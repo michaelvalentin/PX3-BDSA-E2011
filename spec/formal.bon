@@ -26,8 +26,7 @@ component
 		feature
 			Title : STRING
 			Username : STRING
-			Priviledges : SET[STRING]
-			Privilleges : SET[STRING]
+			Privileges : SET[STRING]
 			ChangePassword : BOOLEAN
 				-> pwd : STRING
 		end

@@ -51,6 +51,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ElectionEvent.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="VoterCard.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -63,6 +66,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Citizen.cs" />
     <Compile Include="Election\Citizen.cs" />
     <Compile Include="Election\ElectionEvent.cs" />
     <Compile Include="Election\IDataAccessObject.cs" />
@@ -70,6 +74,7 @@
     <Compile Include="Election\Person.cs" />
     <Compile Include="Election\User.cs" />
     <Compile Include="Election\VoterCard.cs" />
+    <Compile Include="Person.cs" />
     <Compile Include="Start.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

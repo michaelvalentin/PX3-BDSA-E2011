@@ -86,7 +86,7 @@ explanation
 query
 	"May I have a new person?",
 	"What is your name?",
-	"When is your birthday?",
+	"What is your adress?",
 	"Are you eligible to vote?",
 	"Have you been handed a ballot?"
 command
@@ -123,7 +123,7 @@ query
 command
 	"Change your password!"
 constraint
-	"Must have a titel",
+	"Must have a title",
 	"Must have a username",
 	"Must have a password"
 end
