@@ -51,9 +51,11 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ElectionEvent.cs" />
-    <Compile Include="User.cs" />
-    <Compile Include="VoterCard.cs" />
+    <Compile Include="Utilities\Barcode.cs" />
+    <Compile Include="Utilities\Quiz.cs" />
+    <Compile Include="Views\LoginWindow.xaml.cs">
+      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -66,7 +68,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Citizen.cs" />
+    <Compile Include="Election\Administration\DataAnalyzer.cs" />
+    <Compile Include="Election\Administration\DataCollector.cs" />
+    <Compile Include="Election\Administration\VoterCardPrinter.cs" />
     <Compile Include="Election\Citizen.cs" />
     <Compile Include="Election\ElectionEvent.cs" />
     <Compile Include="Election\IDataAccessObject.cs" />
@@ -74,12 +78,15 @@
     <Compile Include="Election\Person.cs" />
     <Compile Include="Election\User.cs" />
     <Compile Include="Election\VoterCard.cs" />
-    <Compile Include="Person.cs" />
     <Compile Include="Start.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\LoginWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

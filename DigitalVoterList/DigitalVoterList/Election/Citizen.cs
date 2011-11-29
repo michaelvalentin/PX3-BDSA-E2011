@@ -3,7 +3,7 @@
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
-using System.Diagnostics.Contracts
+using System.Diagnostics.Contracts;
 
 namespace DigitalVoterList.Election
 {
@@ -35,7 +35,13 @@ namespace DigitalVoterList.Election
 
         private void ObjectInvariant()
         {
-            Contract.Invariant(Cpr != null);
+            Contract.Invariant(ValidCpr(_cpr));
+        }
+
+        private bool ValidCpr(int cpr)
+        {
+            //Todo: Write method! 
+            return true;
         }
     }
 }

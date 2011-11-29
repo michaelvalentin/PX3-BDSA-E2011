@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows;
+using DigitalVoterList.Views;
 
 namespace DigitalVoterList
 {
@@ -16,7 +17,7 @@ namespace DigitalVoterList
             Application app = new Application();
             app.Startup += (object sender, StartupEventArgs e) =>
             {
-                MainWindow view = new MainWindow();
+                LoginWindow view = new LoginWindow();
                 view.Show();
             };
             app.Run();
