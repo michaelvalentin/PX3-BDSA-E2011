@@ -1,4 +1,5 @@
 system_chart PX3_DIGITAL_VOTER_LIST_SCENARIOS
+end
 
 scenario_chart USE_SCENARIOS
 indexing
