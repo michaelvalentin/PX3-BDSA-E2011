@@ -267,7 +267,7 @@ explanation
 	"A printer used to create the physical voter cards"
 query
 	"May I have a new voter card printer?"
-	"May I have a voter card based on this voter information",
+	"May I have a voter card based on this voter card information",
 constraint
 	""
 end
