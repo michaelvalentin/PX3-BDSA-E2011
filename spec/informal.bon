@@ -1,4 +1,4 @@
-system_chart PX3_DIGITAL_VOTER_LIST
+ksystem_chart PX3_DIGITAL_VOTER_LIST
 indexing
 	authors: "Jens Dahl Møllerhøj <jdmo@itu.dk>, Morten Hyllekilde Andersen <mhyl@itu.dk> & Michael Valentin <mier@itu.dk>";
 	course: "BDSA";
@@ -68,7 +68,6 @@ explanation
 	"An optical, machine readable, representation of simple data, with the ability to output both the data and the optical representation."
 query
 	"May i have a new barcode object, representing this data?",
-	"May i have a new barcode, that will produce this optical representation?",
 	"What data do you hold?",
 	"Can i have a optical representation of the data you hold?"
 constraint
@@ -169,13 +168,15 @@ indexing
 	created: "2011-11-25";
 	revised: "2011-11-25"
 explanation
-	"An object to access the database containing the citizens."
+	"An object to access the database in a standardized way."
 query
 	"What person has this id?",
 	"What persons exists with data similiar to this person?",
 	"What user has this id?",
+	"What user has this username and password?",
 	"What users exists with data similiar to this user?",
 	"What votercard has this id?",
+	"What votercard has this id-key?",
 	"What votercards exists with data similiar to this votercard?"
 command
 	"Register this person!",

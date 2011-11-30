@@ -29,6 +29,7 @@ component
 			Privileges : SET[STRING]
 			ChangePassword : BOOLEAN
 				-> pwd : STRING
+			Authenticated : BOOLEAN
 		end
 		
 	class VOTER_CARD
@@ -87,11 +88,16 @@ component
 			Find : SET[VOTER_CARD]
 				-> p : VOTER_CARD
 			LoadPerson : PERSON
-				-> INTEGER : id
+				-> id : INTEGER
 			LoadUser : USER
-				-> INTEGER : id
+				-> id : INTEGER
+			LoadUser : USER
+				-> username : STRING
+				-> password : STRING
 			LoadVoterCard : VOTER_CARD
-				-> INTEGER : id
+				-> id : INTEGER
+			LoadVoterCard : VOTER_CARD
+				-> id-key : STRING
 		end
 		
 	class DAO_MYSQL
