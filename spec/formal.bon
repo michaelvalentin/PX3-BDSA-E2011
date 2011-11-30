@@ -4,21 +4,24 @@ component
   component
 	class PERSON
 		feature
+			CprNumber : INTEGER
 			Name : STRING
 			Address : STRING
-			EligibleVoter : BOOLEAN
-			BallotHanded : BOOLEAN
+			PassportNumber : INTEGER
+			PlaceOfBirth : DATE
 		end
 	class CITIZEN
 	  inherit PERSON
 		feature
-			Cpr : INTEGER
-				require
-					-- cpr.length = 10
-					1=1
+			EligibleToVote : BOOLEAN
+			HasVoted : BOOLEAN
+			VotingStatus : STRING
+			VoterCards : SET[VOTER_CARD]
+			SecurityQuestion : QUIZ
 			end
 		invariant
-			Cpr /= Void;
+			CprNumber /= Void;
+			--CprNumber must be valid
 		end
 	class USER
 	  inherit PERSON
@@ -120,21 +123,22 @@ component
 	class DATABASE
 	class BARCODE
 		feature
-			BarcodeIn
-			-> s : STRING
-			require
-			s /= Void
+			Barcode
+				-> data : STRING
+				require
+					data /= Void;
 			end
-			BarcodeOut
-			-> i : IMAGE
-			require
-			i /= Void
-			end
-			Data : STRING
-			Image : IMAGE		
-			
+		Data : STRING
+			ensure
+				result /= Void;
+		end
+		Image : IMAGE		
+			ensure
+				result /= Void;
+		end
 			invariant
-					1=1;	-- The data must not be longer than 10 charachters	
+					1=1;	-- The data must not be longer than 10 charachters
+					-- The data must be at least one charachter
 		end
 	class QUIZ
 		feature

@@ -83,8 +83,8 @@ indexing
 explanation
 	"A human being"
 query
+	"May I have a new person?",
 	"What is your CPR-number?",
-	"May I have a new person with this name, this address this voterstatus and this ballot handed status?",
 	"What is your name?",
 	"What is your adress?",
 	"What is your passport number?",
