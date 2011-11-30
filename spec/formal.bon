@@ -132,6 +132,7 @@ component
 		end
 	class QUIZ
 		feature
+			Quiz: Void
 			Question: STRING
 			Answer: STRING
 	end
@@ -139,6 +140,7 @@ component
   component
 	class VOTER_CARD_PRINTER
 		feature
+			VoterCardPrinter: Void
 			Print: Void
 		end
 	end
