@@ -20,6 +20,9 @@ namespace DigitalVoterList.Election
             _name = name;
         }
 
+        /// <summary>
+        /// A getter and setter for _date. The date is the scheduled date of the ElectionEvent.
+        /// </summary>
         public DateTime Date
         {
             get
@@ -28,11 +31,14 @@ namespace DigitalVoterList.Election
             }
             set
             {
-                Contract.Ensures(!_date.Equals(null));
+                Contract.Ensures(!value.Equals(null));
                 _date = value;
             }
         }
 
+        /// <summary>
+        /// A getter and setter for _name. The name is the name of the election.
+        /// </summary>
         public string Name
         {
             get
@@ -41,7 +47,7 @@ namespace DigitalVoterList.Election
             }
             set
             {
-                Contract.Ensures(!string.IsNullOrEmpty(_name));
+                Contract.Ensures(!string.IsNullOrEmpty(value));
                 _name = value;
             }
         }

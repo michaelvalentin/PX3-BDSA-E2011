@@ -40,9 +40,9 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// What voter card has this id-key?
         /// </summary>
-        /// <param name="id_key">The id-key to search for</param>
+        /// <param name="idKey">The id-key to search for</param>
         /// <returns>A voter card</returns>
-        VoterCard LoadVoterCard(string id_key);
+        VoterCard LoadVoterCard(string idKey);
 
         /// <summary>
         /// What persons exists with data similiar to this person?
@@ -66,24 +66,66 @@ namespace DigitalVoterList.Election
         List<VoterCard> Find(VoterCard voterCard);
 
         /// <summary>
-        /// Atempt to register this person!
+        /// May I have all eligible voters in the database?
+        /// </summary>
+        /// <returns>A list of eligible voters</returns>
+        List<Citizen> Find();
+
+        /// <summary>
+        /// Create this person with this data!
         /// </summary>
         /// <param name="person">The person to register</param>
-        /// <returns>Was the atempt successful?</returns>
+        /// <returns>Was the attempt successful?</returns>
         bool Save(Person person);
 
         /// <summary>
-        /// Atempt to register this user!
+        /// Create this user with this data!
         /// </summary>
         /// <param name="user">The user to register</param>
-        /// <returns>Was the atempt successful?</returns>
+        /// <returns>Was the attempt successful?</returns>
         bool Save(User user);
 
         /// <summary>
-        /// Atempt to register this voter card!
+        /// Create this voter card with this data!
         /// </summary>
         /// <param name="voterCard">The voter card to register</param>
-        /// <returns>Was the atempt successful?</returns>
+        /// <returns>Was the attempt successful?</returns>
         bool Save(VoterCard voterCard);
+
+        /// <summary>
+        /// Mark that a voter has voted with standard validation!
+        /// </summary>
+        /// <param name="citizen">The citizen who should be marked as voted</param>
+        /// <param name="keyPhrase">The last four digits of the citizen's CPR-Number</param>
+        /// <returns>Was the attempt successful?</returns>
+        bool Mark(Citizen citizen, int keyPhrase);
+
+        /// <summary>
+        /// Mark that a voter has voted with manual validation!
+        /// </summary>
+        /// <param name="citizen">The citizen who should be marked as voted</param>
+        /// <returns>Was the attempt successful?</returns>
+        bool Mark(Citizen citizen);
+
+        /// <summary>
+        /// Change this users pasword to this!
+        /// </summary>
+        /// <param name="user">The user whose password should be changed</param>
+        /// <returns>Was the attempt succesful?</returns>
+        bool ChangePassword(User user);
+
+        /// <summary>
+        /// Mark this user as invalid!
+        /// </summary>
+        /// <param name="user">The user who should be marked as invalid</param>
+        /// <returns>Was the attempt succesful?</returns>
+        bool InvalidUser(User user);
+
+        /// <summary>
+        /// Mark this voter card as invalid!
+        /// </summary>
+        /// <param name="voterCard">The voter card which should be marked as invalid</param>
+        /// <returns>Was the attempt succesful?</returns>
+        bool InvalidVoterCard(VoterCard voterCard);
     }
 }

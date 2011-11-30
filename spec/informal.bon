@@ -44,8 +44,6 @@ class BARCODE
 	description "An optical, machine readable, representation of simple data"
 class QUIZ
 	description "A linguistic expression used to make a request for information"
-class DATABASE
-	description "A class in charge of adminstrating a database"
 end
 
 cluster_chart ADMINISTRATION
@@ -57,22 +55,6 @@ class DATA_COLLECTOR
 	description "A system that can collect the necessary data for an election event."
 class DATA_ANALYZER
 	description "A system that can analyze the turnout results after an election."
-end
-
-class_chart BARCODE
-indexing
-	in_cluster: "UTILITIES";
-	created: "2011-11-25";
-	revised: "2011-11-25"
-explanation
-	"An optical, machine readable, representation of simple data, with the ability to output both the data and the optical representation."
-query
-	"May I have a new barcode object, representing this data?",
-	"What data do you hold?",
-	"Can I have an optical representation of the data you hold?"
-constraint
-	"The data must not be longer than 10 charachters",
-	"The optical representation must represent the data exactly and unambiguously."
 end
 
 class_chart PERSON
@@ -142,7 +124,7 @@ indexing
 explanation
 	"The voter card being sent to citizens who are eligibe to vote."
 query
-	"Can I have a new voter card for this citizen?",
+	"Can I have a new voter card for this citizen for this ElectionEvent?",
 	"Which election event have you been made for?",
 	"Who are you addressed to?",
 	"What is your ID?",
@@ -170,7 +152,7 @@ command
 	"Change your scheduled election date!",
 	"Change your name!"
 constraint
-	"Must have a scheduled election date, and a name"
+	"Must have a scheduled election date and a name"
 end
 
 class_chart DATA_ACCESS_OBJECT
@@ -241,6 +223,22 @@ explanation
 	"An object to ensure you get the right database object"
 query
 	"Give me the right DAO"
+end
+
+class_chart BARCODE
+indexing
+	in_cluster: "UTILITIES";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"An optical, machine readable, representation of simple data, with the ability to output both the data and the optical representation."
+query
+	"May I have a new barcode object, representing this data?",
+	"What data do you hold?",
+	"Can I have an optical representation of the data you hold?"
+constraint
+	"The data must not be longer than 10 charachters",
+	"The optical representation must represent the data exactly and unambiguously."
 end
 	
 class_chart QUIZ
