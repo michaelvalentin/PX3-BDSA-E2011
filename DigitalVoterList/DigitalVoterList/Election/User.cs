@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace DigitalVoterList.Election
 {
@@ -8,46 +10,94 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class User : Person
     {
-        private readonly string _title;
-        private readonly string _username;
-        private string _password;
+        private string _title;
+        private HashSet<Permission> _permissions;
+        private DateTime? _lastSuccessfullValidationTime;
 
-        public User(string title, string username, string password)
+        /// <summary>
+        /// The users at the election venue and people adminitrating the electing, who have different priviledges.
+        /// </summary>
+        /// <param name="id">The database id of the user</param>
+        public User(int id)
+            : base(id)
         {
-            Contract.Requires(!string.IsNullOrEmpty(title));
-            Contract.Requires(!string.IsNullOrEmpty(username));
-            Contract.Requires(!string.IsNullOrEmpty(password));
-            _title = title;
-            _username = username;
-            _password = password;
+            _title = "";
+            _permissions = new HashSet<Permission>();
+            _lastSuccessfullValidationTime = null;
         }
 
-        public string Password
+        /// <summary>
+        /// The users at the election venue and people adminitrating the electing, who have different priviledges.
+        /// </summary>
+        public User()
+            : this(0)
+        {
+        }
+
+
+        public bool FetchPermissions(string uname, string pwd)
+        {
+            //todo: Make validation..!
+            _lastSuccessfullValidationTime = null;
+            return false;
+        }
+
+        public string Title { get; private set; }
+
+        public Permission[] Permissions
         {
             get
             {
-                return _password;
-            }
-            set
-            {
-                Contract.Ensures(!string.IsNullOrEmpty(_password));
-                _password = value;
-            }
-        }
-
-        public string Title
-        {
-            get
-            {
-                return _title;
+                Contract.Requires(_permissions != null);
+                if (!Validated)
+                {
+                    return new Permission[0];
+                }
+                else
+                {
+                    Permission[] output = new Permission[_permissions.Count];
+                    _permissions.CopyTo(output);
+                    return output;
+                }
             }
         }
 
-        public string Username
+        public bool HasPermission(Permission p)
+        {
+            return Validated && _permissions.Contains(p);
+        }
+
+        public bool Validated
         {
             get
             {
-                return _username;
+                if (_lastSuccessfullValidationTime == null) return false;
+
+                DateTime now = new DateTime();
+                if (now.Subtract((DateTime)_lastSuccessfullValidationTime).Minutes > 15)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
+        private bool CheckValidation()
+        {
+            if()
+            DateTime now = new DateTime();
+            if (now.Subtract(_lastSuccessfullValidationTime).Minutes > 15)
+            {
+                _validated = false;
+                _permissions = new HashSet<Permission>();
+                return false;
+            }
+            else
+            {
+                return true;
             }
         }
     }

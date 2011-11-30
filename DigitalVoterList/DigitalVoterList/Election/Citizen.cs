@@ -4,7 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using DigitalVoterList.Utilities;
 
 namespace DigitalVoterList.Election
 {
@@ -14,29 +16,33 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class Citizen : Person
     {
-        private int _cpr;
+        private bool _eligibleToVote;
+        private bool _hasVoted;
+        private string _votingStatus;
+        private HashSet<VoterCard> _voterCards = null;
+        private HashSet<Quiz> _securityQuestions = null;
 
-        public Citizen(int cpr)
+        public Citizen(int id)
+            : base(id)
         {
-            _cpr = cpr;
         }
 
-        public int Cpr
-        {
-            get
-            {
-                return _cpr;
-            }
-            set
-            {
-                Contract.Ensures(_cpr.ToString().Length == 10);
-                _cpr = value;
-            }
-        }
+        //TODO: Make this... :-)
+        public bool EligibleToVote { get; private set; }
+
+        //TODO: Make this... :-)
+        public bool HasVoted { get; private set; }
+
+        public string VotingStatus { get; set; }
+
+        //TODO: Make this... :-)
+        public HashSet<VoterCard> VoterCards { get; set; }
+
+        public HashSet<Quiz> SecurityQuestions { get; set; }
 
         private void ObjectInvariant()
         {
-            Contract.Invariant(ValidCpr(_cpr));
+            Contract.Invariant(ValidCpr(Cpr));
         }
 
         private bool ValidCpr(int cpr)
@@ -48,7 +54,7 @@ namespace DigitalVoterList.Election
                 int month = Int32.Parse(tempCpr.Substring(2, 3));
                 if (!(day > 0 && day <= 31)) return false;
                 if (!(month > 0 && month <= 12)) return false;
-                
+
                 return true;
             }
             return false;
