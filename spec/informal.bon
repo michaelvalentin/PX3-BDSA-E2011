@@ -68,7 +68,6 @@ explanation
 	"An optical, machine readable, representation of simple data, with the ability to output both the data and the optical representation."
 query
 	"May I have a new barcode object, representing this data?",
-	"May I have a new barcode, that will produce this optical representation?",
 	"What data do you hold?",
 	"Can I have an optical representation of the data you hold?"
 constraint
@@ -182,25 +181,29 @@ indexing
 explanation
 	"An object to access the database in a standardized way."
 query
-	"May i have all eligible voters in the database?"
 	"What person has this id?",
-	"What persons exists with data similiar to this?",
 	"What user has this id?",
 	"What user has this username and password?",
-	"What users exists with data similiar to this user?",
 	"What votercard has this id?",
 	"What votercard has this id-key?",
-	"What votercards exists with data similiar to this votercard?"
+	"What persons exists with data similiar to this?",
+	"May i have all eligible voters in the database?",
+	"What users exists with data similiar to this?",
+	"What votercards exists with data similiar to this?"
 command
 	"Create this person with this data!",
 	"Create this user with this data!",
-	"Create this voter card this data!",
+	"Create this voter card with this data!",
 	"Update this person with this data!",
-	"Set person as voted!"
+	"Mark that a voter has voted with standard validation!",
+	"mark that a voter has voted with manual validation!",
+	"Change this users pasword to this!",
+	"Mark this user as invalid!",
+	"Mark this voter card as invalid!"
 constraint
-	"Person to register must have a name",
-	"User to register must have a username",
-	"User to register must have a password"
+	"Person to be created must have a name or CPR-number",
+	"User to be created must have a username",
+	"User to be created must have a password"
 end
 
 class_chart DAO_PERMISSION_PROXY
