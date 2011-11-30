@@ -68,7 +68,6 @@ explanation
 	"An optical, machine readable, representation of simple data, with the ability to output both the data and the optical representation."
 query
 	"May I have a new barcode object, representing this data?",
-	"May I have a new barcode, that will produce this optical representation?",
 	"What data do you hold?",
 	"Can I have an optical representation of the data you hold?"
 constraint
@@ -84,14 +83,12 @@ indexing
 explanation
 	"A human being"
 query
+	"What is your CPR-number?",
 	"May I have a new person with this name, this address this voterstatus and this ballot handed status?",
 	"What is your name?",
 	"What is your adress?",
-	"Are you eligible to vote?",
-	"Have you been handed a ballot?"
-command
-	"Change your eligibility to vote!",
-	"Set your status whether or not you have been handed a ballot!"
+	"What is your passport number?",
+	"Where were you born?"
 end
 
 class_chart CITIZEN
@@ -100,11 +97,20 @@ indexing
 	created: "2011-11-25";
 	revised: "2011-11-25"
 explanation
-	"A human being with a cpr-number"
+	"A potential voter"
+inherit PERSON
 query
-	"What is your CPR-number?",
+	"Are you eligible to vote?",
+	"Have you voted?",
+	"What is your voting status?",
+	"What voter cards belong to you?",
+	"What security questions can i ask you?"
+command
+	"Change your eligibility to vote!",
+	"Register that you have voted!"
 constraint
 	"Must have a CPR-number",
+	"A has voted when he has been handed a ballot"
 end
 
 class_chart USER
@@ -139,7 +145,10 @@ query
 	"Can I have a new voter card for this citizen?",
 	"Which election event have you been made for?",
 	"Who are you addressed to?",
-	"What is your ID?"
+	"What is your ID?",
+	"Are you valid?"
+command
+	"Set this voter card invalid!"
 constraint
 	"Must have a citizen",
 	"Must have an election event",
@@ -173,21 +182,28 @@ explanation
 	"An object to access the database in a standardized way."
 query
 	"What person has this id?",
-	"What persons exists with data similiar to this person?",
 	"What user has this id?",
 	"What user has this username and password?",
-	"What users exists with data similiar to this user?",
 	"What votercard has this id?",
 	"What votercard has this id-key?",
-	"What votercards exists with data similiar to this votercard?"
+	"What persons exists with data similiar to this?",
+	"May i have all eligible voters in the database?",
+	"What users exists with data similiar to this?",
+	"What votercards exists with data similiar to this?"
 command
-	"Register this person!",
-	"Register this user!",
-	"Register this votercard!",
+	"Create this person with this data!",
+	"Create this user with this data!",
+	"Create this voter card with this data!",
+	"Update this person with this data!",
+	"Mark that a voter has voted with standard validation!",
+	"mark that a voter has voted with manual validation!",
+	"Change this users pasword to this!",
+	"Mark this user as invalid!",
+	"Mark this voter card as invalid!"
 constraint
-	"Person to register must have a name",
-	"User to register must have a username",
-	"User to register must have a password"
+	"Person to be created must have a name or CPR-number",
+	"User to be created must have a username",
+	"User to be created must have a password"
 end
 
 class_chart DAO_PERMISSION_PROXY
