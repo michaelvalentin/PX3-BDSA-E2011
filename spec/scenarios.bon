@@ -1,4 +1,7 @@
 scenario_chart USE_SCENARIOS
+indexing
+	created: "2011-11-30";
+	revised: "2011-11-30"
 explanation
 	"Common scenarios at an election, related to the voter lists, from a users view."
 scenario "USER REQUEST FOR INFORMATION"
@@ -16,6 +19,9 @@ scenario "MANUAL REGISTRATION OF VOTER WITHOUT A VOTER CARD"
 end
 
 scenario_chart SYSTEM_SCENARIOS
+indexing
+	created: "2011-11-30";
+	revised: "2011-11-30"
 explanation
 	"Common scenarios at an election, related to the voter lists, from a system view. This is an overview description, omitting technical details."
 scenario "USER REQUEST FOR INFORMATION"
@@ -35,6 +41,9 @@ scenario "REGISTER VOTER"
 end
 
 scenario_chart SYSTEM_PROCESS_CHART
+indexing
+	created: "2011-11-30";
+	revised: "2011-11-30"
 explanation
 	"Description of core system processes, and how they interact. Important for understanding the system arcitechture."
 scenario "USER REQUEST FOR INFORMATION"
@@ -55,3 +64,4 @@ scenario "REGISTRATION OF VOTING"
 	description "When a voter is registered as 'has voted', information is also kept regarding when this happened and who was the election representative in charge."
 scenario "DATABASE PROXY"
 	description "All requests from the voting venue goes through a database proxy unit at the voting venue. If the proxy can establish connection to the central database, the proper actions are performed there and mirrored in the local database. If an connection can't be established, the proper actions are performed in the local database and marked as unsynchronized, and synced to the central database as soon as the connection can again be established."
+end
