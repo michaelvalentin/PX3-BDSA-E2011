@@ -1,7 +1,7 @@
 ﻿<Window x:Class="DigitalVoterList.Views.LoginWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="PX3 Login" Height="217" Width="292">
+        Title="PX3 Login" Height="217" Width="292" ResizeMode="NoResize">
     <Grid Height="176">
         <TextBlock Height="46" HorizontalAlignment="Left" Name="textBlock1" Text="Login to use system" VerticalAlignment="Top" Width="278" FontSize="20" Background="#FF00A3FF" Foreground="White" FontWeight="Bold" Padding="10" />
         <TextBlock Height="43" HorizontalAlignment="Left" Margin="209,3,0,0" Name="textBlock2" Text="PX3" VerticalAlignment="Top" Width="55" FontSize="30" FontWeight="Bold" Foreground="#FF1F8AD6" />

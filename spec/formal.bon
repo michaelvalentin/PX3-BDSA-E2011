@@ -15,12 +15,11 @@ component
 			Cpr : INTEGER
 				require
 					-- cpr.length = 10
+					1=1
 			end
-		end
 		invariant
 			Cpr /= Void;
 		end
-		
 	class USER
 	  inherit PERSON
 		feature
@@ -31,7 +30,6 @@ component
 				-> pwd : STRING
 			Authenticated : BOOLEAN
 		end
-		
 	class VOTER_CARD
 		feature
 			ElectionEvent : ELECTION_EVENT
@@ -52,7 +50,9 @@ component
 			Id : STRING
 				ensure
 					result /= Void
+			end
 		end
+	end
 	class ELECTION_EVENT
 		feature
 			ElectionEvent : ELECTION_EVENT
@@ -65,27 +65,26 @@ component
 			end
 			Name : STRING
 			ensure
-				reulst /= Void
+				result /= Void
 			end
 			Date : DATE
 			ensure
 				result /= Void
 			end
 		end
-		
 	class DATA_ACCESS_OBJECT
 		feature
-			Save : BOOLEAN
+			SavePerson : BOOLEAN
 				-> p : PERSON
-			Save : BOOLEAN
+			SaveUser : BOOLEAN
 				-> u : USER
-			Save : BOOLEAN
+			SaveVoterCard : BOOLEAN
 				-> v : VOTER_CARD
-			Find : SET[PERSON]
+			FindPerson : SET[PERSON]
 				-> p : PERSON
-			Find : SET[USER]
+			FindUser : SET[USER]
 				-> p : USER
-			Find : SET[VOTER_CARD]
+			FindVoterCard : SET[VOTER_CARD]
 				-> p : VOTER_CARD
 			LoadPerson : PERSON
 				-> id : INTEGER
@@ -99,39 +98,34 @@ component
 			LoadVoterCard : VOTER_CARD
 				-> id-key : STRING
 		end
-		
 	class DAO_MYSQL
 		inherit DATA_ACCESS_OBJECT
 		feature
 			Create : DATA_ACCESS_OBJECT
 				-> u : USER
 		end
-		
 	class DAO_PERMISSION_PROXY
 		inherit DATA_ACCESS_OBJECT
 		feature
 			Dao_Permission_Proxy : DAO_PERMISSION_PROXY
 				-> u : USER
 		end
-		
 	class DAO_FACTORY
 		feature
 			GetDAO : DATA_ACCESS_OBJECT
 				-> u : USER
 		end
-  end
-  
   cluster UTILITIES
   component
 	class DATABASE
 	class BARCODE
 		feature
-			Barcode
+			BarcodeIn
 			-> s : STRING
 			require
 			s /= Void
 			end
-			Barcode
+			BarcodeOut
 			-> i : IMAGE
 			require
 			i /= Void
@@ -140,26 +134,23 @@ component
 			Image : IMAGE		
 			
 			invariant
-					1=1;	-- The data must not be longer than 10 charachters
-			end	
+					1=1;	-- The data must not be longer than 10 charachters	
 		end
-	
 	class QUIZ
 		feature
+			Quiz: Void
 			Question: STRING
 			Answer: STRING
-		end
 	end
-  end
   cluster ADMINISTRATION
   component
 	class VOTER_CARD_PRINTER
 		feature
+			VoterCardPrinter: Void
 			Print: Void
 		end
 	end
-	class DATA_COLLECTOR --Not designed yet...
-		
-	class DATA_ANALYZER --Not designed yet...
+	class DATA_COLLECTOR 	-- Not designed yet...
+	class DATA_ANALYZER 	-- Not designed yet...
   end
 end
