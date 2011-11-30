@@ -42,6 +42,11 @@ DigitalVoterList.suo
 DigitalVoterList/DigitalVoterList/bin/
 DigitalVoterList/DigitalVoterList/obj/
 
+# Git weird files #
+###################
+*orig
+*cache
+
 # Tool files #
 ##############
 DigitalVoterList/_ReSharper.DigitalVoterList/
