@@ -3,6 +3,7 @@
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
+using System;
 using System.Diagnostics.Contracts;
 
 namespace DigitalVoterList.Election
@@ -40,8 +41,17 @@ namespace DigitalVoterList.Election
 
         private bool ValidCpr(int cpr)
         {
-            //Todo: Write method! 
-            return true;
+            string tempCpr = cpr.ToString();
+            if (tempCpr.Length == 10)
+            {
+                int day = Int32.Parse(tempCpr.Substring(0, 1));
+                int month = Int32.Parse(tempCpr.Substring(2, 3));
+                if (!(day > 0 && day <= 31)) return false;
+                if (!(month > 0 && month <= 12)) return false;
+                
+                return true;
+            }
+            return false;
         }
     }
 }
