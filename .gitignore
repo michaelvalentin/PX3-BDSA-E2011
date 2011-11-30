@@ -44,8 +44,8 @@ DigitalVoterList/DigitalVoterList/obj/
 
 # Git weird files #
 ###################
-*orig
-*cache
+*.orig
+*.cache
 
 # Tool files #
 ##############

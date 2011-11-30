@@ -4,11 +4,7 @@
 winexe
 C#
 .cs
-<<<<<<< HEAD
-C:\Users\Morten\PX3-Project\DigitalVoterList\DigitalVoterList\obj\x86\Debug\
-=======
-C:\Users\MV\Desktop\PX3-Project\DigitalVoterList\DigitalVoterList\obj\x86\Debug\
->>>>>>> a4dabb4d75d857f99b605fa7fa7f268613bd5bd0
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\obj\x86\Debug\
 DigitalVoterList
 none
 false
@@ -16,11 +12,7 @@ DEBUG;TRACE
 
 51150293223
 
-<<<<<<< HEAD
-22581757265
-=======
-21-598994571
->>>>>>> a4dabb4d75d857f99b605fa7fa7f268613bd5bd0
+21682769883
 13-1012886045
 App.xaml;MainWindow.xaml;Views\AdministrationWindow.xaml;Views\LoginWindow.xaml;Views\UserWindow.xaml;
 
