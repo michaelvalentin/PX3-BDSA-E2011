@@ -106,10 +106,10 @@ inherit
 	CITIZEN
 query
 	"What is your title?",
-	"What is your username?",
-	"What is your password?"
+	"What permissions do you have?"
 command
-	"Change your password!"
+	"Change your password!",
+	"Get perm"
 constraint
 	"Must have a title",
 	"Must have a username",

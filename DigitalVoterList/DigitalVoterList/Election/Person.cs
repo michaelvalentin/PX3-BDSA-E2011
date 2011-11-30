@@ -7,41 +7,53 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class Person
     {
+        private int _id;
+        private int _cpr;
+        private int _passportNumber;
         private string _name;
         private string _address;
-        private bool _eligibleVoter;
-        private bool _ballotHanded;
+        private string _placeOfBirth;
 
-        protected Person()
+        /// <summary>
+        /// A human being 
+        /// </summary>
+        /// <param name="id">A database id. Set to 0 to create new person.</param>
+        public Person(int id)
+        {
+            _id = id;
+        }
+
+        /// <summary>
+        /// A human being
+        /// </summary>
+        public Person()
+            : this(0)
         {
         }
 
-        public Person(string name, string address, bool eligibleVoter, bool ballotHanded)
-        {
-            _name = name;
-            _address = address;
-            _eligibleVoter = eligibleVoter;
-            _ballotHanded = ballotHanded;
-        }
+        /// <summary>
+        /// The persons CPR-number
+        /// </summary>
+        public int Cpr { get; set; }
 
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-        }
+        /// <summary>
+        /// The persons passport number
+        /// </summary>
+        public int PassportNumber { get; set; }
 
-        public string Address
-        {
-            get
-            {
-                return _address;
-            }
-        }
+        /// <summary>
+        /// The persons full name
+        /// </summary>
+        public string Name { get; set; }
 
-        public bool EligibleVoter { get; set; }
+        /// <summary>
+        /// The persons address
+        /// </summary>
+        public string Address { get; set; }
 
-        public bool BallotHanded { get; set; }
+        /// <summary>
+        /// Where this person was born
+        /// </summary>
+        public string PlaceOfBirth { get; set; }
     }
 }
