@@ -15,21 +15,23 @@ namespace DigitalVoterList.Election
     {
         private int _cpr;
 
+        /// <summary>
+        /// "A human being with a cpr-number"
+        /// </summary>
+        /// <param name="cpr"></param>
         public Citizen(int cpr)
         {
             _cpr = cpr;
         }
 
+        /// <summary>
+        /// "What is your CPR-number?"
+        /// </summary>
         public int Cpr
         {
             get
             {
                 return _cpr;
-            }
-            set
-            {
-                Contract.Ensures(_cpr.ToString().Length == 10);
-                _cpr = value;
             }
         }
 

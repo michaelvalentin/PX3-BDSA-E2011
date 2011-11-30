@@ -6,10 +6,13 @@ namespace DigitalVoterList
 {
 
     /// <summary>
-    /// The main class for initializing the application
+    /// "The main class for initializing the application"
     /// </summary>
     public class Start
     {
+        /// <summary>
+        /// "Start the application"
+        /// </summary>
         [System.STAThread]
         public static void Main()
         {

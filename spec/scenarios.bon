@@ -1,3 +1,5 @@
+system_chart PX3_DIGITAL_VOTER_LIST_SCENARIOS
+
 scenario_chart USE_SCENARIOS
 explanation
 	"Common scenarios at an election, related to the voter lists, from a users view."

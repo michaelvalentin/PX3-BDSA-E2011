@@ -84,7 +84,7 @@ indexing
 explanation
 	"A human being"
 query
-	"May I have a new person?",
+	"May I have a new person with this name, this address this voterstatus and this ballot handed status?",
 	"What is your name?",
 	"What is your adress?",
 	"Are you eligible to vote?",
@@ -100,7 +100,7 @@ indexing
 	created: "2011-11-25";
 	revised: "2011-11-25"
 explanation
-	"A formal decision-making process by which a population chooses and individual to hold public office."
+	"A human being with a cpr-number"
 query
 	"What is your CPR-number?",
 constraint
@@ -156,6 +156,7 @@ explanation
 query
 	"Can I have a new election with this name and date?",
 	"When are you scheduled to be?"
+	"What is your name?"
 command
 	"Change your scheduled election date!",
 	"Change your name!"

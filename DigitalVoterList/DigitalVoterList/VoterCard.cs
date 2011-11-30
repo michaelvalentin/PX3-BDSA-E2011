@@ -3,13 +3,12 @@
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
-using System.Diagnostics.Contracts;
 
 namespace DigitalVoterList.Election
 {
 
     /// <summary>
-    ///     A ticket to be exchanged for a ballot, that is send out to the voter as a part of the validation process.
+    ///     "The voter card being sent to citizens who are eligibe to vote."
     /// </summary>
     public class VoterCard
     {
@@ -17,13 +16,25 @@ namespace DigitalVoterList.Election
         private readonly Citizen _citizen;
         private readonly string _id;
 
-        public VoterCard(ElectionEvent electionEvent, Citizen citizen, string id)
+        /// <summary>
+        /// "Can I have a new voter card for this citizen?"
+        /// </summary>
+        /// <param name="electionEvent"></param>
+        /// <param name="citizen"></param>
+        /// <param name="id"></param>
+        public VoterCard(Citizen citizen)
         {
-            _electionEvent = electionEvent;
             _citizen = citizen;
-            _id = id;
+
+            //Get election event
+
+            //Generate id
+
         }
 
+        /// <summary>
+        /// "Which election event have you been made for?"
+        /// </summary>
         public ElectionEvent ElectionEvent
         {
             get
@@ -32,6 +43,9 @@ namespace DigitalVoterList.Election
             }
         }
 
+        /// <summary>
+        /// "Which election event have you been made for?"
+        /// </summary>
         public Citizen Citizen
         {
             get
@@ -40,6 +54,9 @@ namespace DigitalVoterList.Election
             }
         }
 
+        /// <summary>
+        /// "What is your ID?"
+        /// </summary>
         public string Id
         {
             get
