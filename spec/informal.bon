@@ -67,10 +67,10 @@ indexing
 explanation
 	"An optical, machine readable, representation of simple data, with the ability to output both the data and the optical representation."
 query
-	"May i have a new barcode object, representing this data?",
-	"May i have a new barcode, that will produce this optical representation?",
+	"May I have a new barcode object, representing this data?",
+	"May I have a new barcode, that will produce this optical representation?",
 	"What data do you hold?",
-	"Can i have a optical representation of the data you hold?"
+	"Can I have an optical representation of the data you hold?"
 constraint
 	"The data must not be longer than 10 charachters",
 	"The optical representation must represent the data exactly and unambiguously."
@@ -232,7 +232,8 @@ indexing
 explanation
 	"A brief assessment used as an authenticator"
 query
-	"What is the question",
+	"Give me a new quiz with this question and this answer to it"
+	"What is the question?",
 	"What is the answer?"
 constraint
 	"The answer must be the answer to the question."
@@ -246,6 +247,7 @@ indexing
 explanation
 	"A printer used to create the physical voter cards"
 query
+	"May I have a new voter card printer?"
 	"May I have a voter card based on this voter information",
 constraint
 	""

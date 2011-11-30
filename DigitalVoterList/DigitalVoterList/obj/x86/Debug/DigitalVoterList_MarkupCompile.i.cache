@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 
-21519610241
+51150293223
 
-22-715821499
+32249894647
 12-1381780322
-App.xaml;MainWindow.xaml;
+App.xaml;MainWindow.xaml;Views\AdministrationWindow.xaml;Views\LoginWindow.xaml;Views\UserWindow.xaml;
 
 False
 
