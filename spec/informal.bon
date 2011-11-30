@@ -170,13 +170,15 @@ indexing
 	created: "2011-11-25";
 	revised: "2011-11-25"
 explanation
-	"An object to access the database containing the citizens."
+	"An object to access the database in a standardized way."
 query
 	"What person has this id?",
 	"What persons exists with data similiar to this person?",
 	"What user has this id?",
+	"What user has this username and password?",
 	"What users exists with data similiar to this user?",
 	"What votercard has this id?",
+	"What votercard has this id-key?",
 	"What votercards exists with data similiar to this votercard?"
 command
 	"Register this person!",

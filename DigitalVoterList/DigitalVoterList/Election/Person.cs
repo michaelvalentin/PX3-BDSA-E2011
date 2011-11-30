@@ -1,10 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="Person.cs" company="">
-// TODO: Update copyright text.
-// </copyright>
-// -----------------------------------------------------------------------
-using System.Diagnostics.Contracts;
-
+﻿
 namespace DigitalVoterList.Election
 {
 
