@@ -10,15 +10,17 @@ explanation
 scenario "USER REQUEST FOR INFORMATION"
 	description "The user can request information regarding his/her voting status. If the information is not available yet, the user can get an estimate on when it will be available. Otherwise the user can see if they are eligible to vote and if he/she has voted."
 scenario "COLLECT DATA"
-	description "Data regarding elegible voters and their personal details must be gathered and filtered from various, preferably secure, data sources."
+	description "Data regarding eligible voters and their personal details must be gathered and filtered from various, preferably secure, data sources."
 scenario "PRINT VOTER CARDS"
 	description "Data must be collected just before printing voter cards. Voter cards are printed based on collected data."
 scenario "SEND OUT EXTRA VOTER CARD"
 	description "Users who haven't got their voter card (lost in mail, etc.) can request a new voter card. The old voter card is invalidated, and a new one is sent out."
 scenario "REGISTER VOTERS WITH VOTER CARD"
-	description "When a voter arrives at the voting venue, he/she must present his/her voter card, enters one personal information (eg. last four digits of CPR-number) and answer one or more security questions in order to recieve their ballot."
+	description "When a voter arrives at the voting venue, he/she must present his/her voter card, enter a personal information (eg. last four digits of CPR-number) and answer one or more security questions in order to recieve their ballot."
 scenario "MANUAL REGISTRATION OF VOTER WITHOUT A VOTER CARD"
 	description "If a voter has no voter card, a manual validation process is performed. The voter must show picture-id or documents of authentication of similair quality. The voter is then evaluated by the election-staff, who determines wether they should be given a ballot. This process is only handled by special, highly trusted election staff."
+scenario "CHANGE USER PASSWORD"
+	description "When a user is logged in the first time, he/she is asked to change his/her password to a personal password of his/her choice. The password must comply with some specific security constraints."
 end
 
 scenario_chart SYSTEM_SCENARIOS
