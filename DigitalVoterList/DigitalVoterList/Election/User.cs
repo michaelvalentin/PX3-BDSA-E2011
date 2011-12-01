@@ -11,7 +11,7 @@ namespace DigitalVoterList.Election
     public class User : Person
     {
         private string _title;
-        private HashSet<Permission> _permissions;
+        private HashSet<Action> _permissions;
         private DateTime? _lastSuccessfullValidationTime;
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace DigitalVoterList.Election
             : base(id)
         {
             _title = "";
-            _permissions = new HashSet<Permission>();
+            _permissions = new HashSet<Action>();
             _lastSuccessfullValidationTime = null;
         }
 
@@ -34,7 +34,12 @@ namespace DigitalVoterList.Election
         {
         }
 
-
+        /// <summary>
+        /// Validate the user and load according permissions into the user object.
+        /// </summary>
+        /// <param name="uname">The username to validate</param>
+        /// <param name="pwd">The password to validate</param>
+        /// <returns>True on success. False otherwise.</returns>
         public bool FetchPermissions(string uname, string pwd)
         {
             //todo: Make validation..!
@@ -42,39 +47,48 @@ namespace DigitalVoterList.Election
             return false;
         }
 
-        public string Title { get; private set; }
+        public string Username { get; set; }
 
-        public Permission[] Permissions
+        /// <summary>
+        /// The users jobtitle
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// The users permission. Is an empty set if validation has expired, or has not been performed yet.
+        /// </summary>
+        public HashSet<Action> Permissions
         {
             get
             {
                 Contract.Requires(_permissions != null);
                 if (!Validated)
                 {
-                    return new Permission[0];
+                    return new HashSet<Action>();
                 }
                 else
                 {
-                    Permission[] output = new Permission[_permissions.Count];
-                    _permissions.CopyTo(output);
-                    return output;
+                    return new HashSet<Action>(_permissions);
                 }
             }
         }
 
-        public bool HasPermission(Permission p)
+        /// <summary>
+        /// Has the user got permission to perform this action?
+        /// </summary>
+        /// <param name="a">The action to check for permission</param>
+        /// <returns>True if the user has the permission. False if not.</returns>
+        public bool HasPermission(Action a)
         {
-            return Validated && _permissions.Contains(p);
+            return Validated && _permissions.Contains(a);
         }
 
         public bool Validated
         {
             get
             {
-                if (_lastSuccessfullValidationTime == null) return false;
-
                 DateTime now = new DateTime();
-                if (now.Subtract((DateTime)_lastSuccessfullValidationTime).Minutes > 15)
+                if (_lastSuccessfullValidationTime == null || now.Subtract((DateTime)_lastSuccessfullValidationTime).Minutes > 15)
                 {
                     return false;
                 }
@@ -82,22 +96,6 @@ namespace DigitalVoterList.Election
                 {
                     return true;
                 }
-            }
-        }
-
-        private bool CheckValidation()
-        {
-            if()
-            DateTime now = new DateTime();
-            if (now.Subtract(_lastSuccessfullValidationTime).Minutes > 15)
-            {
-                _validated = false;
-                _permissions = new HashSet<Permission>();
-                return false;
-            }
-            else
-            {
-                return true;
             }
         }
     }

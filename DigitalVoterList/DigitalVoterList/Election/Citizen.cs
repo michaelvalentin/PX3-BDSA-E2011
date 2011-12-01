@@ -18,28 +18,28 @@ namespace DigitalVoterList.Election
     {
         private bool _eligibleToVote;
         private bool _hasVoted;
-        private string _votingStatus;
         private HashSet<VoterCard> _voterCards = null;
         private HashSet<Quiz> _securityQuestions = null;
 
-        public Citizen(int id)
+        public Citizen(int id, int cpr)
             : base(id)
         {
+            Cpr = cpr;
         }
 
         //TODO: Make this... :-)
-        public bool EligibleToVote { get; private set; }
+        public bool EligibleToVote { get; set; }
 
         //TODO: Make this... :-)
         public bool HasVoted { get; private set; }
-
-        public string VotingStatus { get; set; }
 
         //TODO: Make this... :-)
         public HashSet<VoterCard> VoterCards { get; set; }
 
         public HashSet<Quiz> SecurityQuestions { get; set; }
 
+        [ContractInvariantMethod]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
         private void ObjectInvariant()
         {
             Contract.Invariant(ValidCpr(Cpr));
