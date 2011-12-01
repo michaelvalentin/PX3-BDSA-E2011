@@ -19,7 +19,7 @@ namespace DigitalVoterList
         {
             Debug.WriteLine("HEY HEY!");
             IDataAccessObject dao = new DAOMySql();
-            Person p = dao.LoadPerson(1);
+            Person p = dao.LoadPerson(2);
             Debug.WriteLine(p.ToString());
             Application app = new Application();
             app.Startup += (object sender, StartupEventArgs e) =>

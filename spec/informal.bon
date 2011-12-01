@@ -25,6 +25,8 @@ class VOTER_CARD
 	description "A ticket to be exchanged for a ballot, that is send out to the voter as a part of the validation process."
 class ELECTION_EVENT
 	description "An actual election, that runs at a specific time, in a specific area and with a specific set of elegible voters."
+class VOTING_VENUE
+	description "A specific venue for voting, typically a school or similair public place."
 class DATA_ACCESS_OBJECT
 	description "A standardized interface for querieing a data source."
 class DAO_PERMISSION_PROXY
@@ -86,7 +88,8 @@ query
 	"Have you voted?",
 	"What is your voting status?",
 	"What voter cards belong to you?",
-	"What security questions can i ask you?"
+	"What security questions can i ask you?",
+	"In what voting venue should you vote?"
 command
 	"Change your eligibility to vote!",
 	"Register that you have voted!"
@@ -106,7 +109,8 @@ inherit
 	CITIZEN
 query
 	"What is your title?",
-	"What permissions do you have?"
+	"What permissions do you have?",
+	"What voting venues do you work in?"
 command
 	"Change your password!",
 	"Get perm"
@@ -153,6 +157,19 @@ command
 	"Change your name!"
 constraint
 	"Must have a scheduled election date and a name"
+end
+
+class_chart VOTING_VENUE
+indexing
+	in_cluster: "ELECTION";
+	created: "2011-12-01";
+	revised: "2011-12-01";
+explanation
+	"A specific venue for voting, typically a school or similair public place."
+query
+	"What is your name?",
+	"What is your address?",
+	"What elegible voters do you have?"
 end
 
 class_chart DATA_ACCESS_OBJECT

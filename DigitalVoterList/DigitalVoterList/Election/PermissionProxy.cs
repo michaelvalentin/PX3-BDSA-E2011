@@ -6,6 +6,7 @@ namespace DigitalVoterList.Election
     /// <summary>
     /// A proxy to handle permissions for data access actions
     /// </summary>
+    // TODO: Consider voting-venues?
     public class PermissionProxy : IDataAccessObject
     {
         private readonly User _user;
@@ -17,7 +18,7 @@ namespace DigitalVoterList.Election
             _dao = dao;
         }
 
-        private bool ActionPermitted(Action a, string msg)
+        private bool ActionPermitted(Action a, string msg = "You don't have permission to perform this action.")
         {
             if (!_user.HasPermission(a))
             {
@@ -27,11 +28,6 @@ namespace DigitalVoterList.Election
             {
                 return true;
             }
-        }
-
-        private bool ActionPermitted(Action a)
-        {
-            return ActionPermitted(a, "You don't have permission to perform this action.");
         }
 
         public Person LoadPerson(int id)

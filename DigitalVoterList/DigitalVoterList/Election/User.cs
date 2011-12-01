@@ -12,6 +12,7 @@ namespace DigitalVoterList.Election
     {
         private string _title;
         private HashSet<Action> _permissions;
+        private HashSet<VotingVenue> _workplaces;
         private DateTime? _lastSuccessfullValidationTime;
 
         /// <summary>
@@ -23,6 +24,7 @@ namespace DigitalVoterList.Election
         {
             _title = "";
             _permissions = new HashSet<Action>();
+            _workplaces = new HashSet<VotingVenue>();
             _lastSuccessfullValidationTime = null;
         }
 
@@ -74,6 +76,25 @@ namespace DigitalVoterList.Election
         }
 
         /// <summary>
+        /// The voting venue(s) where the user works.
+        /// </summary>
+        public HashSet<VotingVenue> Workplaces
+        {
+            get
+            {
+                Contract.Requires(_permissions != null);
+                if (!Validated)
+                {
+                    return new HashSet<VotingVenue>();
+                }
+                else
+                {
+                    return new HashSet<VotingVenue>(_workplaces);
+                }
+            }
+        }
+
+        /// <summary>
         /// Has the user got permission to perform this action?
         /// </summary>
         /// <param name="a">The action to check for permission</param>
@@ -81,6 +102,11 @@ namespace DigitalVoterList.Election
         public bool HasPermission(Action a)
         {
             return Validated && _permissions.Contains(a);
+        }
+
+        public bool WorksHere(VotingVenue v)
+        {
+            return Validated && _workplaces.Contains(v);
         }
 
         public bool Validated
