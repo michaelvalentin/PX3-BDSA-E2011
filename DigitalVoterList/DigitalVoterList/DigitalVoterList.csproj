@@ -52,6 +52,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DAOFactory.cs" />
+    <Compile Include="Election\DAOFactory.cs" />
+    <Compile Include="Election\DAOMysql.cs" />
     <Compile Include="Utilities\Barcode.cs" />
     <Compile Include="Utilities\Quiz.cs" />
     <Compile Include="Views\AdministrationWindow.xaml.cs">
@@ -81,7 +84,7 @@
     <Compile Include="Election\Citizen.cs" />
     <Compile Include="Election\ElectionEvent.cs" />
     <Compile Include="Election\IDataAccessObject.cs" />
-    <Compile Include="Election\PermissionProxy.cs" />
+    <Compile Include="Election\DAOPermissionProxy.cs" />
     <Compile Include="Election\Person.cs" />
     <Compile Include="Election\User.cs" />
     <Compile Include="Election\VoterCard.cs" />
