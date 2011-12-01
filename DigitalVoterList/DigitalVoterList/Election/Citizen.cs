@@ -18,7 +18,6 @@ namespace DigitalVoterList.Election
     {
         private bool _eligibleToVote;
         private bool _hasVoted;
-        private string _votingStatus;
         private HashSet<VoterCard> _voterCards = null;
         private HashSet<Quiz> _securityQuestions = null;
 
@@ -28,12 +27,10 @@ namespace DigitalVoterList.Election
         }
 
         //TODO: Make this... :-)
-        public bool EligibleToVote { get; private set; }
+        public bool EligibleToVote { get; set; }
 
         //TODO: Make this... :-)
         public bool HasVoted { get; private set; }
-
-        public string VotingStatus { get; set; }
 
         //TODO: Make this... :-)
         public HashSet<VoterCard> VoterCards { get; set; }

@@ -119,13 +119,13 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="user">The user who should be marked as invalid</param>
         /// <returns>Was the attempt succesful?</returns>
-        bool InvalidUser(User user);
+        bool MarkUserInvalid(User user);
 
         /// <summary>
         /// Mark this voter card as invalid!
         /// </summary>
         /// <param name="voterCard">The voter card which should be marked as invalid</param>
         /// <returns>Was the attempt succesful?</returns>
-        bool InvalidVoterCard(VoterCard voterCard);
+        bool MarkVoterCardInvalid(VoterCard voterCard);
     }
 }

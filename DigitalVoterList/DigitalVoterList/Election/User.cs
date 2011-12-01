@@ -11,6 +11,7 @@ namespace DigitalVoterList.Election
     public class User : Person
     {
         private string _title;
+        private _userName;
         private HashSet<Permission> _permissions;
         private DateTime? _lastSuccessfullValidationTime;
 
@@ -42,7 +43,9 @@ namespace DigitalVoterList.Election
             return false;
         }
 
-        public string Title { get; private set; }
+        public string Title { get; set; }
+
+        public string Username { get; set; }
 
         public Permission[] Permissions
         {
