@@ -15,38 +15,43 @@ namespace DigitalVoterList.Election
     {
         private readonly ElectionEvent _electionEvent;
         private readonly Citizen _citizen;
-        private readonly string _id;
+        private readonly string _idKey;
+        private string _id; //The database id
         private bool _valid;
 
-        public VoterCard(ElectionEvent electionEvent, Citizen citizen, string id)
+        public VoterCard(ElectionEvent electionEvent, Citizen citizen)
         {
             Contract.Requires(!electionEvent.Equals(null));
-            Contract.Requires(!citizen.Equals(null) && citizen.EligibleVoter);
-            Contract.Requires(!string.IsNullOrEmpty(id));
+            Contract.Requires(!citizen.Equals(null) && citizen.EligibleToVote);
             _electionEvent = electionEvent;
             _citizen = citizen;
-            _id = id;
             _valid = true;
         }
 
         /// <summary>
-        /// A getter for _electionEvent, which is the ElectionEvent that the Voter Card is attached to.
+        /// The ElectionEvent that the Voter Card is attached to.
         /// </summary>
         public ElectionEvent ElectionEvent { get; private set; }
 
         /// <summary>
-        /// A getter for _citizen. The citizen is the owner of the Voter Card.
+        /// The citizen, who is the owner of the Voter Card.
         /// </summary>
         public Citizen Citizen { get; private set; }
 
         /// <summary>
-        /// A getter for _id. The id is to identify the Voter Card.
+        /// The database id of the Voter Card.
         /// </summary>
-        public string Id { get; private set; }
+        public string Id { get; set; }
+
+        /// <summary>
+        /// The id-key, corresponding to the barcode on the physical votercard
+        /// </summary>
+        public string IdKey { get; set; }
 
         /// <summary>
         /// A getter and setter for _valid. This says if the Voter Card is valid or not.
         /// </summary>
-        public bool Valid { get; set; }
+        // TODO: Make setter..
+        public bool Valid { get; private set; }
     }
 }

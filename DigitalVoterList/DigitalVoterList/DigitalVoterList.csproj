@@ -52,6 +52,8 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Election\Action.cs" />
+    <Compile Include="Election\PermissionException.cs" />
     <Compile Include="Utilities\Barcode.cs" />
     <Compile Include="Utilities\Quiz.cs" />
     <Compile Include="Views\AdministrationWindow.xaml.cs">

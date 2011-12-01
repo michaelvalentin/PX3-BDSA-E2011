@@ -69,7 +69,7 @@ namespace DigitalVoterList.Election
         /// May I have all eligible voters in the database?
         /// </summary>
         /// <returns>A list of eligible voters</returns>
-        List<Citizen> Find();
+        List<Citizen> FindElegibleVoters();
 
         /// <summary>
         /// Create this person with this data!
@@ -98,21 +98,22 @@ namespace DigitalVoterList.Election
         /// <param name="citizen">The citizen who should be marked as voted</param>
         /// <param name="keyPhrase">The last four digits of the citizen's CPR-Number</param>
         /// <returns>Was the attempt successful?</returns>
-        bool Mark(Citizen citizen, int keyPhrase);
+        bool SetHasVoted(Citizen citizen, int keyPhrase);
 
         /// <summary>
         /// Mark that a voter has voted with manual validation!
         /// </summary>
         /// <param name="citizen">The citizen who should be marked as voted</param>
         /// <returns>Was the attempt successful?</returns>
-        bool Mark(Citizen citizen);
+        bool SetHasVoted(Citizen citizen);
 
         /// <summary>
         /// Change this users pasword to this!
         /// </summary>
         /// <param name="user">The user whose password should be changed</param>
+        /// <param name="newPassword">The new password to use</param>
         /// <returns>Was the attempt succesful?</returns>
-        bool ChangePassword(User user);
+        bool ChangePassword(User user, string newPassword);
 
         /// <summary>
         /// Mark this user as invalid!
@@ -120,6 +121,13 @@ namespace DigitalVoterList.Election
         /// <param name="user">The user who should be marked as invalid</param>
         /// <returns>Was the attempt succesful?</returns>
         bool MarkUserInvalid(User user);
+
+        /// <summary>
+        /// Mark this invalid user as valid again.
+        /// </summary>
+        /// <param name="user">The user to mark as valid</param>
+        /// <returns>Was the attempt succesful</returns>
+        bool RestoreUser(User user);
 
         /// <summary>
         /// Mark this voter card as invalid!
