@@ -21,6 +21,9 @@ namespace DigitalVoterList.Election
         public Person(int id)
         {
             _id = id;
+            _name = "";
+            _address = "";
+            _placeOfBirth = "";
         }
 
         /// <summary>
@@ -55,5 +58,10 @@ namespace DigitalVoterList.Election
         /// Where this person was born
         /// </summary>
         public string PlaceOfBirth { get; set; }
+
+        public new string ToString()
+        {
+            return "PERSON( navn : "+Name+" , cpr : "+Cpr+")";
+        }
     }
 }

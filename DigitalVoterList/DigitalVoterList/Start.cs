@@ -4,19 +4,23 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList
 {
+    using DigitalVoterList.Election;
 
     /// <summary>
-    /// "The main class for initializing the application"
+    /// The main class for initializing the application
     /// </summary>
     public class Start
     {
         /// <summary>
-        /// "Start the application"
+        /// Start the application
         /// </summary>
         [System.STAThread]
         public static void Main()
         {
             Debug.WriteLine("HEY HEY!");
+            IDataAccessObject dao = new DAOMySql();
+            Person p = dao.LoadPerson(1);
+            Debug.WriteLine(p.ToString());
             Application app = new Application();
             app.Startup += (object sender, StartupEventArgs e) =>
             {
