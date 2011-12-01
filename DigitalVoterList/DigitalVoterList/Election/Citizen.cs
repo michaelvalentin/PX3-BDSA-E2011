@@ -22,9 +22,10 @@ namespace DigitalVoterList.Election
         private HashSet<VoterCard> _voterCards = null;
         private HashSet<Quiz> _securityQuestions = null;
 
-        public Citizen(int id)
+        public Citizen(int id, int cpr)
             : base(id)
         {
+            Cpr = cpr;
         }
 
         //TODO: Make this... :-)
@@ -40,6 +41,8 @@ namespace DigitalVoterList.Election
 
         public HashSet<Quiz> SecurityQuestions { get; set; }
 
+        [ContractInvariantMethod]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
         private void ObjectInvariant()
         {
             Contract.Invariant(ValidCpr(Cpr));
