@@ -1,0 +1,50 @@
+﻿using System;
+using DigitalVoterList.Election;
+
+namespace DigitalVoterList.Election
+{
+    public enum SystemAction
+    {
+        Nothing,
+
+        //CREATE
+        CreateUser,
+        CreatePerson,
+        CreateVoterCard,
+
+        //READ
+        LoadPerson,
+        LoadUser,
+        LoadVoterCard,
+        ScanVoterCard,
+
+        //SEARCH
+        FindPerson,
+        FindUser,
+        FindVoterCard,
+        FindElegibleVoters,
+
+        //UPDATE
+        SavePerson,
+        SaveUser,
+        SaveVoterCard,
+        SetHasVoted,
+        SetHasVotedManually,
+        ChangeOwnPassword,
+        ChangeOthersPassword,
+
+        //DELETE
+        MarkUserInvalid,
+        RestoreUser,
+        MarkVoteCardInvalid
+    }
+}
+
+public static class SystemActions
+{
+    public static SystemAction getSystemAction(string name)
+    {
+        SystemAction output;
+        return Enum.TryParse(name, true, out output) ? output : SystemAction.Nothing;
+    }
+}
