@@ -7,22 +7,22 @@
     /// </summary>
     public class PermissionException : Exception
     {
-        private readonly Action _action;
+        private readonly SystemAction _systemAction;
         private readonly User _user;
 
-        public PermissionException(string msg, Action action, User user)
+        public PermissionException(string msg, SystemAction systemAction, User user)
             : base(msg)
         {
-            _action = action;
+            _systemAction = systemAction;
             _user = user;
         }
 
-        public PermissionException(Action action, User user)
-            : this("You don't have permission to perform this action.", action, user)
+        public PermissionException(SystemAction systemAction, User user)
+            : this("You don't have permission to perform this SystemAction.", systemAction, user)
         {
         }
 
-        public Action Action { get; private set; }
+        public SystemAction SystemAction { get; private set; }
 
         public User User { get; private set; }
     }

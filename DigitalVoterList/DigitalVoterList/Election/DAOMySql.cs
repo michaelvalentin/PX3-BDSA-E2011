@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
-using System.Diagnostics.Contracts;
 
 namespace DigitalVoterList.Election
 {
@@ -98,7 +97,7 @@ namespace DigitalVoterList.Election
                 throw ex;
             }
         }
-        
+
         public User LoadUser(string username, string pass)
         {
             Connect();
@@ -125,7 +124,7 @@ namespace DigitalVoterList.Election
                 throw ex;
             }
         }
-        
+
         public User LoadUser(int id)
         {
             Connect();
@@ -150,6 +149,25 @@ namespace DigitalVoterList.Election
                 throw ex;
             }
         }
+
+        public int ValidateUser(string username, string passwordHash)
+        {
+            Connect();
+            MySqlCommand validate = new MySqlCommand("SELECT id FROM user WHERE password_hash=@pwd_hash, username=@uname LIMIT 1", _sqlConnection);
+            validate.Prepare();
+            validate.Parameters.AddWithValue("@pwd_hash", passwordHash);
+            validate.Parameters.AddWithValue("@uname", username);
+            if (validate.ExecuteNonQuery() != -1)
+            {
+                return (int)(validate.ExecuteScalar() ?? 0);
+            }
+        }
+
+        public HashSet<SystemAction> GetPermissions(User u)
+        {
+            MySqlCommand getPermissions = new MySqlCommand("SELECT name FROM user u INNER JOIN permission p ON u.id = p.user_id INNER JOIN action a ON a.id = p.action_id WHERE u.id=" + u.Id, _sqlConnection);
+        }
+
         /*
         public VoterCard LoadVoterCard(int id)
         {
@@ -175,7 +193,7 @@ namespace DigitalVoterList.Election
             throw new NotImplementedException();
         }
         */
-        
+
         public List<Person> Find(Person p)
         {
             Connect();
@@ -196,7 +214,7 @@ namespace DigitalVoterList.Election
                     DoIfNotDbNull(reader, "passport_number", lbl => pers.PassportNumber = reader.GetInt32(lbl));
                     persons.Add(pers);
                 }
-                
+
                 return persons;
             }
             catch (Exception ex)
@@ -204,7 +222,7 @@ namespace DigitalVoterList.Election
                 throw ex;
             }
         }
-        
+
         public List<User> Find(User u)
         {
             Connect();
@@ -227,7 +245,7 @@ namespace DigitalVoterList.Election
                     DoIfNotDbNull(reader, "passport_number", lbl => user.PassportNumber = reader.GetInt32(lbl));
                     users.Add(user);
                 }
-                
+
                 return users;
             }
             catch (Exception ex)
@@ -263,7 +281,7 @@ namespace DigitalVoterList.Election
                 MySqlDataReader reader = findEligibleVoters.ExecuteReader();
                 while (reader.Read())
                 {
-                    Citizen citizen = new Citizen(reader.GetInt32("id"),reader.GetInt32("cpr"));
+                    Citizen citizen = new Citizen(reader.GetInt32("id"), reader.GetInt32("cpr"));
                     citizen.EligibleToVote = reader.GetBoolean("eligible_to_vote");
                     //DoIfNotDbNull(reader, "name", lbl => citizen.Name = reader.GetString(lbl));
                     //DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
