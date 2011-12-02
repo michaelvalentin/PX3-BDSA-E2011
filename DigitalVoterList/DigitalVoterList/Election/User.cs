@@ -51,6 +51,8 @@ namespace DigitalVoterList.Election
 
         public string Username { get; set; }
 
+        public int dBId { get; private set; }
+
         /// <summary>
         /// The users jobtitle
         /// </summary>

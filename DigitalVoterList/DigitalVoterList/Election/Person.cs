@@ -59,6 +59,11 @@ namespace DigitalVoterList.Election
         /// </summary>
         public string PlaceOfBirth { get; set; }
 
+        /// <summary>
+        /// The database id of the person
+        /// </summary>
+        public int DbId { get; private set; }
+
         public new string ToString()
         {
             return "PERSON( navn : "+Name+" , cpr : "+Cpr+" )";
