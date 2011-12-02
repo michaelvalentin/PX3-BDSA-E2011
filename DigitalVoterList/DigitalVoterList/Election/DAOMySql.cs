@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MySql.Data.MySqlClient;
 using System.Diagnostics.Contracts;
 
@@ -18,7 +16,10 @@ namespace DigitalVoterList.Election
 
         public DAOMySql()
         {
-            this._connectionString = "Server=localhost;Database=PX3;Uid=root;Pwd=14078824;";
+            this._connectionString = "Server=" + Settings.DbHost + ";" +
+                                     "Database=" + Settings.DbName + ";" +
+                                     "Uid=" + Settings.DbUser + ";" +
+                                     "Pwd=" + Settings.DbPassword + ";";
 
             try
             {
@@ -77,7 +78,7 @@ namespace DigitalVoterList.Election
         public Person LoadPerson(int id)
         {
             Connect();
-            string query = "SELECT * FROM person WHERE id="+id+" LIMIT 1";
+            string query = "SELECT * FROM person WHERE id=" + id + " LIMIT 1";
             MySqlCommand loadPerson = new MySqlCommand(query, this._sqlConnection);
 
             try

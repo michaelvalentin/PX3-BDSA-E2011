@@ -27,6 +27,8 @@ namespace DigitalVoterList
             {
                 Debug.WriteLine("cpr: "+eligibleVoters.Cpr);   
             }
+            Person p = dao.LoadPerson(2);
+            Debug.WriteLine(p.ToString());
             Application app = new Application();
             app.Startup += (object sender, StartupEventArgs e) =>
             {
