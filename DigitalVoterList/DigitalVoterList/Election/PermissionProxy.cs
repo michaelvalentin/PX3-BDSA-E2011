@@ -162,24 +162,25 @@ namespace DigitalVoterList.Election
             return false;
         }
 
-        public bool ChangePassword(User user, string newPassword)
+        public bool ChangePassword(User user, string newPassword, string oldPassword)
         {
             if (user.Equals(_user))
             {
                 if (ActionPermitted(SystemAction.ChangeOwnPassword))
                 {
-                    return _dao.ChangePassword(user, newPassword);
+                    return _dao.ChangePassword(user, newPassword, oldPassword);
                 }
-                return false;
             }
-            else
+            return false;
+        }
+
+        public bool ChangePassword(User user, string newPassword)
+        {
+            if (ActionPermitted(SystemAction.ChangeOthersPassword))
             {
-                if (ActionPermitted(SystemAction.ChangeOthersPassword))
-                {
-                    return _dao.ChangePassword(user, newPassword);
-                }
-                return false;
+                return _dao.ChangePassword(user, newPassword);
             }
+            return false;
         }
 
         public bool MarkUserInvalid(User user)

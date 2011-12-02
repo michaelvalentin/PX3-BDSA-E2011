@@ -59,7 +59,10 @@ namespace DigitalVoterList.Election
         public bool CangePassword(string oldPwd, string newPwd)
         {
             IDataAccessObject dao = DAOFactory.getDAO(this);
+            dao.ChangePassword(this, newPwd, oldPwd);
         }
+
+        public bool ChangePassword(string newPwd)
 
         public int dBId { get; private set; }
 

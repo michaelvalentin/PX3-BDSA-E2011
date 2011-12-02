@@ -127,7 +127,16 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="user">The user whose password should be changed</param>
         /// <param name="newPassword">The new password to use</param>
+        /// <param name="oldPassword">The old password for this user.</param>
         /// <returns>Was the attempt succesful?</returns>
+        bool ChangePassword(User user, string newPassword, string oldPassword);
+
+        /// <summary>
+        /// Change this users pasword to this!
+        /// </summary>
+        /// <param name="user">The user whose password should be changed</param>
+        /// <param name="newPassword">The new password to use</param>
+        /// <returns>Was th attempt succesful?</returns>
         bool ChangePassword(User user, string newPassword);
 
         /// <summary>

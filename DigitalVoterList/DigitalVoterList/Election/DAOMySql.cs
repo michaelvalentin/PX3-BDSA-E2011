@@ -447,6 +447,11 @@ namespace DigitalVoterList.Election
             throw new NotImplementedException();
         }
 
+        public bool ChangePassword(User user, string newPassword, String oldPassword)
+        {
+
+        }
+
         public bool MarkUserInvalid(User user)
         {
             throw new NotImplementedException();
