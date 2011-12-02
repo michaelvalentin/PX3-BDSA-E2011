@@ -27,9 +27,6 @@ namespace DigitalVoterList.Election
         public bool EligibleToVote { get; set; }
 
         //TODO: Make this... :-)
-        public bool HasVoted { get; private set; }
-
-        //TODO: Make this... :-)
         public VotingVenue VotingPlace { get; private set; }
 
         //TODO: Make this... :-)
@@ -37,6 +34,19 @@ namespace DigitalVoterList.Election
 
         //TODO: Make this... :-)
         public HashSet<Quiz> SecurityQuestions { get; set; }
+
+        public bool HasVoted
+        {
+            get
+            {
+                return _hasVoted;
+            }
+            set
+            {
+                //TODO CHECK PERMISSIONS
+                _hasVoted = value;
+            }
+        }
 
         [ContractInvariantMethod]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
