@@ -11,6 +11,7 @@ namespace DigitalVoterList.Election
     public class User : Person
     {
         private string _title;
+        private string _usersalt;
         private HashSet<SystemAction> _permissions;
         private HashSet<VotingVenue> _workplaces;
         private DateTime? _lastSuccessfullValidationTime;
@@ -56,13 +57,19 @@ namespace DigitalVoterList.Election
 
         public string Username { get; set; }
 
+        public string UserSalt { get; set; }
+
         public bool CangePassword(string oldPwd, string newPwd)
         {
             IDataAccessObject dao = DAOFactory.getDAO(this);
-            dao.ChangePassword(this, newPwd, oldPwd);
+            dao.ChangePassword(this, HashPassword(newPwd), HashPassword(oldPwd));
         }
 
         public bool ChangePassword(string newPwd)
+        {
+            IDataAccessObject dao = DAOFactory.getDAO(this);
+            dao.ChangePassword(this, HashPassword(newPwd));
+        }
 
         public int dBId { get; private set; }
 
@@ -148,6 +155,7 @@ namespace DigitalVoterList.Election
 
         private string HashPassword(string password)
         {
+
             return password;
         }
     }
