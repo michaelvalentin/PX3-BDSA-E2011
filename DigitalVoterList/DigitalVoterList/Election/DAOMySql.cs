@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
-using System.Diagnostics.Contracts;
 
 namespace DigitalVoterList.Election
 {
@@ -98,7 +97,7 @@ namespace DigitalVoterList.Election
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
             }
         }
-        
+
         public User LoadUser(string username, string pass)
         {
             Connect();
@@ -125,7 +124,7 @@ namespace DigitalVoterList.Election
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
             }
         }
-        
+
         public User LoadUser(int id)
         {
             Connect();
@@ -150,6 +149,32 @@ namespace DigitalVoterList.Election
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
             }
         }
+
+        public int ValidateUser(string username, string passwordHash)
+        {
+            Connect();
+            MySqlCommand validate = new MySqlCommand("SELECT id FROM user WHERE password_hash=@pwd_hash, username=@uname LIMIT 1", _sqlConnection);
+            validate.Prepare();
+            validate.Parameters.AddWithValue("@pwd_hash", passwordHash);
+            validate.Parameters.AddWithValue("@uname", username);
+            if (validate.ExecuteNonQuery() != -1)
+            {
+                return (int)(validate.ExecuteScalar() ?? 0);
+            }
+        }
+
+        public HashSet<SystemAction> GetPermissions(User u)
+        {
+            MySqlCommand getPermissions = new MySqlCommand("SELECT label FROM user u INNER JOIN permission p ON u.id = p.user_id INNER JOIN action a ON a.id = p.action_id WHERE u.id=" + u.DbId, _sqlConnection);
+            MySqlDataReader rdr = getPermissions.ExecuteReader();
+            HashSet<SystemAction> output = new HashSet<SystemAction>();
+            while (rdr.Read())
+            {
+                output.Add(SystemActions.getSystemAction(rdr.GetString(0)));
+            }
+            return output;
+        }
+
         /*
         public VoterCard LoadVoterCard(int id)
         {
@@ -175,7 +200,7 @@ namespace DigitalVoterList.Election
             throw new NotImplementedException();
         }
         */
-        
+
         public List<Person> Find(Person p)
         {
             Connect();
@@ -196,7 +221,7 @@ namespace DigitalVoterList.Election
                     DoIfNotDbNull(reader, "passport_number", lbl => pers.PassportNumber = reader.GetInt32(lbl));
                     persons.Add(pers);
                 }
-                
+
                 return persons;
             }
             catch (Exception ex)
@@ -204,7 +229,7 @@ namespace DigitalVoterList.Election
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
             }
         }
-        
+
         public List<User> Find(User u)
         {
             Connect();
@@ -227,7 +252,7 @@ namespace DigitalVoterList.Election
                     DoIfNotDbNull(reader, "passport_number", lbl => user.PassportNumber = reader.GetInt32(lbl));
                     users.Add(user);
                 }
-                
+
                 return users;
             }
             catch (Exception ex)
@@ -263,7 +288,7 @@ namespace DigitalVoterList.Election
                 MySqlDataReader reader = findEligibleVoters.ExecuteReader();
                 while (reader.Read())
                 {
-                    Citizen citizen = new Citizen(reader.GetInt32("id"),reader.GetInt32("cpr"));
+                    Citizen citizen = new Citizen(reader.GetInt32("id"), reader.GetInt32("cpr"));
                     citizen.EligibleToVote = reader.GetBoolean("eligible_to_vote");
                     DoIfNotDbNull(reader, "name", lbl => citizen.Name = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
@@ -277,7 +302,7 @@ namespace DigitalVoterList.Election
             }
             catch (Exception ex)
             {
-                throw new DataAccessException("Unable to connect to database. Error message: "+ex.Message);
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
             }
         }
 
@@ -285,7 +310,7 @@ namespace DigitalVoterList.Election
         {
             Connect();
             int id = per.DbId;
-            if(per.DbId != 0)
+            if (per.DbId != 0)
             {
                 try
                 {
@@ -299,16 +324,16 @@ namespace DigitalVoterList.Election
                 }
                 catch (Exception ex)
                 {
-                    throw new DataAccessException("Unable to connect to database. Error message: "+ex.Message);
+                    throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
                 }
             }
 
             MySqlCommand savePerson;
 
-            if (id==0)
+            if (id == 0)
             {
-                savePerson = new MySqlCommand("INSERT INTO person " + 
-                    "(name,address,cpr,place_of_birth,passport_number) VALUES(@name,@address,@cpr,@place_of_birth,@passport_number)",_sqlConnection);
+                savePerson = new MySqlCommand("INSERT INTO person " +
+                    "(name,address,cpr,place_of_birth,passport_number) VALUES(@name,@address,@cpr,@place_of_birth,@passport_number)", _sqlConnection);
             }
             else
             {
@@ -320,7 +345,7 @@ namespace DigitalVoterList.Election
             savePerson.Parameters.AddWithValue("@cpr", per.Cpr);
             savePerson.Parameters.AddWithValue("@place_of_birth", per.PlaceOfBirth ?? "");
             savePerson.Parameters.AddWithValue("@passport_number", per.PassportNumber);
-            if (id!=0) savePerson.Parameters.AddWithValue("@id", per.DbId);
+            if (id != 0) savePerson.Parameters.AddWithValue("@id", per.DbId);
             return savePerson.ExecuteNonQuery() == 1;
         }
 
@@ -401,15 +426,15 @@ namespace DigitalVoterList.Election
             Connect();
             try
             {
-                    MySqlCommand setHasVoted = new MySqlCommand("SELECT person SET has_voted = '1' WHERE id='" + citizen.DbId + "'", _sqlConnection);
-                    if(setHasVoted.ExecuteNonQuery() == 1)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                MySqlCommand setHasVoted = new MySqlCommand("SELECT person SET has_voted = '1' WHERE id='" + citizen.DbId + "'", _sqlConnection);
+                if (setHasVoted.ExecuteNonQuery() == 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception ex)
             {

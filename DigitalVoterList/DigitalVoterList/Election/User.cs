@@ -11,7 +11,7 @@ namespace DigitalVoterList.Election
     public class User : Person
     {
         private string _title;
-        private HashSet<Action> _permissions;
+        private HashSet<SystemAction> _permissions;
         private HashSet<VotingVenue> _workplaces;
         private DateTime? _lastSuccessfullValidationTime;
 
@@ -23,7 +23,7 @@ namespace DigitalVoterList.Election
             : base(id)
         {
             _title = "";
-            _permissions = new HashSet<Action>();
+            _permissions = new HashSet<SystemAction>();
             _workplaces = new HashSet<VotingVenue>();
             _lastSuccessfullValidationTime = null;
         }
@@ -44,12 +44,22 @@ namespace DigitalVoterList.Election
         /// <returns>True on success. False otherwise.</returns>
         public bool FetchPermissions(string uname, string pwd)
         {
-            //todo: Make validation..!
-            _lastSuccessfullValidationTime = null;
+            IDataAccessObject dao = DAOFactory.getDAO(this);
+            string pwdHash = HashPassword(pwd);
+            if (dao.ValidateUser(uname, pwdHash) != 0)
+            {
+                _lastSuccessfullValidationTime = new DateTime();
+                _permissions = dao.GetPermissions(this);
+            }
             return false;
         }
 
         public string Username { get; set; }
+
+        public bool CangePassword(string oldPwd, string newPwd)
+        {
+            IDataAccessObject dao = DAOFactory.getDAO(this);
+        }
 
         public int dBId { get; private set; }
 
@@ -61,18 +71,18 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// The users permission. Is an empty set if validation has expired, or has not been performed yet.
         /// </summary>
-        public HashSet<Action> Permissions
+        public HashSet<SystemAction> Permissions
         {
             get
             {
                 Contract.Requires(_permissions != null);
                 if (!Validated)
                 {
-                    return new HashSet<Action>();
+                    return new HashSet<SystemAction>();
                 }
                 else
                 {
-                    return new HashSet<Action>(_permissions);
+                    return new HashSet<SystemAction>(_permissions);
                 }
             }
         }
@@ -97,11 +107,11 @@ namespace DigitalVoterList.Election
         }
 
         /// <summary>
-        /// Has the user got permission to perform this action?
+        /// Has the user got permission to perform this SystemAction?
         /// </summary>
-        /// <param name="a">The action to check for permission</param>
+        /// <param name="a">The SystemAction to check for permission</param>
         /// <returns>True if the user has the permission. False if not.</returns>
-        public bool HasPermission(Action a)
+        public bool HasPermission(SystemAction a)
         {
             return Validated && _permissions.Contains(a);
         }
@@ -122,6 +132,7 @@ namespace DigitalVoterList.Election
                 }
                 else
                 {
+                    _lastSuccessfullValidationTime = new DateTime();
                     return true;
                 }
             }
@@ -130,6 +141,11 @@ namespace DigitalVoterList.Election
         public new string ToString()
         {
             return "USER( username : " + Username + " , title : " + Title + " )";
+        }
+
+        private string HashPassword(string password)
+        {
+            return password;
         }
     }
 }
