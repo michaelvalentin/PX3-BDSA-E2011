@@ -98,5 +98,10 @@ namespace DigitalVoterList.Election
                 }
             }
         }
+
+        public new string ToString()
+        {
+            return "USER( username : " + Username + " , title : " + Title + " )";
+        }
     }
 }

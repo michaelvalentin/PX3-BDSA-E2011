@@ -4,6 +4,9 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList
 {
+    using System.Collections.Generic;
+    using System.Windows.Documents;
+
     using DigitalVoterList.Election;
 
     /// <summary>
@@ -17,10 +20,13 @@ namespace DigitalVoterList
         [System.STAThread]
         public static void Main()
         {
-            Debug.WriteLine("HEY HEY!");
+            Debug.WriteLine("START!");
             IDataAccessObject dao = new DAOMySql();
-            Person p = dao.LoadPerson(1);
-            Debug.WriteLine(p.ToString());
+            List<Citizen> p = dao.FindElegibleVoters();
+            foreach (var eligibleVoters in p)
+            {
+                Debug.WriteLine("cpr: "+eligibleVoters.Cpr);   
+            }
             Application app = new Application();
             app.Startup += (object sender, StartupEventArgs e) =>
             {

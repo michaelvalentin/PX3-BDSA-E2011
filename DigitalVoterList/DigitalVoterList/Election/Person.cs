@@ -61,7 +61,7 @@ namespace DigitalVoterList.Election
 
         public new string ToString()
         {
-            return "PERSON( navn : "+Name+" , cpr : "+Cpr+")";
+            return "PERSON( navn : "+Name+" , cpr : "+Cpr+" )";
         }
     }
 }

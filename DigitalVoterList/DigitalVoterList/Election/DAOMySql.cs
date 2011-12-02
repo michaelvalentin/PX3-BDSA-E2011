@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MySql.Data.MySqlClient;
+using System.Diagnostics.Contracts;
 
 namespace DigitalVoterList.Election
 {
     using System.Diagnostics;
+    using System.Windows.Documents;
 
     class DAOMySql : IDataAccessObject
     {
@@ -95,56 +97,62 @@ namespace DigitalVoterList.Election
                 throw ex;
             }
         }
-        /*
+        
         public User LoadUser(string username, string pass)
         {
             Connect();
-            string query = "SELECT * FROM user WHERE user_name='"+username+"' LIMIT 1";
+            string query = "SELECT * FROM user INNER JOIN person ON person_id=person.id AND user_name='" + username + "'";
             MySqlCommand loadUser = new MySqlCommand(query, this._sqlConnection);
 
             try
             {
-                MySqlDataReader myReader = loadUser.ExecuteReader();
-                myReader.Read();
-                myReader.GetString("user_name");
-                Debug.Assert(!myReader.Read());
-                User user = new User();
+                MySqlDataReader reader = loadUser.ExecuteReader();
+                if (!reader.Read()) throw new DataAccessException("No person with the username and password specified.");
+                Debug.Assert(reader.GetString("password_hash") == pass);
+                User user = new User(reader.GetInt32("id"));
+                user.Username = reader.GetString("user_name");
+                user.Title = reader.GetString("title");
+                user.PassportNumber = reader.GetInt32("passport_number");
+                user.Name = reader.GetString("name");
+                user.PlaceOfBirth = reader.GetString("place_of_birth");
+
+                return user;
                 //TODO VERIFY USERNAME AND PASSWORD
-
-
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Exception myEx = new Exception("Could not load user. Error: " + myEx.Message, myEx);
-                throw (myEx);
+                throw ex;
             }
         }
-
+        
         public User LoadUser(int id)
         {
-            string query = "SELECT * FROM user WHERE User.Id="+id+" INNER JOIN person ON person.id=user.person_id";
+            Connect();
+            string query = "SELECT * FROM user INNER JOIN person ON person_id=person.id AND user.id='" + id + "'";
             MySqlCommand loadUser = new MySqlCommand(query, this._sqlConnection);
 
             try
             {
-                loadUser.ExecuteReader();
-                User user = new User(id);
-                user.Username = user_name;
-                user.Name = name;
-                user.Title = title;
-                user.PassportNumber = passport_number;
-                user.PlaceOfBirth = place_of_birth;
-                //TODO SET HasVoted
+                MySqlDataReader reader = loadUser.ExecuteReader();
+                if (!reader.Read()) throw new DataAccessException("No person with the id specified.");
+                User user = new User(reader.GetInt32("id"));
+                user.Username = reader.GetString("user_name");
+                user.Title = reader.GetString("title");
+                user.PassportNumber = reader.GetInt32("passport_number");
+                user.Name = reader.GetString("name");
+                user.PlaceOfBirth = reader.GetString("place_of_birth");
+
+                return user;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Exception myEx = new Exception("Could not load user. Error: " + myEx.Message, myEx);
-                throw (myEx);
+                throw ex;
             }
         }
-
+        /*
         public VoterCard LoadVoterCard(int id)
         {
+            Connect();
             string query = "SELECT * FROM voter_card WHERE id="+id;
             MySqlCommand loadUser = new MySqlCommand(query, this._sqlConnection);
 
@@ -160,78 +168,74 @@ namespace DigitalVoterList.Election
                 throw (myEx);
             }
         }
-
+        
         public VoterCard LoadVoterCard(string idKey)
         {
             throw new NotImplementedException();
         }
-
-        public List<Person> Find(Person person)
+        */
+        
+        public List<Person> Find(Person p)
         {
-            throw new NotImplementedException();
+            Connect();
+            List<Person> persons = new List<Person>();
+            string query = "SELECT * FROM person WHERE cpr='" + p.Cpr + "' OR (name='" + p.Name + "' AND address='" + p.Address + "') OR COALESCE(name='" + p.Name + "', address='" + p.Address + "') IS NOT NULL";
+            MySqlCommand find = new MySqlCommand(query, this._sqlConnection);
+
+            try
+            {
+                MySqlDataReader reader = find.ExecuteReader();
+                while (reader.Read())
+                {
+                    Person pers = new Person();
+                    pers.Cpr = reader.GetInt32("cpr");
+                    DoIfNotDbNull(reader, "name", lbl => pers.Name = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "address", lbl => pers.Address = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "place_of_birth", lbl => pers.PlaceOfBirth = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "passport_number", lbl => pers.PassportNumber = reader.GetInt32(lbl));
+                    persons.Add(pers);
+                }
+                
+                return persons;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
-
-        public List<User> Find(User user)
+        
+        public List<User> Find(User u)
         {
-            throw new NotImplementedException();
+            Connect();
+            List<User> users = new List<User>();
+            string query = "SELECT * FROM user INNER JOIN person ON person_id = person.id AND (title='" + u.Title + "' AND user_name='" + u.Username + "') OR COALESCE(title='" + u.Title + "' AND user_name='" + u.Username + "') IS NOT NULL";
+            MySqlCommand find = new MySqlCommand(query, this._sqlConnection);
+            //TODO MAKE THE QUERY BETTER!!
+            try
+            {
+                MySqlDataReader reader = find.ExecuteReader();
+                while (reader.Read())
+                {
+                    User user = new User();
+                    user.Username = reader.GetString("user_name");
+                    user.Title = reader.GetString("title");
+                    user.Cpr = reader.GetInt32("cpr");
+                    DoIfNotDbNull(reader, "name", lbl => user.Name = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "address", lbl => user.Address = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "place_of_birth", lbl => user.PlaceOfBirth = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "passport_number", lbl => user.PassportNumber = reader.GetInt32(lbl));
+                    users.Add(user);
+                }
+                
+                return users;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public List<VoterCard> Find(VoterCard voterCard)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<Citizen> Find()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Save(Person person)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Save(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Save(VoterCard voterCard)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Mark(Citizen citizen, int keyPhrase)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Mark(Citizen citizen)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool ChangePassword(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool MarkUserInvalid(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool MarkVoterCardInvalid(VoterCard voterCard)
-        {
-            throw new NotImplementedException();
-        }*/
-
-        public User LoadUser(string username, string password)
-        {
-            throw new NotImplementedException();
-        }
-
-        public User LoadUser(int id)
         {
             throw new NotImplementedException();
         }
@@ -246,24 +250,34 @@ namespace DigitalVoterList.Election
             throw new NotImplementedException();
         }
 
-        public List<Person> Find(Person person)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<User> Find(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<VoterCard> Find(VoterCard voterCard)
-        {
-            throw new NotImplementedException();
-        }
-
         public List<Citizen> FindElegibleVoters()
         {
-            throw new NotImplementedException();
+            Connect();
+            List<Citizen> citizens = new List<Citizen>();
+            string query = "SELECT * FROM person INNER JOIN quiz ON person.id=person_id AND eligible_to_vote = '1'";
+            MySqlCommand findEligibleVoters = new MySqlCommand(query, this._sqlConnection);
+
+            try
+            {
+                MySqlDataReader reader = findEligibleVoters.ExecuteReader();
+                while (reader.Read())
+                {
+                    Citizen citizen = new Citizen(reader.GetInt32("id"),reader.GetInt32("cpr"));
+                    citizen.EligibleToVote = reader.GetBoolean("eligible_to_vote");
+                    //DoIfNotDbNull(reader, "name", lbl => citizen.Name = reader.GetString(lbl));
+                    //DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
+                    //DoIfNotDbNull(reader, "place_of_birth", lbl => citizen.PlaceOfBirth = reader.GetString(lbl));
+                    //DoIfNotDbNull(reader, "passport_number", lbl => citizen.PassportNumber = reader.GetInt32(lbl));
+                    //TODO SET HASVOTED
+                    citizens.Add(citizen);
+                }
+
+                return citizens;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public bool Save(Person person)
