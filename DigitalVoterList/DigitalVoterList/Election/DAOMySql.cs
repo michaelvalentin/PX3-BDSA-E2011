@@ -269,7 +269,7 @@ namespace DigitalVoterList.Election
                     DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => citizen.PlaceOfBirth = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "passport_number", lbl => citizen.PassportNumber = reader.GetInt32(lbl));
-                    //TODO SET HASVOTED
+                    citizen.HasVoted = reader.GetBoolean("has_voted");
                     citizens.Add(citizen);
                 }
 
