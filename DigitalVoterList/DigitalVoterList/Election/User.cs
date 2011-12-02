@@ -44,12 +44,22 @@ namespace DigitalVoterList.Election
         /// <returns>True on success. False otherwise.</returns>
         public bool FetchPermissions(string uname, string pwd)
         {
-            //todo: Make validation..!
-            _lastSuccessfullValidationTime = null;
+            IDataAccessObject dao = DAOFactory.getDAO(this);
+            string pwdHash = HashPassword(pwd);
+            if (dao.ValidateUser(uname, pwdHash) != 0)
+            {
+                _lastSuccessfullValidationTime = new DateTime();
+                _permissions = dao.GetPermissions(this);
+            }
             return false;
         }
 
         public string Username { get; set; }
+
+        public bool CangePassword(string oldPwd, string newPwd)
+        {
+            IDataAccessObject dao = DAOFactory.getDAO(this);
+        }
 
         public int dBId { get; private set; }
 
