@@ -35,17 +35,17 @@ namespace DigitalVoterList.Election
         //TODO: Make this... :-)
         public HashSet<Quiz> SecurityQuestions { get; set; }
 
-        public bool HasVoted
+        public bool HasVoted { get; private set; }
+
+        public bool SetHasVoted()
         {
-            get
+            IDataAccessObject dao = DAOFactory.GlobalDAO;
+            if (dao.SetHasVoted(this))
             {
-                return _hasVoted;
+                _hasVoted = true;
+                return true;
             }
-            set
-            {
-                //TODO CHECK PERMISSIONS
-                _hasVoted = value;
-            }
+            return false;
         }
 
         [ContractInvariantMethod]
