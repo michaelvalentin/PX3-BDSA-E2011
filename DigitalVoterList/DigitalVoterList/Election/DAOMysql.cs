@@ -16,7 +16,7 @@ namespace DigitalVoterList.Election
 
         public DAOMySql()
         {
-            this._connectionString = "Server=localhost;Database=PX3;Uid=root;Pwd=14078824;";
+            this._connectionString = "Server=localhost;Database=PX3;Uid=root;Pwd=''";
 
             try
             {
@@ -84,7 +84,7 @@ namespace DigitalVoterList.Election
                 if (!reader.Read()) throw new DataAccessException("No person with the supplied id could be found.");
                 Person person = new Person(id);
                 DoIfNotDbNull(reader, "name", lbl => person.Name = reader.GetString(lbl));
-                person.Cpr = reader.GetInt32("cpr");
+                DoIfNotDbNull(reader, "cpr", lbl => person.Cpr = reader.GetInt32(lbl));
                 DoIfNotDbNull(reader, "address", lbl => person.Address = reader.GetString(lbl));
                 DoIfNotDbNull(reader, "place_of_birth", lbl => person.PlaceOfBirth = reader.GetString(lbl));
                 DoIfNotDbNull(reader, "passport_number", lbl => person.PassportNumber = reader.GetInt32(lbl));
