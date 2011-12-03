@@ -13,7 +13,7 @@ namespace DigitalVoterList.Election
         {
             if (!daos.ContainsKey(u))
             {
-                IDataAccessObject dao = new PermissionProxy(u, new DAOMySql());
+                IDataAccessObject dao = new DAOPermissionProxy(u, new DAOMySql());
                 daos[u] = dao;
             }
             return daos[u];

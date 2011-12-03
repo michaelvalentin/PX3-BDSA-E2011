@@ -54,10 +54,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Election\Action.cs" />
+    <Compile Include="Election\DAOFactory.cs" />
     <Compile Include="Election\DAOMySql.cs" />
     <Compile Include="Election\DAOPermissionProxy.cs" />
     <Compile Include="Election\DataAccessException.cs" />
     <Compile Include="Election\PermissionException.cs" />
+    <Compile Include="Election\SystemAction.cs" />
     <Compile Include="Election\VotingVenue.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Start.cs" />
