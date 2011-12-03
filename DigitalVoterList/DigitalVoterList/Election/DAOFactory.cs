@@ -1,25 +1,22 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="DAOFactory.cs" company="">
-// TODO: Update copyright text.
-// </copyright>
-// -----------------------------------------------------------------------
-
-namespace DigitalVoterList
+namespace DigitalVoterList.Election
 {
-    using DigitalVoterList.Election;
+    using System.Collections.Generic;
 
     /// <summary>
-    /// "An object to ensure you get the right database object"
+    /// A factory responsible of creating Data Access Objects.
     /// </summary>
     public static class DAOFactory
     {
-        /// <summary>
-        /// "Give me the right DAO"
-        /// </summary>
-        /// <returns></returns>
-        public static IDataAccessObject GetDAO()
-        {
+        private static Dictionary<User, IDataAccessObject> daos = new Dictionary<User, IDataAccessObject>();
 
+        public static IDataAccessObject getDAO(User u)
+        {
+            if (!daos.ContainsKey(u))
+            {
+                IDataAccessObject dao = new PermissionProxy(u, new DAOMySql());
+                daos[u] = dao;
+            }
+            return daos[u];
         }
     }
 }

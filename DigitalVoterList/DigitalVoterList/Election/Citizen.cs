@@ -1,9 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="Citizen.cs" company="">
-// TODO: Update copyright text.
-// </copyright>
-// -----------------------------------------------------------------------
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using DigitalVoterList.Utilities;
@@ -20,6 +15,7 @@ namespace DigitalVoterList.Election
         private bool _hasVoted;
         private HashSet<VoterCard> _voterCards = null;
         private HashSet<Quiz> _securityQuestions = null;
+        private VotingVenue _votingPlace;
 
         public Citizen(int id, int cpr)
             : base(id)
@@ -31,12 +27,26 @@ namespace DigitalVoterList.Election
         public bool EligibleToVote { get; set; }
 
         //TODO: Make this... :-)
-        public bool HasVoted { get; private set; }
+        public VotingVenue VotingPlace { get; private set; }
 
         //TODO: Make this... :-)
         public HashSet<VoterCard> VoterCards { get; set; }
 
+        //TODO: Make this... :-)
         public HashSet<Quiz> SecurityQuestions { get; set; }
+
+        public bool HasVoted
+        {
+            get
+            {
+                return _hasVoted;
+            }
+            set
+            {
+                //TODO CHECK PERMISSIONS
+                _hasVoted = value;
+            }
+        }
 
         [ContractInvariantMethod]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]

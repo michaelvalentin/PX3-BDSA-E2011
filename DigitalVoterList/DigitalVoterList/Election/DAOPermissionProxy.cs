@@ -6,7 +6,8 @@ namespace DigitalVoterList.Election
     /// <summary>
     /// A proxy to handle permissions for data access actions
     /// </summary>
-    public class DAOPermissionProxy : IDataAccessObject
+    // TODO: Consider voting-venues?
+    public class PermissionProxy : IDataAccessObject
     {
         private readonly User _user;
         private readonly IDataAccessObject _dao;
@@ -17,7 +18,7 @@ namespace DigitalVoterList.Election
             _dao = dao;
         }
 
-        private bool ActionPermitted(Action a, string msg)
+        private bool ActionPermitted(SystemAction a, string msg = "You don't have permission to perform this SystemAction.")
         {
             if (!_user.HasPermission(a))
             {
@@ -29,14 +30,9 @@ namespace DigitalVoterList.Election
             }
         }
 
-        private bool ActionPermitted(Action a)
-        {
-            return ActionPermitted(a, "You don't have permission to perform this action.");
-        }
-
         public Person LoadPerson(int id)
         {
-            if (ActionPermitted(Action.LoadPerson))
+            if (ActionPermitted(SystemAction.LoadPerson))
             {
                 return _dao.LoadPerson(id);
             }
@@ -50,16 +46,26 @@ namespace DigitalVoterList.Election
 
         public User LoadUser(int id)
         {
-            if (ActionPermitted(Action.LoadUser))
+            if (ActionPermitted(SystemAction.LoadUser))
             {
                 return _dao.LoadUser(id);
             }
             return null;
         }
 
+        public int ValidateUser(string username, string passwordHash)
+        {
+            return _dao.ValidateUser(username, passwordHash);
+        }
+
+        public HashSet<SystemAction> GetPermissions(User u)
+        {
+            return _dao.GetPermissions(u);
+        }
+
         public VoterCard LoadVoterCard(int id)
         {
-            if (ActionPermitted(Action.LoadVoterCard))
+            if (ActionPermitted(SystemAction.LoadVoterCard))
             {
                 return _dao.LoadVoterCard(id);
             }
@@ -68,7 +74,7 @@ namespace DigitalVoterList.Election
 
         public VoterCard LoadVoterCard(string idKey)
         {
-            if (ActionPermitted(Action.ScanVoterCard))
+            if (ActionPermitted(SystemAction.ScanVoterCard))
             {
                 return _dao.LoadVoterCard(idKey);
             }
@@ -77,7 +83,7 @@ namespace DigitalVoterList.Election
 
         public List<Person> Find(Person person)
         {
-            if (ActionPermitted(Action.FindPerson))
+            if (ActionPermitted(SystemAction.FindPerson))
             {
                 return _dao.Find(person);
             }
@@ -86,7 +92,7 @@ namespace DigitalVoterList.Election
 
         public List<User> Find(User user)
         {
-            if (ActionPermitted(Action.FindUser))
+            if (ActionPermitted(SystemAction.FindUser))
             {
                 return _dao.Find(user);
             }
@@ -95,7 +101,7 @@ namespace DigitalVoterList.Election
 
         public List<VoterCard> Find(VoterCard voterCard)
         {
-            if (ActionPermitted(Action.FindVoterCard))
+            if (ActionPermitted(SystemAction.FindVoterCard))
             {
                 return _dao.Find(voterCard);
             }
@@ -104,7 +110,7 @@ namespace DigitalVoterList.Election
 
         public List<Citizen> FindElegibleVoters()
         {
-            if (ActionPermitted(Action.FindElegibleVoters))
+            if (ActionPermitted(SystemAction.FindElegibleVoters))
             {
                 return _dao.FindElegibleVoters();
             }
@@ -113,7 +119,7 @@ namespace DigitalVoterList.Election
 
         public bool Save(Person person)
         {
-            if (ActionPermitted(Action.SavePerson))
+            if (ActionPermitted(SystemAction.SavePerson))
             {
                 return _dao.Save(person);
             }
@@ -122,7 +128,7 @@ namespace DigitalVoterList.Election
 
         public bool Save(User user)
         {
-            if (ActionPermitted(Action.SaveUser))
+            if (ActionPermitted(SystemAction.SaveUser))
             {
                 return _dao.Save(user);
             }
@@ -131,7 +137,7 @@ namespace DigitalVoterList.Election
 
         public bool Save(VoterCard voterCard)
         {
-            if (ActionPermitted(Action.SaveVoterCard))
+            if (ActionPermitted(SystemAction.SaveVoterCard))
             {
                 return _dao.Save(voterCard);
             }
@@ -140,7 +146,7 @@ namespace DigitalVoterList.Election
 
         public bool SetHasVoted(Citizen citizen, int keyPhrase)
         {
-            if (ActionPermitted(Action.SetHasVoted))
+            if (ActionPermitted(SystemAction.SetHasVoted))
             {
                 return _dao.SetHasVoted(citizen, keyPhrase);
             }
@@ -149,36 +155,37 @@ namespace DigitalVoterList.Election
 
         public bool SetHasVoted(Citizen citizen)
         {
-            if (ActionPermitted(Action.SetHasVotedManually))
+            if (ActionPermitted(SystemAction.SetHasVotedManually))
             {
                 return _dao.Save(citizen);
             }
             return false;
         }
 
-        public bool ChangePassword(User user, string newPassword)
+        public bool ChangePassword(User user, string newPassword, string oldPassword)
         {
             if (user.Equals(_user))
             {
-                if (ActionPermitted(Action.ChangeOwnPassword))
+                if (ActionPermitted(SystemAction.ChangeOwnPassword))
                 {
-                    return _dao.ChangePassword(user, newPassword);
+                    return _dao.ChangePassword(user, newPassword, oldPassword);
                 }
-                return false;
             }
-            else
+            return false;
+        }
+
+        public bool ChangePassword(User user, string newPassword)
+        {
+            if (ActionPermitted(SystemAction.ChangeOthersPassword))
             {
-                if (ActionPermitted(Action.ChangeOthersPassword))
-                {
-                    return _dao.ChangePassword(user, newPassword);
-                }
-                return false;
+                return _dao.ChangePassword(user, newPassword);
             }
+            return false;
         }
 
         public bool MarkUserInvalid(User user)
         {
-            if (ActionPermitted(Action.MarkUserInvalid))
+            if (ActionPermitted(SystemAction.MarkUserInvalid))
             {
                 return _dao.MarkUserInvalid(user);
             }
@@ -187,7 +194,7 @@ namespace DigitalVoterList.Election
 
         public bool RestoreUser(User user)
         {
-            if (ActionPermitted(Action.RestoreUser))
+            if (ActionPermitted(SystemAction.RestoreUser))
             {
                 return _dao.RestoreUser(user);
             }
@@ -196,7 +203,7 @@ namespace DigitalVoterList.Election
 
         public bool MarkVoterCardInvalid(VoterCard voterCard)
         {
-            if (ActionPermitted(Action.MarkVoteCardInvalid))
+            if (ActionPermitted(SystemAction.MarkVoteCardInvalid))
             {
                 return _dao.Save(voterCard);
             }

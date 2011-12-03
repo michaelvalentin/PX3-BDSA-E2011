@@ -58,6 +58,8 @@
     <Compile Include="Election\DAOPermissionProxy.cs" />
     <Compile Include="Election\DataAccessException.cs" />
     <Compile Include="Election\PermissionException.cs" />
+    <Compile Include="Election\VotingVenue.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Start.cs" />
     <Compile Include="Utilities\Barcode.cs" />
     <Compile Include="Utilities\Quiz.cs" />

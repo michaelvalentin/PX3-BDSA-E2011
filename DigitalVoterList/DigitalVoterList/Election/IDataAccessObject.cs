@@ -31,6 +31,21 @@ namespace DigitalVoterList.Election
         User LoadUser(int id);
 
         /// <summary>
+        /// Is this username and password combination valid?
+        /// </summary>
+        /// <param name="username">The username to validate</param>
+        /// <param name="password">The password to validate with</param>
+        /// <returns>The id of a validated user. 0 if no user can be found.</returns>
+        int ValidateUser(string username, string passwordHash);
+
+        /// <summary>
+        /// Get the permissions for the supplied user
+        /// </summary>
+        /// <param name="u">The user to get permissions for</param>
+        /// <returns>A set of allowed actions</returns>
+        HashSet<SystemAction> GetPermissions(User u);
+
+        /// <summary>
         /// What voter card has this id?
         /// </summary>
         /// <param name="id">The database id of the voter card to load</param>
@@ -112,7 +127,16 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="user">The user whose password should be changed</param>
         /// <param name="newPassword">The new password to use</param>
+        /// <param name="oldPassword">The old password for this user.</param>
         /// <returns>Was the attempt succesful?</returns>
+        bool ChangePassword(User user, string newPassword, string oldPassword);
+
+        /// <summary>
+        /// Change this users pasword to this!
+        /// </summary>
+        /// <param name="user">The user whose password should be changed</param>
+        /// <param name="newPassword">The new password to use</param>
+        /// <returns>Was th attempt succesful?</returns>
         bool ChangePassword(User user, string newPassword);
 
         /// <summary>
