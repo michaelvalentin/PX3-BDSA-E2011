@@ -46,6 +46,13 @@ namespace DigitalVoterList.Election
         HashSet<SystemAction> GetPermissions(User u);
 
         /// <summary>
+        /// Get the workplace(s) for the supplied user
+        /// </summary>
+        /// <param name="u">The user to get workplaces for</param>
+        /// <returns>The voting venues where the user works</returns>
+        HashSet<VotingVenue> GetWorkplaces(User u);
+
+        /// <summary>
         /// What voter card has this id?
         /// </summary>
         /// <param name="id">The database id of the voter card to load</param>

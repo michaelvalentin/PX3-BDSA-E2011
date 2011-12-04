@@ -6,6 +6,7 @@ namespace DigitalVoterList.Election
     public enum SystemAction
     {
         Nothing,
+        AllVotingPlaces,
 
         //CREATE
         CreateUser,

@@ -55,7 +55,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Election\Action.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Election\DAOFactory.cs" />
+    <Compile Include="Election\SystemAction.cs" />
     <Compile Include="Election\DAOMySql.cs" />
     <Compile Include="Election\DataAccessException.cs" />
     <Compile Include="Election\PermissionException.cs" />

@@ -30,6 +30,11 @@ namespace DigitalVoterList.Election
             }
         }
 
+        private bool WorksHere(VotingVenue v, string msg = "You can't perform this action, as you don't work in the right voting venue")
+        {
+            return _user.Workplaces.Contains(v) || ActionPermitted(SystemAction.AllVotingPlaces);
+        }
+
         public Person LoadPerson(int id)
         {
             if (ActionPermitted(SystemAction.LoadPerson))
@@ -61,6 +66,16 @@ namespace DigitalVoterList.Election
         public HashSet<SystemAction> GetPermissions(User u)
         {
             return _dao.GetPermissions(u);
+        }
+
+        public HashSet<VotingVenue> GetWorkplaces(User u)
+        {
+            return _dao.GetWorkplaces(u);
+        }
+
+        public HashSet<VotingVenue> Workplaces(User u)
+        {
+            return _dao.GetWorkplaces(u);
         }
 
         public VoterCard LoadVoterCard(int id)
@@ -146,7 +161,7 @@ namespace DigitalVoterList.Election
 
         public bool SetHasVoted(Citizen citizen, int keyPhrase)
         {
-            if (ActionPermitted(SystemAction.SetHasVoted))
+            if (ActionPermitted(SystemAction.SetHasVoted) && WorksHere(citizen.VotingPlace))
             {
                 return _dao.SetHasVoted(citizen, keyPhrase);
             }

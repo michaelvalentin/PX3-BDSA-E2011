@@ -3,13 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="PX3 Login" Height="217" Width="292" ResizeMode="NoResize">
     <Grid Height="176">
-        <TextBlock Height="46" HorizontalAlignment="Left" Name="textBlock1" Text="Login to use system" VerticalAlignment="Top" Width="278" FontSize="20" Background="#FF00A3FF" Foreground="White" FontWeight="Bold" Padding="10" />
-        <TextBlock Height="43" HorizontalAlignment="Left" Margin="209,3,0,0" Name="textBlock2" Text="PX3" VerticalAlignment="Top" Width="55" FontSize="30" FontWeight="Bold" Foreground="#FF1F8AD6" />
-        <Label Content="Username:" Height="23" HorizontalAlignment="Left" Margin="12,63,0,0" Name="label1" VerticalAlignment="Top" Width="104" />
+        <TextBlock Height="46" HorizontalAlignment="Left" Name="_title" Text="Login to use system" VerticalAlignment="Top" Width="278" FontSize="20" Background="#FF00A3FF" Foreground="White" FontWeight="Bold" Padding="10" />
+        <TextBlock Height="43" HorizontalAlignment="Left" Margin="209,3,0,0" Name="_logo" Text="PX3" VerticalAlignment="Top" Width="55" FontSize="30" FontWeight="Bold" Foreground="#FF1F8AD6" />
+        <Label Content="Username:" Height="23" HorizontalAlignment="Left" Margin="12,63,0,0" Name="_usernameLabel" VerticalAlignment="Top" Width="104" />
         <TextBox Height="23" HorizontalAlignment="Left" Margin="114,63,0,0" Name="_username" VerticalAlignment="Top" Width="144" />
-        <Label Content="Password:" Height="23" HorizontalAlignment="Left" Margin="12,101,0,0" Name="label2" VerticalAlignment="Top" Width="104" />
+        <Label Content="Password:" Height="23" HorizontalAlignment="Left" Margin="12,101,0,0" Name="_passwordLabel" VerticalAlignment="Top" Width="104" />
         <PasswordBox Height="23" HorizontalAlignment="Left" Margin="114,103,0,0" Name="_password" VerticalAlignment="Top" Width="144" DataContext="{Binding}" UseLayoutRounding="False" />
-        <Button Content="Login" Height="23" HorizontalAlignment="Left" Margin="183,141,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" />
-        <TextBlock Height="19" HorizontalAlignment="Left" Margin="12,145,0,0" Name="_statusText" Text="" VerticalAlignment="Top" Width="165" Foreground="Red" />
+        <Button Content="Login" Height="23" HorizontalAlignment="Right" Margin="0,141,12,0" Name="LoginBtn" VerticalAlignment="Top" Width="75" Click="LoginBtn_Click" />
+        <TextBlock Height="19" HorizontalAlignment="Left" Margin="12,145,0,0" Name="StatusText" Text="" VerticalAlignment="Top" Width="165" Foreground="Red" />
     </Grid>
 </Window>

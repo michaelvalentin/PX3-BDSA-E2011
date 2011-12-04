@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace DigitalVoterList.Election
 {
@@ -51,6 +53,7 @@ namespace DigitalVoterList.Election
             {
                 _lastSuccessfullValidationTime = new DateTime();
                 _permissions = dao.GetPermissions(this);
+                _workplaces = dao.GetWorkplaces(this);
             }
             return false;
         }
@@ -155,8 +158,16 @@ namespace DigitalVoterList.Election
 
         private string HashPassword(string password)
         {
-
-            return password;
+            string salted = UserSalt + password + "AX7530G7FR";
+            MD5 md5 = System.Security.Cryptography.MD5.Create();
+            byte[] inputBytes = System.Text.Encoding.UTF32.GetBytes(salted);
+            byte[] hash = md5.ComputeHash(inputBytes);
+            StringBuilder output = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++)
+            {
+                output.Append(hash[i].ToString("X2"));
+            }
+            return output.ToString();
         }
     }
 }

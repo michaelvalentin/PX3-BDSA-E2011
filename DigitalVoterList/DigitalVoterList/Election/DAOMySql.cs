@@ -175,6 +175,18 @@ namespace DigitalVoterList.Election
             return output;
         }
 
+        public HashSet<VotingVenue> GetWorkplaces(User u)
+        {
+            MySqlCommand getWorkplaces = new MySqlCommand("SELECT * FROM user u INNER JOIN workplace w ON u.id = w.user_id INNER JOIN voting_venue v ON v.id = w.voting_venue_id WHERE u.id=" + u.DbId, _sqlConnection);
+            MySqlDataReader rdr = getWorkplaces.ExecuteReader();
+            HashSet<VotingVenue> output = new HashSet<VotingVenue>();
+            while (rdr.Read())
+            {
+                output.Add(new VotingVenue(rdr.GetInt32("id"), rdr.GetString("name"), rdr.GetString("address")));
+            }
+            return output;
+        }
+
         /*
         public VoterCard LoadVoterCard(int id)
         {

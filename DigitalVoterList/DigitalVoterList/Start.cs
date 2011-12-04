@@ -20,15 +20,6 @@ namespace DigitalVoterList
         [System.STAThread]
         public static void Main()
         {
-            Debug.WriteLine("START!");
-            IDataAccessObject dao = new DAOMySql();
-            List<Citizen> p = dao.FindElegibleVoters();
-            foreach (var eligibleVoters in p)
-            {
-                Debug.WriteLine("cpr: "+eligibleVoters.Cpr);   
-            }
-            Person p = dao.LoadPerson(2);
-            Debug.WriteLine(p.ToString());
             Application app = new Application();
             app.Startup += (object sender, StartupEventArgs e) =>
             {
