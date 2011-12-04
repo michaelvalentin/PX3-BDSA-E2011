@@ -172,6 +172,7 @@ namespace DigitalVoterList.Election
             {
                 return (int)(validate.ExecuteScalar() ?? 0);
             }
+                return 0;
         }
 
         public HashSet<SystemAction> GetPermissions(User u)
@@ -185,7 +186,6 @@ namespace DigitalVoterList.Election
             }
             return output;
         }
-
         
         public VoterCard LoadVoterCard(int id)
         {
@@ -201,7 +201,9 @@ namespace DigitalVoterList.Election
                 Citizen citizen = (Citizen)this.LoadPerson(id);
                 VoterCard voterCard = new VoterCard(electionEvent, citizen);
                 //voterCard.Id = id;
-                voterCard.Valid = reader.GetBoolean("valid");
+                //voterCard.Valid = reader.GetBoolean("valid"); TODO
+
+                return voterCard;
             }
             catch (Exception ex)
             {
@@ -486,7 +488,7 @@ namespace DigitalVoterList.Election
 
             try
             {
-                User u = LoadUser(user.dBId);
+                User u = LoadUser(user.DBId);
                 return u.ChangePassword(newPassword);
             }
             catch (Exception ex)
@@ -501,7 +503,7 @@ namespace DigitalVoterList.Election
             Connect();
             try
             {
-                User u = LoadUser(user.dBId);
+                User u = LoadUser(user.DBId);
                 return u.ChangePassword(oldPassword, newPassword);
             }
             catch (Exception ex)
@@ -517,7 +519,9 @@ namespace DigitalVoterList.Election
             {
                 User u = LoadUser(user.Username);
                 //u.Validated = TODO SET FALSE!
+                return true;
             }
+            return false;
         }
 
         public bool RestoreUser(User user)
@@ -525,9 +529,18 @@ namespace DigitalVoterList.Election
             PermissionProxy pp = new PermissionProxy(user, DAOFactory.getDAO(user));
             if (pp.RestoreUser(user))
             {
-                User u = LoadUser(user.Username);
-                //u.Validated = TODO SET TRUE!
+                try
+                {
+                    User u = LoadUser(user.Username);
+                    //u.Validated = TODO SET TRUE!
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+                }
             }
+            return false;
         }
 
         public bool MarkVoterCardInvalid(VoterCard vc)
@@ -540,10 +553,7 @@ namespace DigitalVoterList.Election
                 {
                     return true;
                 }
-                else
-                {
                     return false;
-                }
             }
             catch (Exception ex)
             {
