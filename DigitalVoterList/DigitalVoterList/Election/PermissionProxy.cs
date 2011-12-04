@@ -44,9 +44,9 @@ namespace DigitalVoterList.Election
             return null;
         }
 
-        public User LoadUser(string username, string password)
+        public User LoadUser(string username)
         {
-            return _dao.LoadUser(username, password);
+            return _dao.LoadUser(username);
         }
 
         public User LoadUser(int id)

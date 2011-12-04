@@ -20,6 +20,8 @@ namespace DigitalVoterList
         [System.STAThread]
         public static void Main()
         {
+            Debug.WriteLine("START!");
+            IDataAccessObject dao = new DAOMySql();
             Application app = new Application();
             app.Startup += (object sender, StartupEventArgs e) =>
             {

@@ -18,5 +18,19 @@
             }
             return daos[u];
         }
+
+        private static IDataAccessObject _globalDAO = getDAO(new User());
+
+        public static IDataAccessObject GlobalDAO 
+        { 
+            get
+            {
+                return _globalDAO;
+            }
+                set
+            {
+                if (value != null) _globalDAO = value;
+            } 
+        }
     }
 }
