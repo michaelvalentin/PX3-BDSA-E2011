@@ -18,7 +18,8 @@ namespace DigitalVoterList.Views
 
         private void RaiseLoginEvent()
         {
-            LoginEvent.Invoke(_username.Text ?? "", _password.Password ?? "");
+            StatusText.Text = "Trying to login";
+            if (LoginEvent != null) LoginEvent.Invoke(this, new LoginEventArgs(_username.Text ?? "", _password.Password ?? ""));
         }
 
         private void LoginBtn_Click(object sender, RoutedEventArgs e)

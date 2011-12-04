@@ -1,4 +1,5 @@
-﻿namespace DigitalVoterList.Election
+﻿
+namespace DigitalVoterList.Election
 {
 
     /// <summary>
@@ -25,7 +26,9 @@
 
         public static bool operator ==(VotingVenue a, VotingVenue b)
         {
-            a.DbId = b.DbId;
+            if (a == null && b == null) return true;
+            if (a == null || b == null) return false;
+            return a.DbId == b.DbId;
         }
 
         public static bool operator !=(VotingVenue a, VotingVenue b)

@@ -37,7 +37,7 @@ namespace DigitalVoterList.Election
         //DELETE
         MarkUserInvalid,
         RestoreUser,
-        MarkVoteCardInvalid
+        MarkVoteCardInvalid,
     }
 }
 

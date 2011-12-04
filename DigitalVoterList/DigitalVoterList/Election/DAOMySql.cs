@@ -4,7 +4,6 @@ using MySql.Data.MySqlClient;
 
 namespace DigitalVoterList.Election
 {
-    using System.Diagnostics;
     using System.Windows.Documents;
 
     class DAOMySql : IDataAccessObject
@@ -117,11 +116,12 @@ namespace DigitalVoterList.Election
             Connect();
             string query = "SELECT * FROM user INNER JOIN person ON person_id=person.id AND user_name='" + username + "'";
             MySqlCommand loadUser = new MySqlCommand(query, this._sqlConnection);
+            MySqlDataReader reader = null;
 
             try
             {
-                MySqlDataReader reader = loadUser.ExecuteReader();
-                if (!reader.Read()) throw new DataAccessException("No user with the username specified.");
+                reader = loadUser.ExecuteReader();
+                if (!reader.Read()) return null;
                 User user = new User(reader.GetInt32("id"));
                 user.Username = reader.GetString("user_name");
                 user.Title = reader.GetString("title");
@@ -133,6 +133,23 @@ namespace DigitalVoterList.Election
             catch (Exception ex)
             {
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public User LoadUser(string username, string password)
+        {
+            User u = LoadUser(username);
+            if (u != null && u.FetchPermissions(username, password))
+            {
+                return u;
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -218,13 +235,13 @@ namespace DigitalVoterList.Election
         public VoterCard LoadVoterCard(int id)
         {
             Connect();
-            string query = "SELECT * FROM voter_card INNER JOIN person ON person.id=person_id AND id="+id;
+            string query = "SELECT * FROM voter_card INNER JOIN person ON person.id=person_id AND id=" + id;
             MySqlCommand loadUser = new MySqlCommand(query, this._sqlConnection);
 
             try
             {
                 ElectionEvent electionEvent = Settings.Election;
-                
+
                 MySqlDataReader reader = loadUser.ExecuteReader();
                 Citizen citizen = (Citizen)this.LoadPerson(id);
                 VoterCard voterCard = new VoterCard(electionEvent, citizen);
@@ -238,12 +255,12 @@ namespace DigitalVoterList.Election
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
             }
         }
-        
+
         public VoterCard LoadVoterCard(string idKey)
         {
             throw new NotImplementedException();
         }
-        
+
 
         public List<Person> Find(Person p)
         {
@@ -328,7 +345,7 @@ namespace DigitalVoterList.Election
                     DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => citizen.PlaceOfBirth = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "passport_number", lbl => citizen.PassportNumber = reader.GetInt32(lbl));
-                    
+
                     citizens.Add(citizen);
                 }
 
@@ -486,7 +503,7 @@ namespace DigitalVoterList.Election
                         throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
                     }
                 }
-                    return false;
+                return false;
             }
             catch (Exception ex)
             {
@@ -586,7 +603,7 @@ namespace DigitalVoterList.Election
                 {
                     return true;
                 }
-                    return false;
+                return false;
             }
             catch (Exception ex)
             {

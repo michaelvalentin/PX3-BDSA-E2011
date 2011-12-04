@@ -8,6 +8,7 @@
     public static class DAOFactory
     {
         private static Dictionary<User, IDataAccessObject> daos = new Dictionary<User, IDataAccessObject>();
+        private static IDataAccessObject _globalDAO;
 
         public static IDataAccessObject getDAO(User u)
         {
@@ -19,18 +20,15 @@
             return daos[u];
         }
 
-        private static IDataAccessObject _globalDAO = getDAO(new User());
 
-        public static IDataAccessObject GlobalDAO 
-        { 
+        public static IDataAccessObject GlobalDAO
+        {
             get
             {
+                if (_globalDAO == null) GlobalDAO = new PermissionProxy(new User(), new DAOMySql());
                 return _globalDAO;
             }
-                set
-            {
-                if (value != null) _globalDAO = value;
-            } 
+            set { _globalDAO = value; }
         }
     }
 }

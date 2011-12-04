@@ -1,13 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Windows;
+using DigitalVoterList.Election;
 using DigitalVoterList.Views;
 
 namespace DigitalVoterList
 {
-    using System.Collections.Generic;
-    using System.Windows.Documents;
 
-    using DigitalVoterList.Election;
 
     /// <summary>
     /// The main class for initializing the application
@@ -20,15 +18,27 @@ namespace DigitalVoterList
         [System.STAThread]
         public static void Main()
         {
-            Debug.WriteLine("START!");
-            IDataAccessObject dao = new DAOMySql();
             Application app = new Application();
             app.Startup += (object sender, StartupEventArgs e) =>
             {
-                LoginWindow view = new LoginWindow();
-                view.Show();
+                RunApp(null);
             };
             app.Run();
+        }
+
+        public static void RunApp(User user)
+        {
+            if (user != null && user.Validated)
+            {
+                Debug.WriteLine("TEST");
+            }
+            else
+            {
+                //Show the login window
+                LoginWindow view = new LoginWindow();
+                new Controllers.LoginController(view);
+                view.Show();
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DigitalVoterList.Election
 {
@@ -22,7 +23,7 @@ namespace DigitalVoterList.Election
         {
             if (!_user.HasPermission(a))
             {
-                throw new PermissionException(a, _user);
+                throw new PermissionException(a, _user, msg);
             }
             else
             {
@@ -47,6 +48,11 @@ namespace DigitalVoterList.Election
         public User LoadUser(string username)
         {
             return _dao.LoadUser(username);
+        }
+
+        public User LoadUser(string username, string password)
+        {
+            return _dao.LoadUser(username, password);
         }
 
         public User LoadUser(int id)
