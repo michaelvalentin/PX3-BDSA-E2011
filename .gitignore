@@ -35,7 +35,7 @@ Thumbs.db
 
 # Solution options #
 ####################
-DigitalVoterList.suo
+*.suo
 *.csproj
 
 # Build files #

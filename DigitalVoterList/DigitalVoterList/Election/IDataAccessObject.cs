@@ -16,12 +16,11 @@ namespace DigitalVoterList.Election
         Person LoadPerson(int id);
 
         /// <summary>
-        /// What user has this username and password?
+        /// What user has this username?
         /// </summary>
         /// <param name="username">The username to search for</param>
-        /// <param name="password">The password to authenticate with</param>
         /// <returns>An authenticated User object</returns>
-        User LoadUser(string username, string password);
+        User LoadUser(string username);
 
         /// <summary>
         /// What user has this id?
@@ -31,10 +30,10 @@ namespace DigitalVoterList.Election
         User LoadUser(int id);
 
         /// <summary>
-        /// Is this username and password combination valid?
+        /// Is this username and hashed password combination valid?
         /// </summary>
         /// <param name="username">The username to validate</param>
-        /// <param name="password">The password to validate with</param>
+        /// <param name="passwordHash">The passwordHash to validate with</param>
         /// <returns>The id of a validated user. 0 if no user can be found.</returns>
         int ValidateUser(string username, string passwordHash);
 
