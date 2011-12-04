@@ -463,13 +463,18 @@ namespace DigitalVoterList.Election
                 int citizenKeyPhrase = Convert.ToInt32(getCpr.ToString().Substring(7, 4));
                 if (keyPhrase == citizenKeyPhrase)
                 {
-                    MySqlCommand setHasVoted = new MySqlCommand("SELECT person SET has_voted = '1' WHERE id='" + citizen.DbId + "'", _sqlConnection);
-                    return true;
+                    try
+                    {
+                        MySqlCommand setHasVoted = new MySqlCommand("SELECT person SET has_voted = '1' WHERE id='" + citizen.DbId + "'", _sqlConnection);
+                        citizen.SetHasVoted();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+                    }
                 }
-                else
-                {
                     return false;
-                }
             }
             catch (Exception ex)
             {
