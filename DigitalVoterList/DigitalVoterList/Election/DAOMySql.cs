@@ -172,8 +172,24 @@ namespace DigitalVoterList.Election
             {
                 return (int)(validate.ExecuteScalar() ?? 0);
             }
+            return 0;
+        }
+
+        /*
+        public int ValidateUser(string username, string passwordHash)
+        {
+            Connect();
+            MySqlCommand validate = new MySqlCommand("SELECT id FROM user WHERE password_hash=@pwd_hash, username=@uname LIMIT 1", _sqlConnection);
+            validate.Prepare();
+            validate.Parameters.AddWithValue("@pwd_hash", passwordHash);
+            validate.Parameters.AddWithValue("@uname", username);
+            if (validate.ExecuteNonQuery() != -1)
+            {
+                return (int)(validate.ExecuteScalar() ?? 0);
+            }
                 return 0;
         }
+        */
 
         public HashSet<SystemAction> GetPermissions(User u)
         {
@@ -200,8 +216,8 @@ namespace DigitalVoterList.Election
                 MySqlDataReader reader = loadUser.ExecuteReader();
                 Citizen citizen = (Citizen)this.LoadPerson(id);
                 VoterCard voterCard = new VoterCard(electionEvent, citizen);
-                //voterCard.Id = id;
-                //voterCard.Valid = reader.GetBoolean("valid"); TODO
+                voterCard.Id = id;
+                voterCard.MarkAsInvalid();
 
                 return voterCard;
             }
@@ -391,7 +407,7 @@ namespace DigitalVoterList.Election
             saveUser.Prepare();
             saveUser.Parameters.AddWithValue("@user_name", u.Username);
             saveUser.Parameters.AddWithValue("@title", u.Title);
-            saveUser.Parameters.AddWithValue("@password", u.ChangePassword("NEW PASSWORD")); // TODO SET PASSWORD!
+            saveUser.Parameters.AddWithValue("@password", u.ChangePassword("@password"));
             if (id != 0) saveUser.Parameters.AddWithValue("@id", u.DbId);
             return saveUser.ExecuteNonQuery() == 1;
         }
@@ -518,7 +534,7 @@ namespace DigitalVoterList.Election
             if (pp.MarkUserInvalid(user))
             {
                 User u = LoadUser(user.Username);
-                //u.Validated = TODO SET FALSE!
+                u.Valid = false;
                 return true;
             }
             return false;
@@ -532,7 +548,7 @@ namespace DigitalVoterList.Election
                 try
                 {
                     User u = LoadUser(user.Username);
-                    //u.Validated = TODO SET TRUE!
+                    u.Valid = true;
                     return true;
                 }
                 catch (Exception ex)

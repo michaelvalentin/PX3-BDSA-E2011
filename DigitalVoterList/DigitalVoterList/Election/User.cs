@@ -12,6 +12,7 @@ namespace DigitalVoterList.Election
     {
         private string _title;
         private string _usersalt;
+        private bool _valid;
         private HashSet<SystemAction> _permissions;
         private HashSet<VotingVenue> _workplaces;
         private DateTime? _lastSuccessfullValidationTime;
@@ -61,6 +62,8 @@ namespace DigitalVoterList.Election
         public string Username { get; set; }
 
         public string UserSalt { get; set; }
+
+        public bool Valid { get; set; }
 
         /// <summary>
         /// Changes the password of a specific user

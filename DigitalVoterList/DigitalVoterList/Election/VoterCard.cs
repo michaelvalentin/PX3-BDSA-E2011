@@ -48,6 +48,12 @@ namespace DigitalVoterList.Election
         /// </summary>
         public string IdKey { get; set; }
 
+        public bool MarkAsInvalid()
+        {
+            Valid = false;
+            return true;
+        }
+
         /// <summary>
         /// A getter and setter for _valid. This says if the Voter Card is valid or not.
         /// </summary>
