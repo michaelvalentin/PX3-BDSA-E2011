@@ -6,30 +6,42 @@
 
 namespace DigitalVoterList.Election
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
     public class DataTransformer
     {
-        public void CollectData()
+
+
+
+        public void TransformData(User u)
         {
-            //Readeer
+            var da = DAOFactory.getDAO(u);
 
-            //Læs række
+            var people = da.LoadRawPeople();
 
-            //Generer persons
+            foreach (var rawPerson in people)
+            {
+                //Find rawPerson.cpr
+                da.Find(new Person().Cpr = rawPerson.CPR)
+                //Person med cpr i db
+                //Hvis person findes, hent ham ud og update,
+                //Ellers opret ny person
 
-            //gen quizes
 
-            //
+            }
+        }
+
+        private void InsertIntoPerson(RawPerson rawPerson)
+        {
+
 
         }
 
+        private void InsertIntoQuiz(Person person)
+        {
 
+        }
     }
 }

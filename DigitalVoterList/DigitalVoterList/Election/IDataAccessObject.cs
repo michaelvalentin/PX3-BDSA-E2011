@@ -101,6 +101,12 @@ namespace DigitalVoterList.Election
         List<Citizen> FindElegibleVoters();
 
         /// <summary>
+        /// "May I have all raw people in the database?"
+        /// </summary>
+        /// <returns>All raw people</returns>
+        IEnumerable<RawPerson> LoadRawPeople();
+
+        /// <summary>
         /// Create this person with this data!
         /// </summary>
         /// <param name="person">The person to register</param>
