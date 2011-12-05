@@ -5,7 +5,7 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList
 {
-
+    using DigitalVoterList.Election.Administration;
 
     /// <summary>
     /// The main class for initializing the application
@@ -18,6 +18,11 @@ namespace DigitalVoterList
         [System.STAThread]
         public static void Main()
         {
+            Citizen c = new Citizen(1,14492819);
+            VoterCard vc = new VoterCard(Settings.Election, c);
+            VoterCardPrinter vcp = new VoterCardPrinter();
+            vcp.Print(vc);
+            Debug.WriteLine("JEG ER HER!!");
             Application app = new Application();
             app.Startup += (o, e) =>
             {

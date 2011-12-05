@@ -1,4 +1,4 @@
-﻿namespace DigitalVoterList.Election
+namespace DigitalVoterList.Election
 {
     using System.Collections.Generic;
 
@@ -14,7 +14,7 @@
         {
             if (!daos.ContainsKey(u))
             {
-                IDataAccessObject dao = new PermissionProxy(u, new DAOMySql());
+                IDataAccessObject dao = new DAOPermissionProxy(u, new DAOMySql());
                 daos[u] = dao;
             }
             return daos[u];
