@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace DigitalVoterList.Election
 {
@@ -64,7 +63,7 @@ namespace DigitalVoterList.Election
             return null;
         }
 
-        public int ValidateUser(string username, string passwordHash)
+        public bool ValidateUser(string username, string passwordHash)
         {
             return _dao.ValidateUser(username, passwordHash);
         }

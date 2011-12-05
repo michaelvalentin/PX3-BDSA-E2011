@@ -43,7 +43,7 @@ namespace DigitalVoterList.Election
         /// <param name="username">The username to validate</param>
         /// <param name="passwordHash">The passwordHash to validate with</param>
         /// <returns>The id of a validated user. 0 if no user can be found.</returns>
-        int ValidateUser(string username, string passwordHash);
+        bool ValidateUser(string username, string passwordHash);
 
         /// <summary>
         /// Get the permissions for the supplied user
