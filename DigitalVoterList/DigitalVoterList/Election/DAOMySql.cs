@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using MySql.Data.MySqlClient;
 
 namespace DigitalVoterList.Election
@@ -114,30 +115,13 @@ namespace DigitalVoterList.Election
         public User LoadUser(string username)
         {
             Connect();
-            string query = "SELECT * FROM user INNER JOIN person ON person_id=person.id AND user_name='" + username + "'";
-            MySqlCommand loadUser = new MySqlCommand(query, this._sqlConnection);
-            MySqlDataReader reader = null;
-
-            try
-            {
-                reader = loadUser.ExecuteReader();
-                if (!reader.Read()) return null;
-                User user = new User(reader.GetInt32("id"));
-                user.Username = reader.GetString("user_name");
-                user.Title = reader.GetString("title");
-                user.PassportNumber = reader.GetInt32("passport_number");
-                user.Name = reader.GetString("name");
-                user.PlaceOfBirth = reader.GetString("place_of_birth");
-                return user;
-            }
-            catch (Exception ex)
-            {
-                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
-            }
-            finally
-            {
-                if (reader != null) reader.Close();
-            }
+            MySqlCommand loadUser = new MySqlCommand(
+                "SELECT * FROM user INNER JOIN person ON person_id=person.id AND user_name=@uname",
+                 this._sqlConnection
+                 );
+            loadUser.Prepare();
+            loadUser.Parameters.AddWithValue("@uname", username);
+            return LoadUser(loadUser);
         }
 
         public User LoadUser(string username, string password)
@@ -157,18 +141,24 @@ namespace DigitalVoterList.Election
         {
             Connect();
             string query = "SELECT * FROM user INNER JOIN person ON person_id=person.id AND user.id='" + id + "'";
-            MySqlCommand loadUser = new MySqlCommand(query, this._sqlConnection);
+            return LoadUser(new MySqlCommand(query, this._sqlConnection));
+        }
 
+        private User LoadUser(MySqlCommand loadUser)
+        {
+            Connect();
+            MySqlDataReader reader = null;
             try
             {
-                MySqlDataReader reader = loadUser.ExecuteReader();
-                if (!reader.Read()) throw new DataAccessException("No person with the id specified.");
+                reader = loadUser.ExecuteReader();
+                if (!reader.Read()) return null;
                 User user = new User(reader.GetInt32("id"));
                 user.Username = reader.GetString("user_name");
                 user.Title = reader.GetString("title");
                 user.PassportNumber = reader.GetInt32("passport_number");
                 user.Name = reader.GetString("name");
                 user.PlaceOfBirth = reader.GetString("place_of_birth");
+                user.UserSalt = reader.GetString("user_salt");
 
                 return user;
             }
@@ -176,46 +166,45 @@ namespace DigitalVoterList.Election
             {
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
             }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
         }
 
-        public int ValidateUser(string username, string passwordHash)
+        public bool ValidateUser(string username, string passwordHash)
         {
             Connect();
-            MySqlCommand validate = new MySqlCommand("SELECT id FROM user WHERE password_hash=@pwd_hash, username=@uname LIMIT 1", _sqlConnection);
+            MySqlCommand validate = new MySqlCommand("SELECT id FROM user WHERE password_hash=@pwd_hash AND user_name=@uname LIMIT 1", _sqlConnection);
             validate.Prepare();
             validate.Parameters.AddWithValue("@pwd_hash", passwordHash);
             validate.Parameters.AddWithValue("@uname", username);
-            if (validate.ExecuteNonQuery() != -1)
-            {
-                return (int)(validate.ExecuteScalar() ?? 0);
-            }
-            return 0;
-        }
 
-        /*
-        public int ValidateUser(string username, string passwordHash)
-        {
-            Connect();
-            MySqlCommand validate = new MySqlCommand("SELECT id FROM user WHERE password_hash=@pwd_hash, username=@uname LIMIT 1", _sqlConnection);
-            validate.Prepare();
-            validate.Parameters.AddWithValue("@pwd_hash", passwordHash);
-            validate.Parameters.AddWithValue("@uname", username);
-            if (validate.ExecuteNonQuery() != -1)
-            {
-                return (int)(validate.ExecuteScalar() ?? 0);
-            }
-                return 0;
+            object result = validate.ExecuteScalar();
+            return result != null && (int)result > 0;
         }
-        */
 
         public HashSet<SystemAction> GetPermissions(User u)
         {
             MySqlCommand getPermissions = new MySqlCommand("SELECT label FROM user u INNER JOIN permission p ON u.id = p.user_id INNER JOIN action a ON a.id = p.action_id WHERE u.id=" + u.DbId, _sqlConnection);
-            MySqlDataReader rdr = getPermissions.ExecuteReader();
+            MySqlDataReader rdr = null;
             HashSet<SystemAction> output = new HashSet<SystemAction>();
-            while (rdr.Read())
+
+            try
             {
-                output.Add(SystemActions.getSystemAction(rdr.GetString(0)));
+                rdr = getPermissions.ExecuteReader();
+                while (rdr.Read())
+                {
+                    output.Add(SystemActions.getSystemAction(rdr.GetString(0)));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (rdr != null) rdr.Close();
             }
             return output;
         }
@@ -223,11 +212,23 @@ namespace DigitalVoterList.Election
         public HashSet<VotingVenue> GetWorkplaces(User u)
         {
             MySqlCommand getWorkplaces = new MySqlCommand("SELECT * FROM user u INNER JOIN workplace w ON u.id = w.user_id INNER JOIN voting_venue v ON v.id = w.voting_venue_id WHERE u.id=" + u.DbId, _sqlConnection);
-            MySqlDataReader rdr = getWorkplaces.ExecuteReader();
             HashSet<VotingVenue> output = new HashSet<VotingVenue>();
-            while (rdr.Read())
+            MySqlDataReader rdr = null;
+            try
             {
-                output.Add(new VotingVenue(rdr.GetInt32("id"), rdr.GetString("name"), rdr.GetString("address")));
+                rdr = getWorkplaces.ExecuteReader();
+                while (rdr.Read())
+                {
+                    output.Add(new VotingVenue(rdr.GetInt32("id"), rdr.GetString("name"), rdr.GetString("address")));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (rdr != null) rdr.Close();
             }
             return output;
         }
