@@ -564,8 +564,8 @@ namespace DigitalVoterList.Election
 
         public bool MarkUserInvalid(User user)
         {
-            PermissionProxy pp = new PermissionProxy(user, DAOFactory.getDAO(user));
-            if (pp.MarkUserInvalid(user))
+            DAOMySql dms = new DAOMySql();
+            if (dms.MarkUserInvalid(user))
             {
                 User u = LoadUser(user.Username);
                 u.Valid = false;
@@ -576,8 +576,8 @@ namespace DigitalVoterList.Election
 
         public bool RestoreUser(User user)
         {
-            PermissionProxy pp = new PermissionProxy(user, DAOFactory.getDAO(user));
-            if (pp.RestoreUser(user))
+            DAOMySql dms = new DAOMySql();
+            if (dms.RestoreUser(user))
             {
                 try
                 {
