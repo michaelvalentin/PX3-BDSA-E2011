@@ -10,16 +10,11 @@
         private readonly SystemAction _systemAction;
         private readonly User _user;
 
-        public PermissionException(string msg, SystemAction systemAction, User user)
+        public PermissionException(SystemAction systemAction, User user, string msg = "You don't have permission to perform this SystemAction.")
             : base(msg)
         {
             _systemAction = systemAction;
             _user = user;
-        }
-
-        public PermissionException(SystemAction systemAction, User user)
-            : this("You don't have permission to perform this SystemAction.", systemAction, user)
-        {
         }
 
         public SystemAction SystemAction { get; private set; }

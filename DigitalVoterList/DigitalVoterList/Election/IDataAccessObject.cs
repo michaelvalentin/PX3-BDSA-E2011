@@ -19,8 +19,16 @@ namespace DigitalVoterList.Election
         /// What user has this username?
         /// </summary>
         /// <param name="username">The username to search for</param>
-        /// <returns>An authenticated User object</returns>
+        /// <returns>A user object</returns>
         User LoadUser(string username);
+
+        /// <summary>
+        /// What authenticated user exists with this username and password?
+        /// </summary>
+        /// <param name="username">The username to search for</param>
+        /// <param name="password">The password to validate with</param>
+        /// <returns>An authenticated user object, null if no user matched the details</returns>
+        User LoadUser(string username, string password);
 
         /// <summary>
         /// What user has this id?
@@ -43,6 +51,13 @@ namespace DigitalVoterList.Election
         /// <param name="u">The user to get permissions for</param>
         /// <returns>A set of allowed actions</returns>
         HashSet<SystemAction> GetPermissions(User u);
+
+        /// <summary>
+        /// Get the workplace(s) for the supplied user
+        /// </summary>
+        /// <param name="u">The user to get workplaces for</param>
+        /// <returns>The voting venues where the user works</returns>
+        HashSet<VotingVenue> GetWorkplaces(User u);
 
         /// <summary>
         /// What voter card has this id?

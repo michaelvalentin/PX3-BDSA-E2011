@@ -6,6 +6,7 @@ namespace DigitalVoterList.Election
     public enum SystemAction
     {
         Nothing,
+        AllVotingPlaces,
 
         //CREATE
         CreateUser,
@@ -36,7 +37,7 @@ namespace DigitalVoterList.Election
         //DELETE
         MarkUserInvalid,
         RestoreUser,
-        MarkVoteCardInvalid
+        MarkVoteCardInvalid,
     }
 }
 

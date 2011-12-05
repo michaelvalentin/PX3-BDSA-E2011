@@ -16,7 +16,7 @@ namespace DigitalVoterList.Election
         private readonly ElectionEvent _electionEvent;
         private readonly Citizen _citizen;
         private readonly string _idKey;
-        private string _id; //The database id
+        private int _id; //The database id
         private bool _valid;
 
         public VoterCard(ElectionEvent electionEvent, Citizen citizen)
@@ -41,12 +41,18 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// The database id of the Voter Card.
         /// </summary>
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// The id-key, corresponding to the barcode on the physical votercard
         /// </summary>
         public string IdKey { get; set; }
+
+        public bool MarkAsInvalid()
+        {
+            Valid = false;
+            return true;
+        }
 
         /// <summary>
         /// A getter and setter for _valid. This says if the Voter Card is valid or not.

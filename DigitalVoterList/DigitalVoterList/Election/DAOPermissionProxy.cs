@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DigitalVoterList.Election
 {
@@ -22,12 +23,17 @@ namespace DigitalVoterList.Election
         {
             if (!_user.HasPermission(a))
             {
-                throw new PermissionException(a, _user);
+                throw new PermissionException(a, _user, msg);
             }
             else
             {
                 return true;
             }
+        }
+
+        private bool WorksHere(VotingVenue v, string msg = "You can't perform this action, as you don't work in the right voting venue")
+        {
+            return _user.Workplaces.Contains(v) || ActionPermitted(SystemAction.AllVotingPlaces);
         }
 
         public Person LoadPerson(int id)
@@ -66,6 +72,16 @@ namespace DigitalVoterList.Election
         public HashSet<SystemAction> GetPermissions(User u)
         {
             return _dao.GetPermissions(u);
+        }
+
+        public HashSet<VotingVenue> GetWorkplaces(User u)
+        {
+            return _dao.GetWorkplaces(u);
+        }
+
+        public HashSet<VotingVenue> Workplaces(User u)
+        {
+            return _dao.GetWorkplaces(u);
         }
 
         public VoterCard LoadVoterCard(int id)
@@ -151,7 +167,7 @@ namespace DigitalVoterList.Election
 
         public bool SetHasVoted(Citizen citizen, int keyPhrase)
         {
-            if (ActionPermitted(SystemAction.SetHasVoted))
+            if (ActionPermitted(SystemAction.SetHasVoted) && WorksHere(citizen.VotingPlace))
             {
                 return _dao.SetHasVoted(citizen, keyPhrase);
             }

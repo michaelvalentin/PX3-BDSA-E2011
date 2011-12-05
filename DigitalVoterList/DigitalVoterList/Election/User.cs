@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace DigitalVoterList.Election
 {
@@ -12,6 +14,7 @@ namespace DigitalVoterList.Election
     {
         private string _title;
         private string _usersalt;
+        private bool _valid;
         private HashSet<SystemAction> _permissions;
         private HashSet<VotingVenue> _workplaces;
         private DateTime? _lastSuccessfullValidationTime;
@@ -51,30 +54,50 @@ namespace DigitalVoterList.Election
             {
                 _lastSuccessfullValidationTime = new DateTime();
                 _permissions = dao.GetPermissions(this);
+                _workplaces = dao.GetWorkplaces(this);
             }
             return false;
         }
 
+        /// <summary>
+        /// The user's username
+        /// </summary>
         public string Username { get; set; }
 
         public string UserSalt { get; set; }
 
+        public bool Valid { get; set; }
+
+        /// <summary>
+        /// Changes the password of a specific user
+        /// </summary>
+        /// <param name="oldPwd">The old password</param>
+        /// <param name="newPwd">The new password</param>
+        /// <returns>Was it succesful?</returns>
         public bool ChangePassword(string oldPwd, string newPwd)
         {
             IDataAccessObject dao = DAOFactory.getDAO(this);
-            dao.ChangePassword(this, HashPassword(newPwd), HashPassword(oldPwd));
+            return dao.ChangePassword(this, HashPassword(newPwd), HashPassword(oldPwd));
         }
 
+        /// <summary>
+        /// Changes the password of a specific user
+        /// </summary>
+        /// <param name="newPwd">The new password</param>
+        /// <returns>Was it succesful?</returns>
         public bool ChangePassword(string newPwd)
         {
             IDataAccessObject dao = DAOFactory.getDAO(this);
-            dao.ChangePassword(this, HashPassword(newPwd));
+            return dao.ChangePassword(this, HashPassword(newPwd));
         }
 
-        public int dBId { get; private set; }
+        /// <summary>
+        /// The user's id in the database
+        /// </summary>
+        public int DBId { get; private set; }
 
         /// <summary>
-        /// The users jobtitle
+        /// The user's jobtitle
         /// </summary>
         public string Title { get; set; }
 
@@ -126,6 +149,11 @@ namespace DigitalVoterList.Election
             return Validated && _permissions.Contains(a);
         }
 
+        /// <summary>
+        /// Checks if the user works at this specific voting venue
+        /// </summary>
+        /// <param name="v">The voting venue to check for</param>
+        /// <returns>True if the user works here. False if not</returns>
         public bool WorksHere(VotingVenue v)
         {
             return Validated && _workplaces.Contains(v);
@@ -155,7 +183,16 @@ namespace DigitalVoterList.Election
 
         private string HashPassword(string password)
         {
-
+            string salted = UserSalt + password + "AX7530G7FR";
+            MD5 md5 = System.Security.Cryptography.MD5.Create();
+            byte[] inputBytes = System.Text.Encoding.UTF32.GetBytes(salted);
+            byte[] hash = md5.ComputeHash(inputBytes);
+            StringBuilder output = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++)
+            {
+                output.Append(hash[i].ToString("X2"));
+            }
+            return output.ToString();
             return password;
         }
     }
