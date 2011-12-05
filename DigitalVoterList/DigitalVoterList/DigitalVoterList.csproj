@@ -120,7 +120,6 @@
     <Compile Include="Election\Citizen.cs" />
     <Compile Include="Election\ElectionEvent.cs" />
     <Compile Include="Election\IDataAccessObject.cs" />
-    <Compile Include="Election\PermissionProxy.cs" />
     <Compile Include="Election\Person.cs" />
     <Compile Include="Election\User.cs" />
     <Compile Include="Election\VoterCard.cs" />
