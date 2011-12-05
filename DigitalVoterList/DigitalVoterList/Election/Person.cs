@@ -7,23 +7,16 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class Person
     {
-        private int _id;
-        private string _cpr;
-        private int _passportNumber;
-        private string _name;
-        private string _address;
-        private string _placeOfBirth;
-
         /// <summary>
         /// A human being 
         /// </summary>
         /// <param name="id">A database id. Set to 0 to create new person.</param>
         public Person(int id)
         {
-            _id = id;
-            _name = "";
-            _address = "";
-            _placeOfBirth = "";
+            Id = id;
+            Name = "";
+            Address = "";
+            PlaceOfBirth = "";
         }
 
         /// <summary>
@@ -32,7 +25,13 @@ namespace DigitalVoterList.Election
         public Person()
             : this(0)
         {
+
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Id { get; private set; }
 
         /// <summary>
         /// The persons CPR-number
@@ -42,7 +41,7 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// The persons passport number
         /// </summary>
-        public int PassportNumber { get; set; }
+        public string PassportNumber { get; set; }
 
         /// <summary>
         /// The persons full name
