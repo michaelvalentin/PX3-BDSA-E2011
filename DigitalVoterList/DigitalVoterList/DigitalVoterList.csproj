@@ -81,9 +81,15 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <Compile Include="Election\Administration\PrintVoterCard.xaml.cs">
       <DependentUpon>PrintVoterCard.xaml</DependentUpon>
     </Compile>
+=======
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\RandomQuestionController.cs" />
+    <Compile Include="Controllers\VoterRegistrationController.cs" />
+>>>>>>> f1d18f7c17f2b695e2b65d1fe6794bc9a42e7650
     <Compile Include="Election\SystemAction.cs" />
     <Compile Include="Election\DAOFactory.cs" />
     <Compile Include="Election\DAOMySql.cs" />
@@ -100,9 +106,13 @@
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SecurityQuestionView.xaml.cs">
+      <DependentUpon>SecurityQuestionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UserWindow.xaml.cs">
       <DependentUpon>UserWindow.xaml</DependentUpon>
     </Compile>
+<<<<<<< HEAD
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -119,6 +129,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+=======
+>>>>>>> f1d18f7c17f2b695e2b65d1fe6794bc9a42e7650
     <Compile Include="Election\Administration\DataAnalyzer.cs" />
     <Compile Include="Election\Administration\DataCollector.cs" />
     <Compile Include="Election\Administration\VoterCardPrinter.cs" />
@@ -129,15 +141,15 @@
     <Compile Include="Election\Person.cs" />
     <Compile Include="Election\User.cs" />
     <Compile Include="Election\VoterCard.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Page Include="Views\AdministrationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LoginWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SecurityQuestionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

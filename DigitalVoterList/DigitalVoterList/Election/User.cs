@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Security.Cryptography;
 using System.Text;
@@ -50,11 +51,14 @@ namespace DigitalVoterList.Election
         {
             IDataAccessObject dao = DAOFactory.getDAO(this);
             string pwdHash = HashPassword(pwd);
-            if (dao.ValidateUser(uname, pwdHash) != 0)
+            Debug.WriteLine("PwdHash: " + pwdHash);
+            Debug.WriteLine("UserSalt: " + UserSalt);
+            if (dao.ValidateUser(uname, pwdHash))
             {
                 _lastSuccessfullValidationTime = new DateTime();
                 _permissions = dao.GetPermissions(this);
                 _workplaces = dao.GetWorkplaces(this);
+                return true;
             }
             return false;
         }
