@@ -100,8 +100,8 @@
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SecurityQuestionView.xaml.cs">
-      <DependentUpon>SecurityQuestionView.xaml</DependentUpon>
+    <Compile Include="Views\SecurityQuesitonView.xaml.cs">
+      <DependentUpon>SecurityQuesitonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserWindow.xaml.cs">
       <DependentUpon>UserWindow.xaml</DependentUpon>
@@ -116,6 +116,9 @@
     <Compile Include="Election\Person.cs" />
     <Compile Include="Election\User.cs" />
     <Compile Include="Election\VoterCard.cs" />
+    <Compile Include="Views\VoterRegistrationView.xaml.cs">
+      <DependentUpon>VoterRegistrationView.xaml</DependentUpon>
+    </Compile>
     <Page Include="Views\AdministrationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -124,11 +127,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SecurityQuestionView.xaml">
+    <Page Include="Views\SecurityQuesitonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UserWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VoterRegistrationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

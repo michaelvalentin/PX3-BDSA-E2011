@@ -12,7 +12,7 @@
         <TextBlock Height="60" HorizontalAlignment="Left" Margin="116,82,0,0" Name="Answer" Text="" VerticalAlignment="Top" Width="367" Foreground="#FF009300" />
         <Label Content="Question" Height="44" HorizontalAlignment="Left" Margin="8,12,0,0" Name="_questionLabel" VerticalAlignment="Top" Width="105" FontSize="18" FontWeight="Bold" />
         <Label Content="Answer" FontSize="18" FontWeight="Bold" Height="44" HorizontalAlignment="Left" Margin="8,81,0,0" Name="_answerLabel" VerticalAlignment="Top" Width="105" />
-        <Button Content="New Question" Height="59" HorizontalAlignment="Left" Margin="488,12,0,0" Name="_newQuestionBtn" VerticalAlignment="Top" Width="105" />
+        <Button Content="New Question" Height="59" HorizontalAlignment="Left" Margin="488,12,0,0" Name="_newQuestionBtn" VerticalAlignment="Top" Width="105" Click="_newQuestionBtn_Click" />
         <TextBlock Height="61" HorizontalAlignment="Left" Margin="488,81,0,0" Name="StatusText" Text="TextBlock" VerticalAlignment="Top" Width="105" FontSize="10" />
     </Grid>
 </UserControl>

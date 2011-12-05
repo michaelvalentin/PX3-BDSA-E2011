@@ -30,8 +30,7 @@ namespace DigitalVoterList
         {
             if (user != null && user.Validated)
             {
-                MainWindow view = new MainWindow();
-                view.Show();
+
             }
             else
             {
