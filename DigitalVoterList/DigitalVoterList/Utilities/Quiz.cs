@@ -6,7 +6,7 @@
     /// </summary>
     public struct Quiz
     {
-        /*private string _question;
+        private string _question;
 
         private string _answer;
 
@@ -29,6 +29,6 @@
         /// <summary>
         /// The answer to the question
         /// </summary>
-        public string Answer { get; private set; }*/
+        public string Answer { get; private set; }
     }
 }
