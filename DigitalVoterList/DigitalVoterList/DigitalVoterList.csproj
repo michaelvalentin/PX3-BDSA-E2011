@@ -81,15 +81,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
-    <Compile Include="Election\Administration\PrintVoterCard.xaml.cs">
-      <DependentUpon>PrintVoterCard.xaml</DependentUpon>
-    </Compile>
-=======
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\RandomQuestionController.cs" />
     <Compile Include="Controllers\VoterRegistrationController.cs" />
->>>>>>> f1d18f7c17f2b695e2b65d1fe6794bc9a42e7650
     <Compile Include="Election\SystemAction.cs" />
     <Compile Include="Election\DAOFactory.cs" />
     <Compile Include="Election\DAOMySql.cs" />
@@ -112,25 +106,6 @@
     <Compile Include="Views\UserWindow.xaml.cs">
       <DependentUpon>UserWindow.xaml</DependentUpon>
     </Compile>
-<<<<<<< HEAD
-    <Page Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Election\Administration\PrintVoterCard.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-=======
->>>>>>> f1d18f7c17f2b695e2b65d1fe6794bc9a42e7650
     <Compile Include="Election\Administration\DataAnalyzer.cs" />
     <Compile Include="Election\Administration\DataCollector.cs" />
     <Compile Include="Election\Administration\VoterCardPrinter.cs" />
@@ -181,9 +156,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controllers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
