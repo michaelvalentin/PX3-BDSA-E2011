@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="DigitalVoterList.Views.SecurityQuesitonView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="150" d:DesignWidth="600">
+    <Grid>
+        <Rectangle Height="60" HorizontalAlignment="Left" Margin="116,12,0,0" Name="_questionBorder" Stroke="Black" VerticalAlignment="Top" Width="367" />
+        <TextBlock Height="60" HorizontalAlignment="Left" Margin="116,12,0,0" Name="Question" Text="" VerticalAlignment="Top" Width="367" Foreground="#FFBE0000" />
+        <Rectangle Height="60" HorizontalAlignment="Left" Margin="116,82,0,0" Name="_answerBorder" Stroke="Black" VerticalAlignment="Top" Width="367" />
+        <TextBlock Height="60" HorizontalAlignment="Left" Margin="116,82,0,0" Name="Answer" Text="" VerticalAlignment="Top" Width="367" Foreground="#FF009300" />
+        <Label Content="Question" Height="44" HorizontalAlignment="Left" Margin="8,12,0,0" Name="_questionLabel" VerticalAlignment="Top" Width="105" FontSize="18" FontWeight="Bold" />
+        <Label Content="Answer" FontSize="18" FontWeight="Bold" Height="44" HorizontalAlignment="Left" Margin="8,81,0,0" Name="_answerLabel" VerticalAlignment="Top" Width="105" />
+        <Button Content="New Question" Height="59" HorizontalAlignment="Left" Margin="488,12,0,0" Name="_newQuestionBtn" VerticalAlignment="Top" Width="105" />
+        <TextBlock Height="61" HorizontalAlignment="Left" Margin="488,81,0,0" Name="StatusText" Text="TextBlock" VerticalAlignment="Top" Width="105" FontSize="10" />
+    </Grid>
+</UserControl>
