@@ -39,7 +39,7 @@ namespace DigitalVoterList.Election
             person.PassportNumber = rawPerson.PassportNumber;
             person.PlaceOfBirth = rawPerson.Birthplace;
 
-            if (person.Cpr != "0")
+            if (person is Citizen)
             {
                 var citizen = (Citizen)person;
                 citizen.EligibleToVote = CalculateEligibleToVote(rawPerson);

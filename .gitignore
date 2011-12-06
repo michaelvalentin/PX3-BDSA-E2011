@@ -43,6 +43,11 @@ Thumbs.db
 DigitalVoterList/DigitalVoterList/bin/
 DigitalVoterList/DigitalVoterList/obj/
 
+# Testfiles #
+#############
+*.testsettings
+*.vsmdi
+
 # Git weird files #
 ###################
 *.orig

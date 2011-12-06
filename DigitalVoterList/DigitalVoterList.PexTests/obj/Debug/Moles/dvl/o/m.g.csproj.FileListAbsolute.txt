@@ -1,0 +1,9 @@
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList.PexTests\obj\Debug\Moles\dvl\b\DigitalVoterList.Moles.xml
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList.PexTests\obj\Debug\Moles\dvl\b\DigitalVoterList.Moles.dll
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList.PexTests\obj\Debug\Moles\dvl\b\DigitalVoterList.Moles.pdb
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList.PexTests\obj\Debug\Moles\dvl\b\DigitalVoterList.exe
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList.PexTests\obj\Debug\Moles\dvl\b\DigitalVoterList.pdb
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList.PexTests\obj\Debug\Moles\dvl\o\ResolveAssemblyReference.cache
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList.PexTests\obj\Debug\Moles\dvl\o\DigitalVoterList.Moles.rewritten
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList.PexTests\obj\Debug\Moles\dvl\o\DigitalVoterList.Moles.dll
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList.PexTests\obj\Debug\Moles\dvl\o\DigitalVoterList.Moles.pdb

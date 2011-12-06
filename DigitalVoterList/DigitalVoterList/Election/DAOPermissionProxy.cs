@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace DigitalVoterList.Election
 {
     using System;
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// A proxy to handle permissions for data access actions
@@ -22,30 +22,34 @@ namespace DigitalVoterList.Election
 
         private bool ActionPermitted(SystemAction a, string msg = "You don't have permission to perform this SystemAction.")
         {
+            Contract.Ensures(
+                (!_user.HasPermission(a) && Contract.Result<bool>() == false)
+                || (_user.HasPermission(a) && Contract.Result<bool>() == false));
+
+
             if (!_user.HasPermission(a))
             {
-                foreach (SystemAction ac in _user.Permissions)
-                {
-                    Debug.WriteLine("User permission: " + ac.ToString());
-                }
+                //todo: Enten skal denne metode retunere en bool eller kaste en exception, ikke begge?
                 throw new PermissionException(a, _user, msg);
+                return false;
             }
-            else
-            {
-                return true;
-            }
+
+            return true;
         }
 
         private bool ActionPermittedForThisUser(User user, SystemAction a, string msg = "You don't have permission to perform this SystemAction.")
         {
+            Contract.Ensures(
+                (!_user.HasPermission(a) && Contract.Result<bool>() == false)
+                || (_user.HasPermission(a) && Contract.Result<bool>() == false));
+
             if (!user.Equals(_user) || !_user.HasPermission(a))
             {
                 throw new PermissionException(a, _user, msg);
+                return false;
             }
-            else
-            {
-                return true;
-            }
+
+            return true;
         }
 
         private bool WorksHere(VotingVenue v, string msg = "You can't perform this action, as you don't work in the right voting venue")
@@ -204,14 +208,7 @@ namespace DigitalVoterList.Election
         {
             if (ActionPermittedForThisUser(user, SystemAction.ChangeOwnPassword))
             {
-
                 _dao.ChangePassword(user, newPasswordHash, oldPasswordHash);
-
-                if (ActionPermitted(SystemAction.ChangeOwnPassword))
-                {
-                    _dao.ChangePassword(user, newPasswordHash, oldPasswordHash);
-                }
-
             }
         }
 
