@@ -5,9 +5,7 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList
 {
-    using System.Diagnostics;
 
-    using DigitalVoterList.Election.Administration;
 
     /// <summary>
     /// The main class for initializing the application
@@ -20,12 +18,12 @@ namespace DigitalVoterList
         [System.STAThread]
         public static void Main()
         {
-            DAOMySql dao = new DAOMySql();
+            /*DAOMySql dao = new DAOMySql();
             Citizen c = (Citizen)dao.LoadPerson(1);
             VoterCard vc = new VoterCard(Settings.Election, c);
             VoterCardPrinter vcp = new VoterCardPrinter();
             vcp.Print(vc);
-            Debug.WriteLine("JEG ER HER!!");
+            Debug.WriteLine("JEG ER HER!!");*/
             Application app = new Application();
             app.Startup += (o, e) =>
             {
@@ -36,13 +34,14 @@ namespace DigitalVoterList
 
         public static void RunApp(User user)
         {
+            DAOFactory.GlobalDAO = DAOFactory.getDAO(user ?? new User());
             if (user != null && user.Validated)
             {
                 MainWindow view = new MainWindow();
                 view.Show();
                 IDataAccessObject dao = DAOFactory.GlobalDAO;
-                User u = dao.LoadUser(2);
-                u.ChangePassword("12345");
+                /*User u = dao.LoadUser(2);
+                u.ChangePassword("12345");*/
             }
             else
             {

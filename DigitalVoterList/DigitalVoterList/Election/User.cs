@@ -73,7 +73,7 @@ namespace DigitalVoterList.Election
         public bool Valid { get; set; }
 
         /// <summary>
-        /// Changes the password of a specific user
+        /// Changes the password of this user
         /// </summary>
         /// <param name="oldPwd">The old password</param>
         /// <param name="newPwd">The new password</param>
@@ -85,13 +85,13 @@ namespace DigitalVoterList.Election
         }
 
         /// <summary>
-        /// Changes the password of a specific user
+        /// Changes the password of this user
         /// </summary>
         /// <param name="newPwd">The new password</param>
         /// <returns>Was it succesful?</returns>
         public bool ChangePassword(string newPwd)
         {
-            IDataAccessObject dao = DAOFactory.getDAO(this);
+            IDataAccessObject dao = DAOFactory.GlobalDAO;
             return dao.ChangePassword(this, HashPassword(newPwd));
         }
 
@@ -201,7 +201,6 @@ namespace DigitalVoterList.Election
                 output.Append(hash[i].ToString("X2"));
             }
             return output.ToString();
-            return password;
         }
     }
 }

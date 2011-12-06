@@ -557,7 +557,7 @@ namespace DigitalVoterList.Election
         public bool Save(int citizenId, Quiz q)
         {
             Connect();
-            MySqlCommand cId = new MySqlCommand("SELECT id FROM person WHERE id='"+citizenId+"' LIMIT 1");
+            MySqlCommand cId = new MySqlCommand("SELECT id FROM person WHERE id='" + citizenId + "' LIMIT 1");
             MySqlDataReader reader = null;
             try
             {
@@ -639,34 +639,38 @@ namespace DigitalVoterList.Election
             }
         }
 
-        public bool ChangePassword(User user, string newPassword)
+        public bool ChangePassword(User user, string newPasswordHash)
         {
-            Connect();
-
-            try
-            {
-                User u = LoadUser(user.DBId);
-                return u.ChangePassword(newPassword);
-            }
-            catch (Exception ex)
-            {
-                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
-            }
-
+            User u = LoadUser(user.DbId);
+            if (u == null) return false;
+            return ChangePassword(u.DbId, newPasswordHash);
         }
 
-        public bool ChangePassword(User user, string newPassword, string oldPassword)
+        public bool ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
         {
             Connect();
             try
             {
-                User u = LoadUser(user.DBId);
-                return u.ChangePassword(oldPassword, newPassword);
+                MySqlCommand loadUser = new MySqlCommand("SELECT id FROM user WHERE id=@id AND password_hash=@oldPasswordHash", _sqlConnection);
+                loadUser.Prepare();
+                loadUser.Parameters.AddWithValue("id", user.DbId);
+                loadUser.Parameters.AddWithValue("oldPasswordHash", oldPasswordHash);
+                if (loadUser.ExecuteScalar() != null) return ChangePassword(user.DbId, newPasswordHash);
+                return false;
             }
             catch (Exception ex)
             {
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
             }
+        }
+
+        private bool ChangePassword(int userDbId, string newPasswordHash)
+        {
+            MySqlCommand changePassword = new MySqlCommand("UPDATE user SET password_hash=@newPasswordHash WHERE id=@id", _sqlConnection);
+            changePassword.Prepare();
+            changePassword.Parameters.AddWithValue("id", userDbId);
+            changePassword.Parameters.AddWithValue("newPasswordHash", newPasswordHash);
+            return changePassword.ExecuteNonQuery() == 1;
         }
 
         public bool MarkUserInvalid(User user)
