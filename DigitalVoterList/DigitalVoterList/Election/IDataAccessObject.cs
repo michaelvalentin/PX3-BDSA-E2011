@@ -2,6 +2,7 @@
 
 namespace DigitalVoterList.Election
 {
+    using DigitalVoterList.Utilities;
 
     /// <summary>
     /// An object to access the database in a standardized way.
@@ -126,6 +127,14 @@ namespace DigitalVoterList.Election
         /// <param name="voterCard">The voter card to register</param>
         /// <returns>Was the attempt successful?</returns>
         bool Save(VoterCard voterCard);
+
+        /// <summary>
+        /// Load this citizen and save these quizes in it!
+        /// </summary>
+        /// <param name="citizen">The citizen which the quizes should be saved to</param>
+        /// <param name="quiz">The quizes to save</param>
+        /// <returns></returns>
+        bool Save(int citizenId, Quiz quiz);
 
         /// <summary>
         /// Mark that a voter has voted with standard validation!
