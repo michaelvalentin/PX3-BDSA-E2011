@@ -84,6 +84,9 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\RandomQuestionController.cs" />
     <Compile Include="Controllers\VoterRegistrationController.cs" />
+    <Compile Include="Election\Administration\PrintVoterCard.xaml.cs">
+      <DependentUpon>PrintVoterCard.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Election\SystemAction.cs" />
     <Compile Include="Election\DAOFactory.cs" />
     <Compile Include="Election\DAOMySql.cs" />
@@ -100,8 +103,8 @@
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SecurityQuestionView.xaml.cs">
-      <DependentUpon>SecurityQuestionView.xaml</DependentUpon>
+    <Compile Include="Views\SecurityQuesitonView.xaml.cs">
+      <DependentUpon>SecurityQuesitonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserWindow.xaml.cs">
       <DependentUpon>UserWindow.xaml</DependentUpon>
@@ -116,6 +119,10 @@
     <Compile Include="Election\Person.cs" />
     <Compile Include="Election\User.cs" />
     <Compile Include="Election\VoterCard.cs" />
+    <Page Include="Election\Administration\PrintVoterCard.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\AdministrationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -124,9 +131,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SecurityQuestionView.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Views\SecurityQuesitonView.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\UserWindow.xaml">
       <SubType>Designer</SubType>

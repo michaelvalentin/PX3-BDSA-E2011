@@ -164,11 +164,11 @@ namespace DigitalVoterList.Election
             return false;
         }
 
-        public bool SetHasVoted(Citizen citizen, int keyPhrase)
+        public bool SetHasVoted(Citizen citizen, int cprKey)
         {
             if (ActionPermitted(SystemAction.SetHasVoted) && WorksHere(citizen.VotingPlace))
             {
-                return _dao.SetHasVoted(citizen, keyPhrase);
+                return _dao.SetHasVoted(citizen, cprKey);
             }
             return false;
         }
