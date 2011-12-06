@@ -17,16 +17,14 @@ namespace DigitalVoterList.Election
             Cpr = cpr;
         }
 
+        private HashSet<VoterCard> _voterCards;
+
+        private HashSet<Quiz> _securityQuestions;
+
         public bool EligibleToVote { get; set; }
 
         public VotingVenue VotingPlace { get; set; }
 
-<<<<<<< HEAD
-        public HashSet<VoterCard> VoterCards { get; set; }
-
-        public HashSet<Quiz> SecurityQuestions { get; set; }
-=======
-        //TODO: Make this... :-)
         public HashSet<VoterCard> VoterCards
         {
             get { return _voterCards ?? new HashSet<VoterCard>(); }

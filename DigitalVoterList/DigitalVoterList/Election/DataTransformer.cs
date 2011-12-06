@@ -20,7 +20,9 @@ namespace DigitalVoterList.Election
         public void TransformData(ElectionEvent electionEvent)
         {
             _electionEvent = electionEvent;
-            DAOFactory.GlobalDAO.UpdatePeople(UpdatePerson);
+
+
+            DAOFactory.GlobalDAO.UpdatePeople(Update);
         }
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace DigitalVoterList.Election
                 var citizen = (Citizen)person;
                 citizen.EligibleToVote = CalculateEligibleToVote(rawPerson);
                 citizen.SecurityQuestions = this.GenerateSecurityQuestions(rawPerson);
-                citizen.VotingPlace = _electionEvent.votingVenue(citizen);
+                citizen.VotingPlace = _electionEvent.VotingVenueForCitizen(citizen);
                 return citizen;
             }
             return person;

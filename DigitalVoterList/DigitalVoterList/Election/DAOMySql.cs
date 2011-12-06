@@ -524,9 +524,7 @@ namespace DigitalVoterList.Election
             savePerson.Parameters.AddWithValue("@passport_number", per.PassportNumber);
             if (id != 0) savePerson.Parameters.AddWithValue("@id", per.DbId);
             if (per is Citizen)
-            SaveQuizzes((Citizen)per);
-
-            return savePerson.ExecuteNonQuery() == 1;
+                SaveQuizzes((Citizen)per);
         }
 
         private void SaveQuizzes(Citizen citizen)
@@ -566,7 +564,7 @@ namespace DigitalVoterList.Election
             }
         }
 
-        public bool Save(User u)
+        public void Save(User u)
         {
             Connect();
             int id = u.DbId;
@@ -682,7 +680,7 @@ namespace DigitalVoterList.Election
             }
         }
 
-        public bool SetHasVoted(Citizen citizen, int cprKey)
+        public void SetHasVoted(Citizen citizen, int cprKey)
         {
             Connect();
             try
@@ -732,7 +730,6 @@ namespace DigitalVoterList.Election
             }
         }
 
-<<<<<<< HEAD
         public void ChangePassword(User user, string newPassword)
         {
             Connect();
@@ -749,29 +746,19 @@ namespace DigitalVoterList.Election
 
         }
 
-        public void ChangePassword(User user, string newPassword, string oldPassword)
-=======
-        public bool ChangePassword(User user, string newPasswordHash)
-        {
-            User u = LoadUser(user.DbId);
-            if (u == null) return false;
-            return ChangePassword(u.DbId, newPasswordHash);
-        }
-
-        public bool ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
+        public void ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
         {
             Connect();
             try
             {
                 User u = LoadUser(user.DBId);
-                u.ChangePassword(oldPassword, newPassword);
+                u.ChangePassword(oldPasswordHash, newPasswordHash);
 
                 MySqlCommand loadUser = new MySqlCommand("SELECT id FROM user WHERE id=@id AND password_hash=@oldPasswordHash", _sqlConnection);
                 loadUser.Prepare();
                 loadUser.Parameters.AddWithValue("id", user.DbId);
                 loadUser.Parameters.AddWithValue("oldPasswordHash", oldPasswordHash);
-                if (loadUser.ExecuteScalar() != null) return ChangePassword(user.DbId, newPasswordHash);
-                return false;
+                if (loadUser.ExecuteScalar() != null) ChangePassword(user.DbId, newPasswordHash);
             }
             catch (Exception ex)
             {
@@ -788,7 +775,7 @@ namespace DigitalVoterList.Election
             return changePassword.ExecuteNonQuery() == 1;
         }
 
-        public bool MarkUserInvalid(User user)
+        public void MarkUserInvalid(User user)
         {
 
         }

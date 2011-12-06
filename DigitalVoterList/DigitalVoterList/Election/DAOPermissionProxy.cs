@@ -200,38 +200,26 @@ namespace DigitalVoterList.Election
             }
         }
 
-<<<<<<< HEAD
-        public void ChangePassword(User user, string newPassword, string oldPassword)
-=======
-        public bool ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
->>>>>>> a4bd0f5639a1294fa5fda29660ad905aacf9aeae
+        public void ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
         {
             if (ActionPermittedForThisUser(user, SystemAction.ChangeOwnPassword))
             {
-<<<<<<< HEAD
-                _dao.ChangePassword(user, newPassword, oldPassword);
-=======
+
+                _dao.ChangePassword(user, newPasswordHash, oldPasswordHash);
+
                 if (ActionPermitted(SystemAction.ChangeOwnPassword))
                 {
-                    return _dao.ChangePassword(user, newPasswordHash, oldPasswordHash);
+                    _dao.ChangePassword(user, newPasswordHash, oldPasswordHash);
                 }
->>>>>>> a4bd0f5639a1294fa5fda29660ad905aacf9aeae
+
             }
         }
 
-<<<<<<< HEAD
-        public void ChangePassword(User user, string newPassword)
+        public void ChangePassword(User user, string newPasswordHash)
         {
             if (ActionPermitted(SystemAction.ChangeOthersPassword))
             {
-                _dao.ChangePassword(user, newPassword);
-=======
-        public bool ChangePassword(User user, string newPasswordHash)
-        {
-            if (ActionPermitted(SystemAction.ChangeOthersPassword))
-            {
-                return _dao.ChangePassword(user, newPasswordHash);
->>>>>>> a4bd0f5639a1294fa5fda29660ad905aacf9aeae
+                _dao.ChangePassword(user, newPasswordHash);
             }
         }
 

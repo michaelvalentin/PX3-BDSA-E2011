@@ -61,7 +61,7 @@
                 grid.Measure(oldSize);
 
                 ((UIElement)grid).Arrange(new Rect(new Point(0,0), oldSize));
-                */
+                
             }
                 printDlg.PrintVisual(newVoterCard, "Print Single VoterCard");
             }*/

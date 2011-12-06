@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
+
 namespace DigitalVoterList.Election
 {
 
@@ -56,7 +57,7 @@ namespace DigitalVoterList.Election
         /// What votingVenue should be used for this citizen
         /// </summary>
         /// <returns></returns>
-        public VotingVenue votingVenue(Citizen citizen)
+        public VotingVenue VotingVenueForCitizen(Citizen citizen)
         {
             return DAOFactory.GlobalDAO.FindVotingVenue(citizen);
         }
