@@ -77,17 +77,19 @@ namespace DigitalVoterList.Election
         public Person LoadPerson(int id)
         {
             Connect();
-            string query = "SELECT p.name, p.cpr, p.address, p.elegible_to_vote, p.place_of_birth, p.passport_number, v.name AS voting_place_name, v.address AS voting_place_address FROM person p INNER JOIN voting_venue v ON p.voting_venue_id=v.id AND p.id=" + id + " LIMIT 1";
+            string query = "SELECT * FROM person WHERE id=" + id + " LIMIT 1";
             MySqlCommand loadPerson = new MySqlCommand(query, this._sqlConnection);
-
+            MySqlDataReader reader = null;
             try
             {
-                MySqlDataReader reader = loadPerson.ExecuteReader();
-                if (!reader.Read()) throw new DataAccessException("No person with the supplied id could be found.");
-                if (reader.GetInt32("cpr").Equals(null))
+                reader = loadPerson.ExecuteReader();
+                if (!reader.Read()) return null;
+                if (reader.GetInt32("cpr") == 0)
                 {
+                    reader.Read();
                     Person person = new Person(id);
                     DoIfNotDbNull(reader, "name", lbl => person.Name = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "cpr", lbl => person.Cpr = reader.GetInt32(lbl));
                     person.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "address", lbl => person.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => person.PlaceOfBirth = reader.GetString(lbl));
@@ -109,6 +111,10 @@ namespace DigitalVoterList.Election
             catch (Exception ex)
             {
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
             }
         }
 
@@ -197,6 +203,7 @@ namespace DigitalVoterList.Election
                 {
                     output.Add(SystemActions.getSystemAction(rdr.GetString(0)));
                 }
+                return null;
             }
             catch (Exception ex)
             {
@@ -221,6 +228,7 @@ namespace DigitalVoterList.Election
                 {
                     output.Add(new VotingVenue(rdr.GetInt32("id"), rdr.GetString("name"), rdr.GetString("address")));
                 }
+                return null;
             }
             catch (Exception ex)
             {
@@ -236,24 +244,31 @@ namespace DigitalVoterList.Election
         public VoterCard LoadVoterCard(int id)
         {
             Connect();
-            string query = "SELECT * FROM voter_card v INNER JOIN person p ON p.id=person_id AND v.id=" + id;
-            MySqlCommand loadUser = new MySqlCommand(query, this._sqlConnection);
+            string query = "SELECT * FROM voter_card INNER JOIN person ON person.id=person_id AND voter_card.id=" + id;
+            MySqlCommand loadVoterCard = new MySqlCommand(query, this._sqlConnection);
+            MySqlDataReader reader = null;
 
             try
             {
-                ElectionEvent electionEvent = Settings.Election;
+                reader = loadVoterCard.ExecuteReader();
+                reader.Read();
+                int personId = reader.GetInt32("person_id");
+                reader.Close();
+                Citizen citizen = (Citizen)this.LoadPerson(personId);
 
-                MySqlDataReader reader = loadUser.ExecuteReader();
-                Citizen citizen = (Citizen)this.LoadPerson(id);
-                VoterCard voterCard = new VoterCard(electionEvent, citizen);
+                reader = loadVoterCard.ExecuteReader();
+                if (!reader.Read()) return null;
+                VoterCard voterCard = new VoterCard(Settings.Election, citizen);
                 voterCard.Id = id;
-                voterCard.MarkAsInvalid();
-
                 return voterCard;
             }
             catch (Exception ex)
             {
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
             }
         }
 
@@ -276,12 +291,12 @@ namespace DigitalVoterList.Election
 
             Connect();
             List<Person> persons = new List<Person>();
-            string query = "SELECT * FROM person WHERE cpr='" + p.Cpr + "' OR (name='" + p.Name + "' AND address='" + p.Address + "') OR COALESCE(name='" + p.Name + "', address='" + p.Address + "') IS NOT NULL";
+            string query = "SELECT * FROM person WHERE cpr='" + p.Cpr + "' OR (name=@name AND address=@address) OR COALESCE(name=@name, address=@address) IS NOT NULL";
             MySqlCommand find = new MySqlCommand(query, this._sqlConnection);
-
+            MySqlDataReader reader = null;
             try
             {
-                MySqlDataReader reader = find.ExecuteReader();
+                reader = find.ExecuteReader();
                 while (reader.Read())
                 {
                     Person pers = new Person();
@@ -292,12 +307,16 @@ namespace DigitalVoterList.Election
                     DoIfNotDbNull(reader, "passport_number", lbl => pers.PassportNumber = reader.GetInt32(lbl));
                     persons.Add(pers);
                 }
-
+                if (persons.ToArray().Length == 0) return null;
                 return persons;
             }
             catch (Exception ex)
             {
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
             }
         }
 
@@ -305,12 +324,13 @@ namespace DigitalVoterList.Election
         {
             Connect();
             List<User> users = new List<User>();
-            string query = "SELECT * FROM user INNER JOIN person ON person_id = person.id AND (title='" + u.Title + "' AND user_name='" + u.Username + "') OR COALESCE(title='" + u.Title + "' AND user_name='" + u.Username + "') IS NOT NULL";
+            string query = "SELECT * FROM user INNER JOIN person ON person_id = person.id WHERE (title='" + u.Title + "' AND user_name='" + u.Username + "') OR COALESCE(title='" + u.Title + "', user_name='" + u.Username + "')";
             MySqlCommand find = new MySqlCommand(query, this._sqlConnection);
+            MySqlDataReader reader = null;
 
             try
             {
-                MySqlDataReader reader = find.ExecuteReader();
+                reader = find.ExecuteReader();
                 while (reader.Read())
                 {
                     User user = new User();
@@ -323,12 +343,16 @@ namespace DigitalVoterList.Election
                     DoIfNotDbNull(reader, "passport_number", lbl => user.PassportNumber = reader.GetInt32(lbl));
                     users.Add(user);
                 }
-
+                if (users.ToArray().Length == 0) return null;
                 return users;
             }
             catch (Exception ex)
             {
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
             }
         }
 
@@ -369,12 +393,13 @@ namespace DigitalVoterList.Election
         {
             Connect();
             List<Citizen> citizens = new List<Citizen>();
-            string query = "SELECT * FROM person INNER JOIN quiz ON person.id=person_id AND eligible_to_vote = '1'";
+            string query = "SELECT * FROM person WHERE eligible_to_vote = '1'";
             MySqlCommand findEligibleVoters = new MySqlCommand(query, this._sqlConnection);
+            MySqlDataReader reader = null;
 
             try
             {
-                MySqlDataReader reader = findEligibleVoters.ExecuteReader();
+                reader = findEligibleVoters.ExecuteReader();
                 while (reader.Read())
                 {
                     Citizen citizen = new Citizen(reader.GetInt32("id"), reader.GetString("cpr"));
@@ -386,12 +411,16 @@ namespace DigitalVoterList.Election
 
                     citizens.Add(citizen);
                 }
-
+                if (citizens.ToArray().Length == 0) return null;
                 return citizens;
             }
             catch (Exception ex)
             {
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
             }
         }
 
@@ -526,7 +555,7 @@ namespace DigitalVoterList.Election
             return saveVoterCard.ExecuteNonQuery() == 1;
         }
 
-        public bool SetHasVoted(Citizen citizen, int keyPhrase)
+        public bool SetHasVoted(Citizen citizen, int cprKey)
         {
             Connect();
             try
@@ -534,7 +563,7 @@ namespace DigitalVoterList.Election
                 MySqlCommand getCpr = new MySqlCommand(
                     "SELECT cpr FROM person WHERE id='" + citizen.DbId + "'", _sqlConnection);
                 int citizenKeyPhrase = Convert.ToInt32(getCpr.ToString().Substring(7, 4));
-                if (keyPhrase == citizenKeyPhrase)
+                if (cprKey == citizenKeyPhrase)
                 {
                     try
                     {

@@ -13,19 +13,16 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class VoterCard
     {
-        private readonly ElectionEvent _electionEvent;
-        private readonly Citizen _citizen;
         private readonly string _idKey;
         private int _id; //The database id
-        private bool _valid;
 
         public VoterCard(ElectionEvent electionEvent, Citizen citizen)
         {
             Contract.Requires(!electionEvent.Equals(null));
             Contract.Requires(!citizen.Equals(null) && citizen.EligibleToVote);
-            _electionEvent = electionEvent;
-            _citizen = citizen;
-            _valid = true;
+            ElectionEvent = electionEvent;
+            Citizen = citizen;
+            Valid = true;
         }
 
         /// <summary>
