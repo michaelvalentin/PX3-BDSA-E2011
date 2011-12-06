@@ -41,6 +41,13 @@ namespace DigitalVoterList
         {
             if (user != null && user.Validated)
             {
+                MainWindow view = new MainWindow();
+                view.Show();
+                Debug.WriteLine("User permissions: ");
+                foreach (SystemAction a in user.Permissions)
+                {
+                    Debug.WriteLine("Permission: " + a.ToString());
+                }
             }
             else
             {

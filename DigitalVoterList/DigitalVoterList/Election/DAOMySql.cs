@@ -272,7 +272,13 @@ namespace DigitalVoterList.Election
 
         public VoterCard LoadVoterCard(string idKey)
         {
-            throw new NotImplementedException();
+            Connect();
+            MySqlCommand loadVoterCardId = new MySqlCommand("SELECT id FROM voter_card WHERE id_key=@id_key", _sqlConnection);
+            loadVoterCardId.Prepare();
+            loadVoterCardId.Parameters.AddWithValue("id_key", idKey);
+            int id = (int)(loadVoterCardId.ExecuteScalar() ?? 0);
+            if (id == 0) return null;
+            return LoadVoterCard(id);
         }
 
 

@@ -7,7 +7,6 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class Person
     {
-        private int _id;
         private string _cpr;
         private int _passportNumber;
         private string _name;
@@ -20,7 +19,7 @@ namespace DigitalVoterList.Election
         /// <param name="id">A database id. Set to 0 to create new person.</param>
         public Person(int id)
         {
-            _id = id;
+            DbId = id;
             _name = "";
             _address = "";
             _placeOfBirth = "";
