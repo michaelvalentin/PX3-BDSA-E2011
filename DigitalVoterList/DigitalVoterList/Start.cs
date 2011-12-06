@@ -1,14 +1,11 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using DigitalVoterList.Controllers;
 using DigitalVoterList.Election;
 using DigitalVoterList.Views;
 
 namespace DigitalVoterList
 {
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Windows.Documents;
 
     using DigitalVoterList.Election.Administration;
 
@@ -43,11 +40,9 @@ namespace DigitalVoterList
             {
                 MainWindow view = new MainWindow();
                 view.Show();
-                Debug.WriteLine("User permissions: ");
-                foreach (SystemAction a in user.Permissions)
-                {
-                    Debug.WriteLine("Permission: " + a.ToString());
-                }
+                IDataAccessObject dao = DAOFactory.GlobalDAO;
+                User u = dao.LoadUser(2);
+                u.ChangePassword("12345");
             }
             else
             {

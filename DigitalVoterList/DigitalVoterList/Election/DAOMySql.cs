@@ -144,7 +144,7 @@ namespace DigitalVoterList.Election
         public User LoadUser(int id)
         {
             Connect();
-            string query = "SELECT * FROM user INNER JOIN person ON person_id=person.id AND user.id='" + id + "'";
+            string query = "SELECT * FROM user u LEFT JOIN person p ON u.person_id=p.id WHERE u.id=" + id;
             return LoadUser(new MySqlCommand(query, this._sqlConnection));
         }
 
@@ -201,7 +201,6 @@ namespace DigitalVoterList.Election
                 {
                     output.Add(SystemActions.getSystemAction(rdr.GetString(0)));
                 }
-                return null;
             }
             catch (Exception ex)
             {

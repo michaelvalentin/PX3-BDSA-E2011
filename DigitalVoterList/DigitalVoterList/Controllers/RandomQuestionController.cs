@@ -20,6 +20,7 @@ namespace DigitalVoterList.Controllers
         public RandomQuestionController(SecurityQuesitonView view, Citizen voter)
         {
             _view = view;
+            _questions = new Quiz[voter.SecurityQuestions.Count];
             voter.SecurityQuestions.CopyTo(_questions);
             _used = new HashSet<Quiz>();
             RequestQuestion(null, null);
