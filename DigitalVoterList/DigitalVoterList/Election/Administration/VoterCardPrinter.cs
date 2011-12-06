@@ -17,7 +17,7 @@
 
         public void Print(VoterCard voterCard)
         {
-            PrintDialog printDlg = new System.Windows.Controls.PrintDialog();
+            /*PrintDialog printDlg = new System.Windows.Controls.PrintDialog();
             PrintVoterCard newVoterCard = new PrintVoterCard(voterCard);
             if (printDlg.ShowDialog() == true)
             {
@@ -63,6 +63,8 @@
                 ((UIElement)grid).Arrange(new Rect(new Point(0,0), oldSize));
                 */
             }
+                printDlg.PrintVisual(newVoterCard, "Print Single VoterCard");
+            }*/
         }
     }
 }

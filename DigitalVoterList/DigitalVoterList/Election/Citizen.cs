@@ -30,10 +30,17 @@ namespace DigitalVoterList.Election
         public VotingVenue VotingPlace { get; private set; }
 
         //TODO: Make this... :-)
-        public HashSet<VoterCard> VoterCards { get; set; }
+        public HashSet<VoterCard> VoterCards
+        {
+            get { return _voterCards ?? new HashSet<VoterCard>(); }
+            set { _voterCards = value ?? new HashSet<VoterCard>(); }
+        }
 
-        //TODO: Make this... :-)
-        public HashSet<Quiz> SecurityQuestions { get; set; }
+        public HashSet<Quiz> SecurityQuestions
+        {
+            get { return _securityQuestions ?? new HashSet<Quiz>(); }
+            set { _securityQuestions = value ?? new HashSet<Quiz>(); }
+        }
 
         public bool HasVoted { get; private set; }
 

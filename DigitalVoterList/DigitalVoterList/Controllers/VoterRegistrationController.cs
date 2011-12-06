@@ -33,6 +33,8 @@ namespace DigitalVoterList.Controllers
             {
                 _view.VoterCardNumber.Text = _view.VoterCardNumber.Text.Substring(0, 8);
             }
+            _view.VoterCardNumber.Text = _view.VoterCardNumber.Text.ToUpper();
+            _view.VoterCardNumber.CaretIndex = 8;
             LoadData();
         }
 

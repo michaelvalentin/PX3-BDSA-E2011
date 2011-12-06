@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace DigitalVoterList.Election
 {
@@ -22,6 +23,10 @@ namespace DigitalVoterList.Election
         {
             if (!_user.HasPermission(a))
             {
+                foreach (SystemAction ac in _user.Permissions)
+                {
+                    Debug.WriteLine("User permission: " + ac.ToString());
+                }
                 throw new PermissionException(a, _user, msg);
             }
             else
@@ -187,23 +192,23 @@ namespace DigitalVoterList.Election
             return false;
         }
 
-        public bool ChangePassword(User user, string newPassword, string oldPassword)
+        public bool ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
         {
             if (user.Equals(_user))
             {
                 if (ActionPermitted(SystemAction.ChangeOwnPassword))
                 {
-                    return _dao.ChangePassword(user, newPassword, oldPassword);
+                    return _dao.ChangePassword(user, newPasswordHash, oldPasswordHash);
                 }
             }
             return false;
         }
 
-        public bool ChangePassword(User user, string newPassword)
+        public bool ChangePassword(User user, string newPasswordHash)
         {
             if (ActionPermitted(SystemAction.ChangeOthersPassword))
             {
-                return _dao.ChangePassword(user, newPassword);
+                return _dao.ChangePassword(user, newPasswordHash);
             }
             return false;
         }
