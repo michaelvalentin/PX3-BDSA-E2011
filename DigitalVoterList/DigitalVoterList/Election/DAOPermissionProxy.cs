@@ -7,12 +7,12 @@ namespace DigitalVoterList.Election
     /// A proxy to handle permissions for data access actions
     /// </summary>
     // TODO: Consider voting-venues?
-    public class PermissionProxy : IDataAccessObject
+    public class DAOPermissionProxy : IDataAccessObject
     {
         private readonly User _user;
         private readonly IDataAccessObject _dao;
 
-        public PermissionProxy(User u, IDataAccessObject dao)
+        public DAOPermissionProxy(User u, IDataAccessObject dao)
         {
             _user = u;
             _dao = dao;
@@ -135,6 +135,11 @@ namespace DigitalVoterList.Election
                 return _dao.FindElegibleVoters();
             }
             return null;
+        }
+
+        public IEnumerable<RawPerson> LoadRawPeople()
+        {
+            throw new System.NotImplementedException();
         }
 
         public bool Save(Person person)

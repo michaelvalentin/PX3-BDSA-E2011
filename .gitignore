@@ -35,7 +35,8 @@ Thumbs.db
 
 # Solution options #
 ####################
-DigitalVoterList.suo
+*.suo
+*.csproj
 
 # Build files #
 ###############
@@ -44,8 +45,8 @@ DigitalVoterList/DigitalVoterList/obj/
 
 # Git weird files #
 ###################
-*orig
-*cache
+*.orig
+*.cache
 
 # Tool files #
 ##############

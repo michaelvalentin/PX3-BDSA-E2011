@@ -84,12 +84,11 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\RandomQuestionController.cs" />
     <Compile Include="Controllers\VoterRegistrationController.cs" />
-    <Compile Include="Election\Administration\PrintVoterCard.xaml.cs">
-      <DependentUpon>PrintVoterCard.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Election\RawPerson.cs" />
     <Compile Include="Election\SystemAction.cs" />
     <Compile Include="Election\DAOFactory.cs" />
     <Compile Include="Election\DAOMySql.cs" />
+    <Compile Include="Election\DAOPermissionProxy.cs" />
     <Compile Include="Election\DataAccessException.cs" />
     <Compile Include="Election\PermissionException.cs" />
     <Compile Include="Election\VotingVenue.cs" />
@@ -103,6 +102,9 @@
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SecurityQuesitonView.xaml.cs">
       <DependentUpon>SecurityQuesitonView.xaml</DependentUpon>
     </Compile>
@@ -115,14 +117,12 @@
     <Compile Include="Election\Citizen.cs" />
     <Compile Include="Election\ElectionEvent.cs" />
     <Compile Include="Election\IDataAccessObject.cs" />
-    <Compile Include="Election\PermissionProxy.cs" />
     <Compile Include="Election\Person.cs" />
     <Compile Include="Election\User.cs" />
     <Compile Include="Election\VoterCard.cs" />
-    <Page Include="Election\Administration\PrintVoterCard.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
+    <Compile Include="Views\VoterRegistrationView.xaml.cs">
+      <DependentUpon>VoterRegistrationView.xaml</DependentUpon>
+    </Compile>
     <Page Include="Views\AdministrationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -131,11 +131,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SecurityQuesitonView.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="Views\MainWindow.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SecurityQuesitonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UserWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VoterRegistrationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -158,6 +166,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

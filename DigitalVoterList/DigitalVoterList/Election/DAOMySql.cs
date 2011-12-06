@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using MySql.Data.MySqlClient;
 
 namespace DigitalVoterList.Election
 {
+    using System.Diagnostics.Contracts;
     using System.Windows.Documents;
 
     class DAOMySql : IDataAccessObject
@@ -90,6 +90,7 @@ namespace DigitalVoterList.Election
                     Person person = new Person(id);
                     DoIfNotDbNull(reader, "name", lbl => person.Name = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "cpr", lbl => person.Cpr = reader.GetInt32(lbl));
+                    person.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "address", lbl => person.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => person.PlaceOfBirth = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "passport_number", lbl => person.PassportNumber = reader.GetInt32(lbl));
@@ -97,9 +98,9 @@ namespace DigitalVoterList.Election
                 }
                 else
                 {
-                    Citizen citizen = new Citizen(id, reader.GetInt32("cpr"));
+                    Citizen citizen = new Citizen(id, reader.GetString("cpr"));
                     DoIfNotDbNull(reader, "name", lbl => citizen.Name = reader.GetString(lbl));
-                    citizen.Cpr = reader.GetInt32("cpr");
+                    citizen.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => citizen.PlaceOfBirth = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "passport_number", lbl => citizen.PassportNumber = reader.GetInt32(lbl));
@@ -279,6 +280,9 @@ namespace DigitalVoterList.Election
 
         public List<Person> Find(Person p)
         {
+            Contract.Ensures(Contract.Result<List<Person>>() != null);
+
+
             Connect();
             List<Person> persons = new List<Person>();
             string query = "SELECT * FROM person WHERE cpr='" + p.Cpr + "' OR (name=@name AND address=@address) OR COALESCE(name=@name, address=@address) IS NOT NULL";
@@ -290,7 +294,7 @@ namespace DigitalVoterList.Election
                 while (reader.Read())
                 {
                     Person pers = new Person();
-                    pers.Cpr = reader.GetInt32("cpr");
+                    pers.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "name", lbl => pers.Name = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "address", lbl => pers.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => pers.PlaceOfBirth = reader.GetString(lbl));
@@ -326,7 +330,7 @@ namespace DigitalVoterList.Election
                     User user = new User();
                     user.Username = reader.GetString("user_name");
                     user.Title = reader.GetString("title");
-                    user.Cpr = reader.GetInt32("cpr");
+                    user.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "name", lbl => user.Name = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "address", lbl => user.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => user.PlaceOfBirth = reader.GetString(lbl));
@@ -351,6 +355,34 @@ namespace DigitalVoterList.Election
             throw new NotImplementedException();
         }
 
+        public IEnumerator<RawPerson> LoadRawPersonData()
+        {
+            Connect();
+            string query = "SELECT * FROM raw_person_data";
+            MySqlCommand loadRawPeople = new MySqlCommand(query, this._sqlConnection);
+
+            try
+            {
+                MySqlDataReader reader = loadRawPeople.ExecuteReader();
+                return readStuff(reader);
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+        }
+
+        // HAD TO MAKE A PRIVATE METHOD FOR TRY CATCH OF YIELD
+        private IEnumerator<RawPerson> readStuff(MySqlDataReader reader)
+        {
+            while (reader.Read())
+            {
+                var rawPerson = new RawPerson();
+                DoIfNotDbNull(reader, "name", lbl => rawPerson.Name = reader.GetString(lbl));
+                yield return rawPerson;
+            }
+        }
+
         public List<Citizen> FindElegibleVoters()
         {
             Connect();
@@ -364,7 +396,7 @@ namespace DigitalVoterList.Election
                 reader = findEligibleVoters.ExecuteReader();
                 while (reader.Read())
                 {
-                    Citizen citizen = new Citizen(reader.GetInt32("id"), reader.GetInt32("cpr"));
+                    Citizen citizen = new Citizen(reader.GetInt32("id"), reader.GetString("cpr"));
                     citizen.EligibleToVote = reader.GetBoolean("eligible_to_vote");
                     DoIfNotDbNull(reader, "name", lbl => citizen.Name = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
@@ -386,11 +418,17 @@ namespace DigitalVoterList.Election
             }
         }
 
+        public IEnumerable<RawPerson> LoadRawPeople()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Save(Person per)
         {
             Connect();
             int id = per.DbId;
-            if (per.DbId != 0)
+
+            if (id != 0)
             {
                 try
                 {

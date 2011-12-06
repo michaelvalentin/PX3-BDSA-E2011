@@ -8,7 +8,7 @@ namespace DigitalVoterList.Election
     public class Person
     {
         private int _id;
-        private int _cpr;
+        private string _cpr;
         private int _passportNumber;
         private string _name;
         private string _address;
@@ -37,7 +37,7 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// The persons CPR-number
         /// </summary>
-        public int Cpr { get; set; }
+        public string Cpr { get; set; }
 
         /// <summary>
         /// The persons passport number
@@ -66,7 +66,7 @@ namespace DigitalVoterList.Election
 
         public new string ToString()
         {
-            return "PERSON( navn : "+Name+" , cpr : "+Cpr+" )";
+            return "PERSON( navn : " + Name + " , cpr : " + Cpr + " )";
         }
     }
 }
