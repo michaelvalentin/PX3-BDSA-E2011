@@ -24,6 +24,7 @@ namespace DigitalVoterList.Election
         FindUser,
         FindVoterCard,
         FindElegibleVoters,
+        FindVotingVenue,
 
         //UPDATE
         SavePerson,
@@ -33,6 +34,8 @@ namespace DigitalVoterList.Election
         SetHasVotedManually,
         ChangeOwnPassword,
         ChangeOthersPassword,
+        MarkPeopleNotInRawDataUneligibleToVote,
+        UpdatePeople,
 
         //DELETE
         MarkUserInvalid,

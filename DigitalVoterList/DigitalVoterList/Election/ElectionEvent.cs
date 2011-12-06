@@ -51,5 +51,15 @@ namespace DigitalVoterList.Election
                 _name = value;
             }
         }
+
+        /// <summary>
+        /// What votingVenue should be used for this citizen
+        /// </summary>
+        /// <returns></returns>
+        public VotingVenue votingVenue(Citizen citizen)
+        {
+            return DAOFactory.GlobalDAO.FindVotingVenue(citizen);
+        }
+
     }
 }

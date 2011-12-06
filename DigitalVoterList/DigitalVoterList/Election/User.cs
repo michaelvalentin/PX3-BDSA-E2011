@@ -78,10 +78,10 @@ namespace DigitalVoterList.Election
         /// <param name="oldPwd">The old password</param>
         /// <param name="newPwd">The new password</param>
         /// <returns>Was it succesful?</returns>
-        public bool ChangePassword(string oldPwd, string newPwd)
+        public void ChangePassword(string oldPwd, string newPwd)
         {
             IDataAccessObject dao = DAOFactory.getDAO(this);
-            return dao.ChangePassword(this, HashPassword(newPwd), HashPassword(oldPwd));
+            dao.ChangePassword(this, HashPassword(newPwd), HashPassword(oldPwd));
         }
 
         /// <summary>
@@ -89,10 +89,10 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="newPwd">The new password</param>
         /// <returns>Was it succesful?</returns>
-        public bool ChangePassword(string newPwd)
+        public void ChangePassword(string newPwd)
         {
             IDataAccessObject dao = DAOFactory.getDAO(this);
-            return dao.ChangePassword(this, HashPassword(newPwd));
+            dao.ChangePassword(this, HashPassword(newPwd));
         }
 
         /// <summary>

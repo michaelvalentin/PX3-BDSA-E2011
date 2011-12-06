@@ -84,6 +84,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\RandomQuestionController.cs" />
     <Compile Include="Controllers\VoterRegistrationController.cs" />
+    <Compile Include="Election\DataTransformer.cs" />
     <Compile Include="Election\RawPerson.cs" />
     <Compile Include="Election\SystemAction.cs" />
     <Compile Include="Election\DAOFactory.cs" />

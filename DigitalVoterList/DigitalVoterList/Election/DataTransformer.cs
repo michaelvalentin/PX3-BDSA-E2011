@@ -6,6 +6,8 @@
 
 namespace DigitalVoterList.Election
 {
+    using System.Collections.Generic;
+
     using DigitalVoterList.Utilities;
 
     /// <summary>
@@ -13,69 +15,65 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class DataTransformer
     {
-        public void TransformData()
+        private ElectionEvent _electionEvent;
+
+        public void TransformData(ElectionEvent electionEvent)
         {
-            var da = DAOFactory.getDAO(u);
+            _electionEvent = electionEvent;
+            DAOFactory.GlobalDAO.UpdatePeople(UpdatePerson);
+        }
 
-            var people = da.LoadRawPeople();
+        /// <summary>
+        /// Change this Person with this raw person data, and return the changed person.
+        /// </summary>
+        /// <param name="person"></param>
+        /// <param name="rawPerson"></param>
+        /// <returns></returns>
+        private Person UpdatePerson(Person person, RawPerson rawPerson)
+        {
+            person.Name = rawPerson.Name;
+            person.Cpr = rawPerson.CPR;
+            person.Address = rawPerson.Address;
+            person.PassportNumber = rawPerson.PassportNumber;
+            person.PlaceOfBirth = rawPerson.Birthplace;
 
-            foreach (var rawPerson in people)
+            if (person.Cpr != "0")
             {
-                this.UpdatePerson(rawPerson);
-                this.UpdateQuiz(rawPerson);
+                var citizen = (Citizen)person;
+                citizen.EligibleToVote = CalculateEligibleToVote(rawPerson);
+                citizen.SecurityQuestions = this.GenerateSecurityQuestions(rawPerson);
+                citizen.VotingPlace = _electionEvent.votingVenue(citizen);
+                return citizen;
             }
+            return person;
         }
 
-        private void UpdatePerson(RawPerson rawPerson)
-        {   
-            Person realPerson;
-
-            var realPersonList = DAOFactory.GlobalDAO.Find(new Person() { Cpr = rawPerson.CPR });
-
-            realPerson = (realPersonList.Count > 0) ? realPersonList[0] : realPerson = new Person();
-
-            realPerson.Name = rawPerson.Name;
-            realPerson.Cpr = rawPerson.CPR;
-            realPerson.Address = rawPerson.Address;
-            realPerson.PassportNumber = rawPerson.PassportNumber;
-            realPerson.PlaceOfBirth = rawPerson.Birthplace;
-            realPerson.EligibleToVote = CalculateEligibleToVote(realPerson);
-            realPerson.VotingVenueId = CalculateVotingVenueId(realPerson);
-
-            DAOFactory.GlobalDAO.Save(realPerson);
-        }
-
-        private void UpdateQuiz(RawPerson rawperson)
+        private HashSet<Quiz> GenerateSecurityQuestions(RawPerson rawPerson)
         {
-            Quiz quiz;
+            var quizzes = new HashSet<Quiz>();
 
-            var realPersonList = DAOFactory.GlobalDAO.Find(new Person() { Cpr = rawPerson.CPR });
+            if (rawPerson.Birthplace != null) quizzes.Add(new Quiz("Where were you born?", rawPerson.Birthplace));
+            if (rawPerson.Education != null) quizzes.Add(new Quiz("What is your education?", rawPerson.Education));
 
-            if (realPersonList.Count > 0)? realPerson = realPersonList[0] : realPerson = new Person();
-
-            realPerson.Name = rawPerson.Name;
-            realPerson.Cpr = rawPerson.CPR;
-            realPerson.Address = rawPerson.Address;
-            realPerson.PassportNumber = rawPerson.PassportNumber;
-            realPerson.PlaceOfBirth = rawPerson.Birthplace;
-
-
-            DAOFactory.GlobalDAO.Save(realPerson);
+            return quizzes;
         }
 
-        //todo: Calculate voting venue Id
-        private int CalculateVotingVenueId(Person person)
+        //todo: Calculate eligible to vote better
+        private bool CalculateEligibleToVote(RawPerson rawPerson)
         {
-            return 0;
-        }
+            //Voter is disempowered to vote
+            if (rawPerson.Disempowered) return false;
 
-        //todo: Calculate eligible to vote
-        private bool CalculateEligibleToVote(Person person)
-        {
+            //Person is too young
+            if (rawPerson.Age < 18) return false;
+
+            //Person is not danish
+            if (rawPerson.Nationality != "DNK") return false;
+
+            //Person is dead
+            if (rawPerson.Alive == false) return false;
+
             return true;
         }
-
-
-
     }
 }

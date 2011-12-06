@@ -2,6 +2,7 @@
 
 namespace DigitalVoterList.Election
 {
+    using System;
 
     /// <summary>
     /// An object to access the database in a standardized way.
@@ -101,31 +102,25 @@ namespace DigitalVoterList.Election
         List<Citizen> FindElegibleVoters();
 
         /// <summary>
-        /// "May I have all raw people in the database?"
-        /// </summary>
-        /// <returns>All raw people</returns>
-        IEnumerable<RawPerson> LoadRawPeople();
-
-        /// <summary>
         /// Create this person with this data!
         /// </summary>
         /// <param name="person">The person to register</param>
         /// <returns>Was the attempt successful?</returns>
-        bool Save(Person person);
+        void Save(Person person);
 
         /// <summary>
         /// Create this user with this data!
         /// </summary>
         /// <param name="user">The user to register</param>
         /// <returns>Was the attempt successful?</returns>
-        bool Save(User user);
+        void Save(User user);
 
         /// <summary>
         /// Create this voter card with this data!
         /// </summary>
         /// <param name="voterCard">The voter card to register</param>
         /// <returns>Was the attempt successful?</returns>
-        bool Save(VoterCard voterCard);
+        void Save(VoterCard voterCard);
 
         /// <summary>
         /// Mark that a voter has voted with standard validation!
@@ -133,14 +128,14 @@ namespace DigitalVoterList.Election
         /// <param name="citizen">The citizen who should be marked as voted</param>
         /// <param name="cprKey">The last four digits of the citizen's CPR-Number</param>
         /// <returns>Was the attempt successful?</returns>
-        bool SetHasVoted(Citizen citizen, int cprKey);
+        void SetHasVoted(Citizen citizen, int cprKey);
 
         /// <summary>
         /// Mark that a voter has voted with manual validation!
         /// </summary>
         /// <param name="citizen">The citizen who should be marked as voted</param>
         /// <returns>Was the attempt successful?</returns>
-        bool SetHasVoted(Citizen citizen);
+        void SetHasVoted(Citizen citizen);
 
         /// <summary>
         /// Change this users pasword to this!
@@ -149,7 +144,7 @@ namespace DigitalVoterList.Election
         /// <param name="newPassword">The new password to use</param>
         /// <param name="oldPassword">The old password for this user.</param>
         /// <returns>Was the attempt succesful?</returns>
-        bool ChangePassword(User user, string newPassword, string oldPassword);
+        void ChangePassword(User user, string newPassword, string oldPassword);
 
         /// <summary>
         /// Change this users pasword to this!
@@ -157,27 +152,46 @@ namespace DigitalVoterList.Election
         /// <param name="user">The user whose password should be changed</param>
         /// <param name="newPassword">The new password to use</param>
         /// <returns>Was th attempt succesful?</returns>
-        bool ChangePassword(User user, string newPassword);
+        void ChangePassword(User user, string newPassword);
 
         /// <summary>
         /// Mark this user as invalid!
         /// </summary>
         /// <param name="user">The user who should be marked as invalid</param>
         /// <returns>Was the attempt succesful?</returns>
-        bool MarkUserInvalid(User user);
+        void MarkUserInvalid(User user);
 
         /// <summary>
         /// Mark this invalid user as valid again.
         /// </summary>
         /// <param name="user">The user to mark as valid</param>
         /// <returns>Was the attempt succesful</returns>
-        bool RestoreUser(User user);
+        void RestoreUser(User user);
 
         /// <summary>
         /// Mark this voter card as invalid!
         /// </summary>
         /// <param name="voterCard">The voter card which should be marked as invalid</param>
         /// <returns>Was the attempt succesful?</returns>
-        bool MarkVoterCardInvalid(VoterCard voterCard);
+        void MarkVoterCardInvalid(VoterCard voterCard);
+
+        /// <summary>
+        /// Make people that are not in the raw dataset unable to vote
+        /// </summary>
+        void MarkPeopleNotInRawDataUneligibleToVote();
+
+        /// <summary>
+        /// Update all persons in the dataset with this update
+        /// </summary>
+        /// <param name="voterCard"></param>
+        /// <param name="update">The update function</param>
+        void UpdatePeople(Func<Person, RawPerson, Person> update);
+
+        /// <summary>
+        /// What voting venue should this citizen use?
+        /// </summary>
+        /// <param name="zipcode">zipcode</param>
+        /// <returns></returns>
+        VotingVenue FindVotingVenue(Citizen citizen);
     }
 }
