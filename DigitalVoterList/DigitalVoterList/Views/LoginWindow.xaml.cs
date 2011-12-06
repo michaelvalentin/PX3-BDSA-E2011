@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 
 namespace DigitalVoterList.Views
 {
@@ -14,6 +15,9 @@ namespace DigitalVoterList.Views
         {
             InitializeComponent();
             _username.Focus();
+            _username.KeyDown += EnterClicked;
+            _password.KeyDown += EnterClicked;
+            LoginBtn.KeyDown += EnterClicked;
         }
 
         private void RaiseLoginEvent()
@@ -25,6 +29,11 @@ namespace DigitalVoterList.Views
         private void LoginBtn_Click(object sender, RoutedEventArgs e)
         {
             RaiseLoginEvent();
+        }
+
+        private void EnterClicked(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter) RaiseLoginEvent();
         }
     }
 

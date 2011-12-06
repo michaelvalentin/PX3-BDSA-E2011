@@ -8,27 +8,21 @@ namespace DigitalVoterList.Election
     public static class DAOFactory
     {
         private static Dictionary<User, IDataAccessObject> daos = new Dictionary<User, IDataAccessObject>();
-        private static IDataAccessObject _globalDAO;
 
         public static IDataAccessObject getDAO(User u)
         {
             if (!daos.ContainsKey(u))
             {
-                IDataAccessObject dao = new DAOPermissionProxy(u, new DAOMySql());
+                IDataAccessObject dao = DAOMySql.GetDao(u);
                 daos[u] = dao;
             }
             return daos[u];
         }
 
 
-        public static IDataAccessObject GlobalDAO
+        public static IDataAccessObject CurrentUserDAO
         {
-            get
-            {
-                if (_globalDAO == null) GlobalDAO = new DAOPermissionProxy(new User(), new DAOMySql());
-                return _globalDAO;
-            }
-            set { _globalDAO = value; }
+            get { return getDAO(VoterListApp.CurrentUser); }
         }
     }
 }

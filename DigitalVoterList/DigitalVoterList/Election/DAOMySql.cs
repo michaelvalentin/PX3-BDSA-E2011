@@ -5,7 +5,7 @@ using MySql.Data.MySqlClient;
 namespace DigitalVoterList.Election
 {
     using System.Diagnostics.Contracts;
-
+    using System.Windows.Documents;
     using DigitalVoterList.Utilities;
 
     class DAOMySql : IDataAccessObject
@@ -14,7 +14,7 @@ namespace DigitalVoterList.Election
         private string _connectionString;
         private bool _isConnected;
 
-        public DAOMySql()
+        private DAOMySql()
         {
             this._connectionString = "Server=" + Settings.DbHost + ";" +
                                      "Database=" + Settings.DbName + ";" +
@@ -33,6 +33,11 @@ namespace DigitalVoterList.Election
             }
 
             this._isConnected = false;
+        }
+
+        public static IDataAccessObject GetDao(User u)
+        {
+            return new DAOPermissionProxy(u, new DAOMySql());
         }
 
         ~DAOMySql()

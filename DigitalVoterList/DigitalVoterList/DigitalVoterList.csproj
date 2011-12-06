@@ -83,7 +83,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\ElectionAdministrationController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\MainWindowController.cs" />
+    <Compile Include="Controllers\ManualRegistrationController.cs" />
     <Compile Include="Controllers\RandomQuestionController.cs" />
     <Compile Include="Controllers\VoterRegistrationController.cs" />
     <Compile Include="Election\DataTransformer.cs" />
@@ -96,12 +99,19 @@
     <Compile Include="Election\PermissionException.cs" />
     <Compile Include="Election\VotingVenue.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="Start.cs" />
+    <Compile Include="Views\ElectionAdministrationView.xaml.cs">
+      <DependentUpon>ElectionAdministrationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ManualRegistrationView.xaml.cs">
+      <DependentUpon>ManualRegistrationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="VoterListApp.cs" />
     <Compile Include="Utilities\Barcode.cs" />
     <Compile Include="Utilities\Quiz.cs" />
     <Compile Include="Views\AdministrationWindow.xaml.cs">
       <DependentUpon>AdministrationWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controllers\ContentController.cs" />
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
@@ -130,11 +140,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ElectionAdministrationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LoginWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ManualRegistrationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

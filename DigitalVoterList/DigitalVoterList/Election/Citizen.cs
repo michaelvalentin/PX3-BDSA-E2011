@@ -41,7 +41,7 @@ namespace DigitalVoterList.Election
 
         public void SetHasVoted()
         {
-            IDataAccessObject dao = DAOFactory.GlobalDAO;
+            IDataAccessObject dao = DAOFactory.CurrentUserDAO;
             dao.SetHasVoted(this);
             HasVoted = true;
         }

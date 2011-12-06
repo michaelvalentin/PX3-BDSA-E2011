@@ -91,8 +91,8 @@ namespace DigitalVoterList.Election
         /// <returns>Was it succesful?</returns>
         public void ChangePassword(string newPwd)
         {
-            IDataAccessObject dao = DAOFactory.getDAO(this);
-            dao.ChangePassword(this, HashPassword(newPwd));
+            IDataAccessObject dao = DAOFactory.CurrentUserDAO;
+            return dao.ChangePassword(this, HashPassword(newPwd));
         }
 
         /// <summary>
