@@ -84,6 +84,9 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\RandomQuestionController.cs" />
     <Compile Include="Controllers\VoterRegistrationController.cs" />
+    <Compile Include="Election\Administration\PrintVoterCard.xaml.cs">
+      <DependentUpon>PrintVoterCard.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Election\RawPerson.cs" />
     <Compile Include="Election\SystemAction.cs" />
     <Compile Include="Election\DAOFactory.cs" />
@@ -123,6 +126,10 @@
     <Compile Include="Views\VoterRegistrationView.xaml.cs">
       <DependentUpon>VoterRegistrationView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Election\Administration\PrintVoterCard.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\AdministrationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -166,7 +173,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
