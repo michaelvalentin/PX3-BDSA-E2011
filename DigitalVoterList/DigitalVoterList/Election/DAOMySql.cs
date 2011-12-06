@@ -89,7 +89,7 @@ namespace DigitalVoterList.Election
                     reader.Read();
                     Person person = new Person(id);
                     DoIfNotDbNull(reader, "name", lbl => person.Name = reader.GetString(lbl));
-                    DoIfNotDbNull(reader, "cpr", lbl => person.Cpr = reader.GetInt32(lbl));
+                    DoIfNotDbNull(reader, "cpr", lbl => person.Cpr = reader.GetString(lbl));
                     person.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "address", lbl => person.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => person.PlaceOfBirth = reader.GetString(lbl));
