@@ -92,7 +92,7 @@ namespace DigitalVoterList.Election
         public void ChangePassword(string newPwd)
         {
             IDataAccessObject dao = DAOFactory.CurrentUserDAO;
-            return dao.ChangePassword(this, HashPassword(newPwd));
+            dao.ChangePassword(this, HashPassword(newPwd));
         }
 
         /// <summary>

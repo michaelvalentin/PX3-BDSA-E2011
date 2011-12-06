@@ -59,7 +59,7 @@ namespace DigitalVoterList.Election
         /// <returns></returns>
         public VotingVenue VotingVenueForCitizen(Citizen citizen)
         {
-            return DAOFactory.GlobalDAO.FindVotingVenue(citizen);
+            return DAOFactory.CurrentUserDAO.FindVotingVenue(citizen);
         }
 
     }

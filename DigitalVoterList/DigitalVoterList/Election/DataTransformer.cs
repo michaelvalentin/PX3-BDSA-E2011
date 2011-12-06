@@ -6,6 +6,7 @@
 
 namespace DigitalVoterList.Election
 {
+    using System;
     using System.Collections.Generic;
 
     using DigitalVoterList.Utilities;
@@ -21,8 +22,7 @@ namespace DigitalVoterList.Election
         {
             _electionEvent = electionEvent;
 
-
-            DAOFactory.GlobalDAO.UpdatePeople(Update);
+            DAOFactory.CurrentUserDAO.UpdatePeople(new Func<Person, RawPerson, Person>(UpdatePerson));
         }
 
         /// <summary>
