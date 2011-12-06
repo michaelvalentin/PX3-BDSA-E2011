@@ -231,7 +231,6 @@ namespace DigitalVoterList.Election
                 {
                     output.Add(new VotingVenue(rdr.GetInt32("id"), rdr.GetString("name"), rdr.GetString("address")));
                 }
-                return null;
             }
             catch (Exception ex)
             {

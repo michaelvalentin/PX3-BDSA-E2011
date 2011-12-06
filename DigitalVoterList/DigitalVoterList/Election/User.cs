@@ -13,9 +13,6 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class User : Person
     {
-        private string _title;
-        private string _usersalt;
-        private bool _valid;
         private HashSet<SystemAction> _permissions;
         private HashSet<VotingVenue> _workplaces;
         private DateTime? _lastSuccessfullValidationTime;
@@ -27,7 +24,6 @@ namespace DigitalVoterList.Election
         public User(int id)
             : base(id)
         {
-            _title = "";
             _permissions = new HashSet<SystemAction>();
             _workplaces = new HashSet<VotingVenue>();
             _lastSuccessfullValidationTime = null;
@@ -67,6 +63,7 @@ namespace DigitalVoterList.Election
         /// The user's username
         /// </summary>
         public string Username { get; set; }
+
 
         public string UserSalt { get; set; }
 
