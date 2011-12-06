@@ -5,6 +5,11 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList
 {
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Windows.Controls;
+    using System.Windows.Documents;
+
     /// <summary>
     /// The main class for initializing the application
     /// </summary>
@@ -25,6 +30,18 @@ namespace DigitalVoterList
         [System.STAThread]
         public static void Main()
         {
+            //DAOMySql dao = new DAOMySql();
+            //Citizen c = (Citizen)dao.LoadPerson(1);
+            //VoterCard vc = new VoterCard(Settings.Election, c);
+            //PrintVoterCard pv = new PrintVoterCard(vc);
+            //pv.Show();
+
+            //VoterCardPrinter vcp = new VoterCardPrinter();
+            //vcp.Print(vc);
+            //Debug.WriteLine("JEG ER HER!!");
+            VoterCardPrinter vcp = new VoterCardPrinter();
+            vcp.Print(vc);
+            Debug.WriteLine("JEG ER HER!!");*/
             Application app = new Application();
             VoterListApp.App = app;
             app.Startup += (o, e) =>
