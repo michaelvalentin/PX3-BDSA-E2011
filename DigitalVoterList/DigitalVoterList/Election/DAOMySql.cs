@@ -453,7 +453,6 @@ namespace DigitalVoterList.Election
             }
 
             MySqlCommand savePerson;
-
             if (id == 0)
             {
                 savePerson = new MySqlCommand("INSERT INTO person " +
@@ -470,7 +469,47 @@ namespace DigitalVoterList.Election
             savePerson.Parameters.AddWithValue("@place_of_birth", per.PlaceOfBirth ?? "");
             savePerson.Parameters.AddWithValue("@passport_number", per.PassportNumber);
             if (id != 0) savePerson.Parameters.AddWithValue("@id", per.DbId);
+            if (per is Citizen)
+            SaveQuizzes((Citizen)per);
+
             return savePerson.ExecuteNonQuery() == 1;
+        }
+
+        private void SaveQuizzes(Citizen citizen)
+        {
+            Connect();
+            if (citizen.DbId == 0)
+            {
+                MySqlCommand deleteQuiz = new MySqlCommand(
+                    "DELETE FROM quiz WHERE person_id='" + citizen.DbId + "'", _sqlConnection);
+
+                MySqlDataReader reader = null;
+
+                try
+                {
+                    reader = deleteQuiz.ExecuteReader();
+
+                    foreach (var quiz in citizen.SecurityQuestions)
+                    {
+                        MySqlCommand saveQuiz =
+                            new MySqlCommand(
+                                "INSERT INTO quiz (question, answer, person_id) VALUES(@question, @answer, @person_id)",
+                                _sqlConnection);
+                        saveQuiz.Prepare();
+                        saveQuiz.Parameters.AddWithValue("@question", quiz.Question);
+                        saveQuiz.Parameters.AddWithValue("@answer", quiz.Answer);
+                        saveQuiz.Parameters.AddWithValue("@person_id", citizen.DbId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+                }
+                finally
+                {
+                    if (reader != null) reader.Close();
+                }
+            }
         }
 
         public bool Save(User u)
