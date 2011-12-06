@@ -119,8 +119,12 @@ namespace DigitalVoterList.Election
                 }
                 else
                 {
-                    return new HashSet<SystemAction>(_permissions);
+                    if (_permissions != null)
+                    {
+                        return new HashSet<SystemAction>(_permissions);
+                    }
                 }
+                return new HashSet<SystemAction>();
             }
         }
 
