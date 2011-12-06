@@ -7,6 +7,8 @@ namespace DigitalVoterList.Election
     using System.Diagnostics.Contracts;
     using System.Windows.Documents;
 
+    using DigitalVoterList.Utilities;
+
     class DAOMySql : IDataAccessObject
     {
         private MySqlConnection _sqlConnection;
@@ -551,6 +553,41 @@ namespace DigitalVoterList.Election
             saveVoterCard.Parameters.AddWithValue("@id_key", vc.IdKey);
             if (id != 0) saveVoterCard.Parameters.AddWithValue("@id", vc.Id);
             return saveVoterCard.ExecuteNonQuery() == 1;
+        }
+
+        public bool Save(int citizenId, Quiz q)
+        {
+            Connect();
+            MySqlCommand cId = new MySqlCommand("SELECT id FROM person WHERE id='"+citizenId+"' LIMIT 1");
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = cId.ExecuteReader();
+                if (reader.Read() && reader.GetInt32("id") != 0)
+                {
+                    MySqlCommand quiz =
+                        new MySqlCommand(
+                            "INSERT INTO quiz (question, answer, person_id) VALUES(@question, @answer, @person_id)",
+                            _sqlConnection);
+                    quiz.Parameters.AddWithValue("@question", q.Question);
+                    quiz.Parameters.AddWithValue("@answer", q.Answer);
+                    quiz.Parameters.AddWithValue("@person_id", citizenId);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
         }
 
         public bool SetHasVoted(Citizen citizen, int cprKey)
