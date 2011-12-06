@@ -1,10 +1,15 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using DigitalVoterList.Controllers;
 using DigitalVoterList.Election;
 using DigitalVoterList.Views;
 
 namespace DigitalVoterList
 {
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Windows.Documents;
+
     using DigitalVoterList.Election.Administration;
 
     /// <summary>
@@ -18,7 +23,13 @@ namespace DigitalVoterList
         [System.STAThread]
         public static void Main()
         {
-            Citizen c = new Citizen(1,14492819);
+            DAOMySql dao = new DAOMySql();
+            VoterCard voterCard = dao.LoadVoterCard(1);
+            Debug.WriteLine("owner: "+voterCard.Citizen);
+            //VoterCardPrinter vcp = new VoterCardPrinter();
+            //vcp.Print(voterCard);
+            Debug.WriteLine("p1");
+            Citizen c = new Citizen(1, "14492819");
             VoterCard vc = new VoterCard(Settings.Election, c);
             VoterCardPrinter vcp = new VoterCardPrinter();
             vcp.Print(vc);
@@ -35,8 +46,6 @@ namespace DigitalVoterList
         {
             if (user != null && user.Validated)
             {
-                MainWindow view = new MainWindow();
-                view.Show();
             }
             else
             {

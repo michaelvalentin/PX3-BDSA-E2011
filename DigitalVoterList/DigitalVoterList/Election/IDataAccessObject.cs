@@ -131,9 +131,9 @@ namespace DigitalVoterList.Election
         /// Mark that a voter has voted with standard validation!
         /// </summary>
         /// <param name="citizen">The citizen who should be marked as voted</param>
-        /// <param name="keyPhrase">The last four digits of the citizen's CPR-Number</param>
+        /// <param name="cprKey">The last four digits of the citizen's CPR-Number</param>
         /// <returns>Was the attempt successful?</returns>
-        bool SetHasVoted(Citizen citizen, int keyPhrase);
+        bool SetHasVoted(Citizen citizen, int cprKey);
 
         /// <summary>
         /// Mark that a voter has voted with manual validation!

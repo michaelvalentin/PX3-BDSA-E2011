@@ -1,20 +1,66 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="VoterRegistrationController.cs" company="">
-// TODO: Update copyright text.
-// </copyright>
-// -----------------------------------------------------------------------
+﻿using DigitalVoterList.Election;
+using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     /// <summary>
-    /// TODO: Update summary.
+    /// A controller for handling the registration of voters
     /// </summary>
     public class VoterRegistrationController
     {
+        private VoterRegistrationView _view;
+        private VoterCard _voterCard;
+
+        public VoterRegistrationController(VoterRegistrationView view)
+        {
+            _view = view;
+            _view.VoterCardNumber.TextChanged += VoterCardNumberChanged;
+            _view.Cpr.LostFocus += CheckCpr;
+            _view.RegisterVoterButton.Click += RegisterVoter;
+        }
+
+        private void VoterCardNumberChanged(object sender, EventArgs e)
+        {
+            _voterCard = null;
+            if (_view.VoterCardNumber.Text.Length == 8)
+            {
+                IDataAccessObject dao = DAOFactory.GlobalDAO;
+                _voterCard = dao.LoadVoterCard(_view.VoterCardNumber.Text);
+            }
+            if (_view.VoterCardNumber.Text.Length > 8)
+            {
+                _view.VoterCardNumber.Text = _view.VoterCardNumber.Text.Substring(0, 8);
+            }
+            LoadData();
+        }
+
+        private void LoadData()
+        {
+            if (_voterCard == null)
+            {
+                _view.VoterName.Text = "";
+                _view.VoterAddress.Text = "";
+                _view.SecurityQuestion = new SecurityQuesitonView();
+            }
+            else
+            {
+                _view.VoterName.Text = _voterCard.Citizen.Name;
+                _view.VoterAddress.Text = _voterCard.Citizen.Address;
+                _view.SecurityQuestion = new SecurityQuesitonView();
+                new RandomQuestionController(_view.SecurityQuestion, _voterCard.Citizen);
+            }
+        }
+
+        private void CheckCpr(object sender, EventArgs e)
+        {
+            // TODO: wirte.. :-)
+        }
+
+        private void RegisterVoter(object sender, EventArgs e)
+        {
+
+        }
     }
 }

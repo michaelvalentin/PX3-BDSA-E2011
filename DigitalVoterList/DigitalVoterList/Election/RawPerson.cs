@@ -13,7 +13,6 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class RawPerson
     {
-        public string Name { get; set; }
         public string CPR { get; set; }
         public string Address { get; set; }
         public string AddressPrevious { get; set; }

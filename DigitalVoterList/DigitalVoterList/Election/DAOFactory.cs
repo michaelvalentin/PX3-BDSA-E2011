@@ -25,7 +25,7 @@ namespace DigitalVoterList.Election
         {
             get
             {
-                if (_globalDAO == null) GlobalDAO = new PermissionProxy(new User(), new DAOMySql());
+                if (_globalDAO == null) GlobalDAO = new DAOPermissionProxy(new User(), new DAOMySql());
                 return _globalDAO;
             }
             set { _globalDAO = value; }
