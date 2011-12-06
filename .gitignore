@@ -47,6 +47,9 @@ DigitalVoterList/DigitalVoterList/obj/
 #############
 *.testsettings
 *.vsmdi
+DigitalVoterList/TestResults/*
+DigitalVoterList/DigitalVoterList.PexTests/*
+
 
 # Git weird files #
 ###################

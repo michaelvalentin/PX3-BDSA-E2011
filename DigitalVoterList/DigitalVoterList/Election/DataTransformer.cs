@@ -16,7 +16,7 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class DataTransformer
     {
-        private ElectionEvent _electionEvent;
+        private ElectionEvent _electionEvent; //todo: Can we refer to the current electionEvent somehow?
 
         public void TransformData(ElectionEvent electionEvent)
         {
