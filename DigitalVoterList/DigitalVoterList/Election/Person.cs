@@ -58,6 +58,12 @@ namespace DigitalVoterList.Election
         /// </summary>
         public string PlaceOfBirth { get; set; }
 
+        public bool HasVoted { get; set; }
+
+        public bool EligibleToVote { get; set; }
+
+        public int VotingVenueId { get; set; }
+
         /// <summary>
         /// The database id of the person
         /// </summary>

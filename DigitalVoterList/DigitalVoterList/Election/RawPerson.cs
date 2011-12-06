@@ -15,7 +15,6 @@ namespace DigitalVoterList.Election
     {
         public string Name { get; set; }
         public string CPR { get; set; }
-        public string Name { get; set; }
         public string Address { get; set; }
         public string AddressPrevious { get; set; }
         public DateTime? Birthday { get; set; }
@@ -29,5 +28,10 @@ namespace DigitalVoterList.Election
         public bool MilitaryServed { get; set; }
         public string DriverID { get; set; }
         public string TelephoneNumber { get; set; }
-    }
+
+        public string PassportNumber { get; set; }
+        public string City { get; set; }
+        public int PostNumber { get; set; }
+        public string Nationality { get; set; }
+        public bool Disempowered { get; set; }
 }
