@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using DigitalVoterList.Controllers;
 
 namespace DigitalVoterList.Views
 {
@@ -11,9 +10,6 @@ namespace DigitalVoterList.Views
         public MainWindow()
         {
             InitializeComponent();
-            VoterRegistrationView regView = new VoterRegistrationView();
-            VoterRegistrationController regCont = new VoterRegistrationController(regView);
-            MainContent.Children.Add(regView);
         }
     }
 }
