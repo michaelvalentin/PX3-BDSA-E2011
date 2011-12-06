@@ -84,6 +84,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\RandomQuestionController.cs" />
     <Compile Include="Controllers\VoterRegistrationController.cs" />
+    <Compile Include="Election\RawPerson.cs" />
     <Compile Include="Election\SystemAction.cs" />
     <Compile Include="Election\DAOFactory.cs" />
     <Compile Include="Election\DAOMySql.cs" />
@@ -100,6 +101,9 @@
     </Compile>
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SecurityQuesitonView.xaml.cs">
       <DependentUpon>SecurityQuesitonView.xaml</DependentUpon>
@@ -124,6 +128,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LoginWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -158,6 +166,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

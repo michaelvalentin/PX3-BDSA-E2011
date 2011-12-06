@@ -17,7 +17,7 @@ namespace DigitalVoterList.Election
         private HashSet<Quiz> _securityQuestions = null;
         private VotingVenue _votingPlace;
 
-        public Citizen(int id, int cpr)
+        public Citizen(int id, string cpr)
             : base(id)
         {
             Cpr = cpr;
@@ -55,9 +55,9 @@ namespace DigitalVoterList.Election
             Contract.Invariant(ValidCpr(Cpr));
         }
 
-        private bool ValidCpr(int cpr)
+        private bool ValidCpr(string cpr)
         {
-            string tempCpr = cpr.ToString();
+            string tempCpr = cpr;
             if (tempCpr.Length == 10)
             {
                 int day = Int32.Parse(tempCpr.Substring(0, 1));

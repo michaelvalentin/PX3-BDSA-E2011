@@ -29,7 +29,13 @@ namespace DigitalVoterList.Views
         public void SetQuestion(Quiz q)
         {
             Question.Text = q.Question;
-            Question.Text = q.Answer;
+            Answer.Text = q.Answer;
+        }
+
+        public void Reset()
+        {
+            Question.Text = "";
+            Answer.Text = "";
         }
     }
 }

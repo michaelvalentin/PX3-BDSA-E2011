@@ -31,6 +31,7 @@ namespace DigitalVoterList.Controllers
             }
             else
             {
+                DAOFactory.GlobalDAO = DAOFactory.getDAO(u);
                 _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(0, 235, 0));
                 _view.StatusText.Text = "Login was successfull. Loading the Digital Voter List.";
                 Start.RunApp(u);

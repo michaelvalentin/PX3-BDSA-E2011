@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using MySql.Data.MySqlClient;
 
 namespace DigitalVoterList.Election
@@ -89,7 +88,7 @@ namespace DigitalVoterList.Election
                 {
                     Person person = new Person(id);
                     DoIfNotDbNull(reader, "name", lbl => person.Name = reader.GetString(lbl));
-                    person.Cpr = reader.GetInt32("cpr");
+                    person.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "address", lbl => person.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => person.PlaceOfBirth = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "passport_number", lbl => person.PassportNumber = reader.GetInt32(lbl));
@@ -97,9 +96,9 @@ namespace DigitalVoterList.Election
                 }
                 else
                 {
-                    Citizen citizen = new Citizen(id, reader.GetInt32("cpr"));
+                    Citizen citizen = new Citizen(id, reader.GetString("cpr"));
                     DoIfNotDbNull(reader, "name", lbl => citizen.Name = reader.GetString(lbl));
-                    citizen.Cpr = reader.GetInt32("cpr");
+                    citizen.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => citizen.PlaceOfBirth = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "passport_number", lbl => citizen.PassportNumber = reader.GetInt32(lbl));
@@ -280,7 +279,7 @@ namespace DigitalVoterList.Election
                 while (reader.Read())
                 {
                     Person pers = new Person();
-                    pers.Cpr = reader.GetInt32("cpr");
+                    pers.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "name", lbl => pers.Name = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "address", lbl => pers.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => pers.PlaceOfBirth = reader.GetString(lbl));
@@ -311,7 +310,7 @@ namespace DigitalVoterList.Election
                     User user = new User();
                     user.Username = reader.GetString("user_name");
                     user.Title = reader.GetString("title");
-                    user.Cpr = reader.GetInt32("cpr");
+                    user.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "name", lbl => user.Name = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "address", lbl => user.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => user.PlaceOfBirth = reader.GetString(lbl));
@@ -372,7 +371,7 @@ namespace DigitalVoterList.Election
                 MySqlDataReader reader = findEligibleVoters.ExecuteReader();
                 while (reader.Read())
                 {
-                    Citizen citizen = new Citizen(reader.GetInt32("id"), reader.GetInt32("cpr"));
+                    Citizen citizen = new Citizen(reader.GetInt32("id"), reader.GetString("cpr"));
                     citizen.EligibleToVote = reader.GetBoolean("eligible_to_vote");
                     DoIfNotDbNull(reader, "name", lbl => citizen.Name = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
@@ -388,6 +387,11 @@ namespace DigitalVoterList.Election
             {
                 throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
             }
+        }
+
+        public IEnumerable<RawPerson> LoadRawPeople()
+        {
+            throw new NotImplementedException();
         }
 
         public bool Save(Person per)

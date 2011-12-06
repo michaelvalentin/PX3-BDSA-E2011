@@ -137,6 +137,11 @@ namespace DigitalVoterList.Election
             return null;
         }
 
+        public IEnumerable<RawPerson> LoadRawPeople()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public bool Save(Person person)
         {
             if (ActionPermitted(SystemAction.SavePerson))

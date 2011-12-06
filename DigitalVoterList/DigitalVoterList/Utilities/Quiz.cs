@@ -4,12 +4,8 @@
     /// <summary>
     /// A brief assessment used as an authenticator
     /// </summary>
-    public struct Quiz
+    public class Quiz
     {
-        /*private string _question;
-
-        private string _answer;
-
         /// <summary>
         /// "A brief assessment used as an authenticator"
         /// </summary>
@@ -17,8 +13,8 @@
         /// <param name="answer"></param>
         public Quiz(string question, string answer)
         {
-            _question = question;
-            _answer = answer;
+            Question = question;
+            Answer = answer;
         }
 
         /// <summary>
@@ -29,6 +25,6 @@
         /// <summary>
         /// The answer to the question
         /// </summary>
-        public string Answer { get; private set; }*/
+        public string Answer { get; private set; }
     }
 }
