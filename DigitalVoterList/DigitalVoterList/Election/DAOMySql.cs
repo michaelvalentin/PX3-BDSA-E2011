@@ -6,6 +6,8 @@ namespace DigitalVoterList.Election
 {
     using System.Diagnostics.Contracts;
 
+    using DigitalVoterList.Utilities;
+
     class DAOMySql : IDataAccessObject
     {
         private MySqlConnection _sqlConnection;
@@ -83,13 +85,12 @@ namespace DigitalVoterList.Election
             {
                 reader = loadPerson.ExecuteReader();
                 if (!reader.Read()) return null;
-                if (reader.GetInt32("cpr") == 0)
+                if (reader.GetString("cpr").Equals(null))
                 {
                     reader.Read();
                     Person person = new Person(id);
                     DoIfNotDbNull(reader, "name", lbl => person.Name = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "cpr", lbl => person.Cpr = reader.GetString(lbl));
-                    person.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "address", lbl => person.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => person.PlaceOfBirth = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "passport_number", lbl => person.PassportNumber = reader.GetString(lbl));
@@ -99,7 +100,6 @@ namespace DigitalVoterList.Election
                 {
                     Citizen citizen = new Citizen(id, reader.GetString("cpr"));
                     DoIfNotDbNull(reader, "name", lbl => citizen.Name = reader.GetString(lbl));
-                    citizen.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => citizen.PlaceOfBirth = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "passport_number", lbl => citizen.PassportNumber = reader.GetString(lbl));
@@ -145,7 +145,7 @@ namespace DigitalVoterList.Election
         public User LoadUser(int id)
         {
             Connect();
-            string query = "SELECT * FROM user INNER JOIN person ON person_id=person.id AND user.id='" + id + "'";
+            string query = "SELECT * FROM user u LEFT JOIN person p ON u.person_id=p.id WHERE u.id=" + id;
             return LoadUser(new MySqlCommand(query, this._sqlConnection));
         }
 
@@ -202,7 +202,6 @@ namespace DigitalVoterList.Election
                 {
                     output.Add(SystemActions.getSystemAction(rdr.GetString(0)));
                 }
-                return null;
             }
             catch (Exception ex)
             {
@@ -273,7 +272,13 @@ namespace DigitalVoterList.Election
 
         public VoterCard LoadVoterCard(string idKey)
         {
-            throw new NotImplementedException();
+            Connect();
+            MySqlCommand loadVoterCardId = new MySqlCommand("SELECT id FROM voter_card WHERE id_key=@id_key", _sqlConnection);
+            loadVoterCardId.Prepare();
+            loadVoterCardId.Parameters.AddWithValue("id_key", idKey);
+            int id = (int)(loadVoterCardId.ExecuteScalar() ?? 0);
+            if (id == 0) return null;
+            return LoadVoterCard(id);
         }
 
 
@@ -502,7 +507,6 @@ namespace DigitalVoterList.Election
             }
 
             MySqlCommand savePerson;
-
             if (id == 0)
             {
                 savePerson = new MySqlCommand("INSERT INTO person " +
@@ -519,10 +523,50 @@ namespace DigitalVoterList.Election
             savePerson.Parameters.AddWithValue("@place_of_birth", per.PlaceOfBirth ?? "");
             savePerson.Parameters.AddWithValue("@passport_number", per.PassportNumber);
             if (id != 0) savePerson.Parameters.AddWithValue("@id", per.DbId);
-            //return savePerson.ExecuteNonQuery() == 1;
+            if (per is Citizen)
+            SaveQuizzes((Citizen)per);
+
+            return savePerson.ExecuteNonQuery() == 1;
         }
 
-        public void Save(User u)
+        private void SaveQuizzes(Citizen citizen)
+        {
+            Connect();
+            if (citizen.DbId == 0)
+            {
+                MySqlCommand deleteQuiz = new MySqlCommand(
+                    "DELETE FROM quiz WHERE person_id='" + citizen.DbId + "'", _sqlConnection);
+
+                MySqlDataReader reader = null;
+
+                try
+                {
+                    reader = deleteQuiz.ExecuteReader();
+
+                    foreach (var quiz in citizen.SecurityQuestions)
+                    {
+                        MySqlCommand saveQuiz =
+                            new MySqlCommand(
+                                "INSERT INTO quiz (question, answer, person_id) VALUES(@question, @answer, @person_id)",
+                                _sqlConnection);
+                        saveQuiz.Prepare();
+                        saveQuiz.Parameters.AddWithValue("@question", quiz.Question);
+                        saveQuiz.Parameters.AddWithValue("@answer", quiz.Answer);
+                        saveQuiz.Parameters.AddWithValue("@person_id", citizen.DbId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+                }
+                finally
+                {
+                    if (reader != null) reader.Close();
+                }
+            }
+        }
+
+        public bool Save(User u)
         {
             Connect();
             int id = u.DbId;
@@ -603,7 +647,42 @@ namespace DigitalVoterList.Election
             //return saveVoterCard.ExecuteNonQuery() == 1;
         }
 
-        public void SetHasVoted(Citizen citizen, int cprKey)
+        public bool Save(int citizenId, Quiz q)
+        {
+            Connect();
+            MySqlCommand cId = new MySqlCommand("SELECT id FROM person WHERE id='" + citizenId + "' LIMIT 1");
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = cId.ExecuteReader();
+                if (reader.Read() && reader.GetInt32("id") != 0)
+                {
+                    MySqlCommand quiz =
+                        new MySqlCommand(
+                            "INSERT INTO quiz (question, answer, person_id) VALUES(@question, @answer, @person_id)",
+                            _sqlConnection);
+                    quiz.Parameters.AddWithValue("@question", q.Question);
+                    quiz.Parameters.AddWithValue("@answer", q.Answer);
+                    quiz.Parameters.AddWithValue("@person_id", citizenId);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public bool SetHasVoted(Citizen citizen, int cprKey)
         {
             Connect();
             try
@@ -653,6 +732,7 @@ namespace DigitalVoterList.Election
             }
         }
 
+<<<<<<< HEAD
         public void ChangePassword(User user, string newPassword)
         {
             Connect();
@@ -670,12 +750,28 @@ namespace DigitalVoterList.Election
         }
 
         public void ChangePassword(User user, string newPassword, string oldPassword)
+=======
+        public bool ChangePassword(User user, string newPasswordHash)
+        {
+            User u = LoadUser(user.DbId);
+            if (u == null) return false;
+            return ChangePassword(u.DbId, newPasswordHash);
+        }
+
+        public bool ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
         {
             Connect();
             try
             {
                 User u = LoadUser(user.DBId);
                 u.ChangePassword(oldPassword, newPassword);
+
+                MySqlCommand loadUser = new MySqlCommand("SELECT id FROM user WHERE id=@id AND password_hash=@oldPasswordHash", _sqlConnection);
+                loadUser.Prepare();
+                loadUser.Parameters.AddWithValue("id", user.DbId);
+                loadUser.Parameters.AddWithValue("oldPasswordHash", oldPasswordHash);
+                if (loadUser.ExecuteScalar() != null) return ChangePassword(user.DbId, newPasswordHash);
+                return false;
             }
             catch (Exception ex)
             {
@@ -683,7 +779,16 @@ namespace DigitalVoterList.Election
             }
         }
 
-        public void MarkUserInvalid(User user)
+        private bool ChangePassword(int userDbId, string newPasswordHash)
+        {
+            MySqlCommand changePassword = new MySqlCommand("UPDATE user SET password_hash=@newPasswordHash WHERE id=@id", _sqlConnection);
+            changePassword.Prepare();
+            changePassword.Parameters.AddWithValue("id", userDbId);
+            changePassword.Parameters.AddWithValue("newPasswordHash", newPasswordHash);
+            return changePassword.ExecuteNonQuery() == 1;
+        }
+
+        public bool MarkUserInvalid(User user)
         {
 
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace DigitalVoterList.Election
 {
@@ -23,6 +24,10 @@ namespace DigitalVoterList.Election
         {
             if (!_user.HasPermission(a))
             {
+                foreach (SystemAction ac in _user.Permissions)
+                {
+                    Debug.WriteLine("User permission: " + ac.ToString());
+                }
                 throw new PermissionException(a, _user, msg);
             }
             else
@@ -195,19 +200,38 @@ namespace DigitalVoterList.Election
             }
         }
 
+<<<<<<< HEAD
         public void ChangePassword(User user, string newPassword, string oldPassword)
+=======
+        public bool ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
+>>>>>>> a4bd0f5639a1294fa5fda29660ad905aacf9aeae
         {
             if (ActionPermittedForThisUser(user, SystemAction.ChangeOwnPassword))
             {
+<<<<<<< HEAD
                 _dao.ChangePassword(user, newPassword, oldPassword);
+=======
+                if (ActionPermitted(SystemAction.ChangeOwnPassword))
+                {
+                    return _dao.ChangePassword(user, newPasswordHash, oldPasswordHash);
+                }
+>>>>>>> a4bd0f5639a1294fa5fda29660ad905aacf9aeae
             }
         }
 
+<<<<<<< HEAD
         public void ChangePassword(User user, string newPassword)
         {
             if (ActionPermitted(SystemAction.ChangeOthersPassword))
             {
                 _dao.ChangePassword(user, newPassword);
+=======
+        public bool ChangePassword(User user, string newPasswordHash)
+        {
+            if (ActionPermitted(SystemAction.ChangeOthersPassword))
+            {
+                return _dao.ChangePassword(user, newPasswordHash);
+>>>>>>> a4bd0f5639a1294fa5fda29660ad905aacf9aeae
             }
         }
 

@@ -2,7 +2,11 @@
 
 namespace DigitalVoterList.Election
 {
+<<<<<<< HEAD
     using System;
+=======
+    using DigitalVoterList.Utilities;
+>>>>>>> a4bd0f5639a1294fa5fda29660ad905aacf9aeae
 
     /// <summary>
     /// An object to access the database in a standardized way.
@@ -123,6 +127,14 @@ namespace DigitalVoterList.Election
         void Save(VoterCard voterCard);
 
         /// <summary>
+        /// Load this citizen and save these quizes in it!
+        /// </summary>
+        /// <param name="citizen">The citizen which the quizes should be saved to</param>
+        /// <param name="quiz">The quizes to save</param>
+        /// <returns></returns>
+        bool Save(int citizenId, Quiz quiz);
+
+        /// <summary>
         /// Mark that a voter has voted with standard validation!
         /// </summary>
         /// <param name="citizen">The citizen who should be marked as voted</param>
@@ -141,18 +153,26 @@ namespace DigitalVoterList.Election
         /// Change this users pasword to this!
         /// </summary>
         /// <param name="user">The user whose password should be changed</param>
-        /// <param name="newPassword">The new password to use</param>
-        /// <param name="oldPassword">The old password for this user.</param>
+        /// <param name="newPasswordHash">The hash of the new password to use</param>
+        /// <param name="oldPasswordHash">The hash of the old password for this user.</param>
         /// <returns>Was the attempt succesful?</returns>
+<<<<<<< HEAD
         void ChangePassword(User user, string newPassword, string oldPassword);
+=======
+        bool ChangePassword(User user, string newPasswordHash, string oldPasswordHash);
+>>>>>>> a4bd0f5639a1294fa5fda29660ad905aacf9aeae
 
         /// <summary>
         /// Change this users pasword to this!
         /// </summary>
         /// <param name="user">The user whose password should be changed</param>
-        /// <param name="newPassword">The new password to use</param>
+        /// <param name="newPasswordHash">The hash of the new password to use</param>
         /// <returns>Was th attempt succesful?</returns>
+<<<<<<< HEAD
         void ChangePassword(User user, string newPassword);
+=======
+        bool ChangePassword(User user, string newPasswordHash);
+>>>>>>> a4bd0f5639a1294fa5fda29660ad905aacf9aeae
 
         /// <summary>
         /// Mark this user as invalid!

@@ -9,10 +9,10 @@
     <Grid Height="335">
         <TextBox Height="27" HorizontalAlignment="Right" Margin="0,13,276,0" Name="VoterCardNumber" VerticalAlignment="Top" Width="206" IsReadOnly="False" IsReadOnlyCaretVisible="False" />
         <Label Content="Name" Height="29" HorizontalAlignment="Left" Margin="12,47,0,0" Name="_voterNameLabel" VerticalAlignment="Top" Width="97" FontSize="14" FontWeight="Bold" VerticalContentAlignment="Center" />
-        <TextBox Height="27" HorizontalAlignment="Right" Margin="0,48,276,0" Name="VoterName" VerticalAlignment="Top" Width="206" IsReadOnly="True" />
+        <TextBox Height="27" HorizontalAlignment="Right" Margin="0,48,276,0" Name="VoterName" VerticalAlignment="Top" Width="206" IsReadOnly="True" Focusable="False" Background="#0E000000" Foreground="#FF323232" />
         <Label Content="Voter card #" FontSize="14" FontWeight="Bold" Height="29" HorizontalAlignment="Left" Margin="12,13,0,0" Name="_voterCardNumberLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="97" />
-        <TextBox Height="62" HorizontalAlignment="Left" Margin="346,49,0,0" Name="VoterAddress" VerticalAlignment="Top" Width="242" IsReadOnly="True" />
-        <TextBox Height="27" HorizontalAlignment="Right" Margin="0,84,276,0" Name="Cpr" VerticalAlignment="Top" Width="206" />
+        <TextBox Height="62" HorizontalAlignment="Left" Margin="346,49,0,0" Name="VoterAddress" VerticalAlignment="Top" Width="242" IsReadOnly="True" Focusable="False" Background="#0E000000" Foreground="#FF323232" />
+        <PasswordBox Height="27" HorizontalAlignment="Right" Margin="0,84,276,0" Name="Cpr" VerticalAlignment="Top" Width="206" />
         <Label Content="Last 4 CPR-digits" FontSize="10" FontWeight="Bold" Height="29" HorizontalAlignment="Left" Margin="12,82,0,0" Name="_cprLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="97" />
         <Label Content="Address" FontSize="14" FontWeight="Bold" Height="29" HorizontalAlignment="Left" Margin="342,13,0,0" Name="_voterAddressLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="97" />
         <src:SecurityQuesitonView x:Name="SecurityQuestion" Margin="0,125,0,60" />
