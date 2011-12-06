@@ -1,0 +1,7 @@
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\ParamTests\bin\Debug\ParamTests.dll
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\ParamTests\bin\Debug\ParamTests.pdb
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\ParamTests\bin\Debug\DigitalVoterList.exe
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\ParamTests\bin\Debug\DigitalVoterList.pdb
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\ParamTests\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\ParamTests\obj\Debug\ParamTests.dll
+C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\ParamTests\obj\Debug\ParamTests.pdb

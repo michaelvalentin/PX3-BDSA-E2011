@@ -1,0 +1,78 @@
+﻿<frameTree version="0.94.51006.1"><frameException type="DigitalVoterList.Election.PermissionException"><tag exceptionState="unexpected"><generatedTestRef idref="41a0de4f-83aa-4c8c-b663-70b5e66b7326"/>
+</tag>
+<frameNode><frame value="  at DAOPermissionProxy.ActionPermitted(SystemAction, String) in C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\DAOPermissionProxy.cs(33)" method="DAOPermissionProxy.ActionPermitted(SystemAction, String)" offset="31" file="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\DAOPermissionProxy.cs" line="33"><method assemblyName="DigitalVoterList" name="ActionPermitted" token="60000d3"><declaringType assemblyName="DigitalVoterList" name="DAOPermissionProxy" token="2000023" namespace="DigitalVoterList.Election"/>
+<parameter this="true" name="this" position="0"><type spec="Class"><definition assemblyName="DigitalVoterList" name="DAOPermissionProxy" token="2000023" namespace="DigitalVoterList.Election"/>
+</type>
+</parameter>
+<parameter name="a" position="1"><type spec="ValueType"><definition assemblyName="DigitalVoterList" valueType="true" name="SystemAction" token="2000011" namespace="DigitalVoterList.Election"/>
+</type>
+</parameter>
+<parameter name="msg" position="2"><type spec="Class"><definition assemblyName="mscorlib" name="String" token="200004e" namespace="System"/>
+</type>
+</parameter>
+<resultType spec="ValueType"><definition assemblyName="mscorlib" valueType="true" name="Boolean" token="200009d" namespace="System"/>
+</resultType>
+</method>
+<beforeSource><![CDATA[            if (!_user.HasPermission(a))
+            {
+                //todo: Enten skal denne metode retunere en bool eller kaste en exception, ikke begge?]]></beforeSource>
+<source><![CDATA[                throw new PermissionException(a, _user, msg);]]></source>
+<afterSource><![CDATA[                return false;
+            }
+]]></afterSource>
+</frame>
+<tag exceptionState="unexpected"><generatedTestRef idref="41a0de4f-83aa-4c8c-b663-70b5e66b7326"/>
+<generatedTestRef idref="bb6e17d2-8c40-4bf9-88bf-4aca3116884e"/>
+</tag>
+<frameNode><frame value="  at DAOPermissionProxy.UpdatePeople(Func`3&lt;Person,RawPerson,Person&gt;) in C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\DAOPermissionProxy.cs(257)" method="DAOPermissionProxy.UpdatePeople(Func`3&lt;Person,RawPerson,Person&gt;)" offset="9" file="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\DAOPermissionProxy.cs" line="257"><method assemblyName="DigitalVoterList" name="UpdatePeople" token="60000f0"><declaringType assemblyName="DigitalVoterList" name="DAOPermissionProxy" token="2000023" namespace="DigitalVoterList.Election"/>
+<parameter this="true" name="this" position="0"><type spec="Class"><definition assemblyName="DigitalVoterList" name="DAOPermissionProxy" token="2000023" namespace="DigitalVoterList.Election"/>
+</type>
+</parameter>
+<parameter name="update" position="1"><type spec="Class"><definition assemblyName="mscorlib" name="Func`3" token="200001e" namespace="System"><genericParameter value="T1"/>
+<genericParameter value="T2"/>
+<genericParameter value="TResult"/>
+</definition>
+<genericTypeArgument spec="Class"><definition assemblyName="DigitalVoterList" name="Person" token="2000003" namespace="DigitalVoterList.Election"/>
+</genericTypeArgument>
+<genericTypeArgument spec="Class"><definition assemblyName="DigitalVoterList" name="RawPerson" token="2000024" namespace="DigitalVoterList.Election"/>
+</genericTypeArgument>
+<genericTypeArgument spec="Class"><definition assemblyName="DigitalVoterList" name="Person" token="2000003" namespace="DigitalVoterList.Election"/>
+</genericTypeArgument>
+</type>
+</parameter>
+</method>
+<beforeSource><![CDATA[
+        public void UpdatePeople(Func<Person, RawPerson, Person> update)
+        {]]></beforeSource>
+<source><![CDATA[            if (ActionPermitted(SystemAction.UpdatePeople))]]></source>
+<afterSource><![CDATA[            {
+                _dao.UpdatePeople(update);
+            }]]></afterSource>
+</frame>
+<tag exceptionState="unexpected"><generatedTestRef idref="41a0de4f-83aa-4c8c-b663-70b5e66b7326"/>
+<generatedTestRef idref="bb6e17d2-8c40-4bf9-88bf-4aca3116884e"/>
+</tag>
+<frameNode><frame value="  at DataTransformer.TransformData(ElectionEvent) in C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\DataTransformer.cs(25)" method="DataTransformer.TransformData(ElectionEvent)" offset="25" file="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\DataTransformer.cs" line="25"><method assemblyName="DigitalVoterList" name="TransformData" token="600008e"><declaringType assemblyName="DigitalVoterList" name="DataTransformer" token="2000014" namespace="DigitalVoterList.Election"/>
+<parameter this="true" name="this" position="0"><type spec="Class"><definition assemblyName="DigitalVoterList" name="DataTransformer" token="2000014" namespace="DigitalVoterList.Election"/>
+</type>
+</parameter>
+<parameter name="electionEvent" position="1"><type spec="Class"><definition assemblyName="DigitalVoterList" name="ElectionEvent" token="2000029" namespace="DigitalVoterList.Election"/>
+</type>
+</parameter>
+</method>
+<beforeSource><![CDATA[        {
+            _electionEvent = electionEvent;
+]]></beforeSource>
+<source><![CDATA[            DAOFactory.CurrentUserDAO.UpdatePeople(new Func<Person, RawPerson, Person>(UpdatePerson));]]></source>
+<afterSource><![CDATA[        }
+
+        /// <summary>]]></afterSource>
+</frame>
+<tag exceptionState="unexpected"><generatedTestRef idref="41a0de4f-83aa-4c8c-b663-70b5e66b7326"/>
+<generatedTestRef idref="bb6e17d2-8c40-4bf9-88bf-4aca3116884e"/>
+</tag>
+</frameNode>
+</frameNode>
+</frameNode>
+</frameException>
+</frameTree>
