@@ -38,6 +38,11 @@ namespace DigitalVoterList
             {
                 MainWindow view = new MainWindow();
                 view.Show();
+                Debug.WriteLine("User permissions: ");
+                foreach (SystemAction a in user.Permissions)
+                {
+                    Debug.WriteLine("Permission: " + a.ToString());
+                }
             }
             else
             {

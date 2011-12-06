@@ -236,7 +236,7 @@ namespace DigitalVoterList.Election
         public VoterCard LoadVoterCard(int id)
         {
             Connect();
-            string query = "SELECT * FROM voter_card INNER JOIN person ON person.id=person_id AND id=" + id;
+            string query = "SELECT * FROM voter_card v INNER JOIN person p ON p.id=person_id AND v.id=" + id;
             MySqlCommand loadUser = new MySqlCommand(query, this._sqlConnection);
 
             try
@@ -259,7 +259,13 @@ namespace DigitalVoterList.Election
 
         public VoterCard LoadVoterCard(string idKey)
         {
-            throw new NotImplementedException();
+            Connect();
+            MySqlCommand loadVoterCardId = new MySqlCommand("SELECT id FROM voter_card WHERE id_key=@id_key", _sqlConnection);
+            loadVoterCardId.Prepare();
+            loadVoterCardId.Parameters.AddWithValue("id_key", idKey);
+            int id = (int)(loadVoterCardId.ExecuteScalar() ?? 0);
+            if (id == 0) return null;
+            return LoadVoterCard(id);
         }
 
 
