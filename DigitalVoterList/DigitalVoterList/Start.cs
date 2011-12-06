@@ -24,12 +24,7 @@ namespace DigitalVoterList
         public static void Main()
         {
             DAOMySql dao = new DAOMySql();
-            VoterCard voterCard = dao.LoadVoterCard(1);
-            Debug.WriteLine("owner: "+voterCard.Citizen);
-            //VoterCardPrinter vcp = new VoterCardPrinter();
-            //vcp.Print(voterCard);
-            Debug.WriteLine("p1");
-            Citizen c = new Citizen(1, "14492819");
+            Citizen c = (Citizen)dao.LoadPerson(1);
             VoterCard vc = new VoterCard(Settings.Election, c);
             VoterCardPrinter vcp = new VoterCardPrinter();
             vcp.Print(vc);

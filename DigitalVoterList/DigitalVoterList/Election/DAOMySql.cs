@@ -84,13 +84,12 @@ namespace DigitalVoterList.Election
             {
                 reader = loadPerson.ExecuteReader();
                 if (!reader.Read()) return null;
-                if (reader.GetInt32("cpr") == 0)
+                if (reader.GetString("cpr").Equals(null))
                 {
                     reader.Read();
                     Person person = new Person(id);
                     DoIfNotDbNull(reader, "name", lbl => person.Name = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "cpr", lbl => person.Cpr = reader.GetString(lbl));
-                    person.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "address", lbl => person.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => person.PlaceOfBirth = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "passport_number", lbl => person.PassportNumber = reader.GetInt32(lbl));
@@ -100,7 +99,6 @@ namespace DigitalVoterList.Election
                 {
                     Citizen citizen = new Citizen(id, reader.GetString("cpr"));
                     DoIfNotDbNull(reader, "name", lbl => citizen.Name = reader.GetString(lbl));
-                    citizen.Cpr = reader.GetString("cpr");
                     DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "place_of_birth", lbl => citizen.PlaceOfBirth = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "passport_number", lbl => citizen.PassportNumber = reader.GetInt32(lbl));
