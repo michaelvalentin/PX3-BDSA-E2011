@@ -1,4 +1,4 @@
-﻿namespace DigitalVoterList.Election.Administration
+﻿/*namespace DigitalVoterList.Election.Administration
 {
     using System;
     using System.Windows;
@@ -17,7 +17,7 @@
 
         public void Print(VoterCard voterCard)
         {
-            /*PrintDialog printDlg = new System.Windows.Controls.PrintDialog();
+            PrintDialog printDlg = new System.Windows.Controls.PrintDialog();
             PrintVoterCard newVoterCard = new PrintVoterCard(voterCard);
             if (printDlg.ShowDialog() == true)
             {
@@ -41,7 +41,6 @@
                 //now print the visual to printer to fit on the one page.
                 printDlg.PrintVisual(newVoterCard, "First Fit to Page WPF Print");
 
-                /*
                 PrintCapabilities capabilities = printDlg.PrintQueue.GetPrintCapabilities(printDlg.PrintTicket);
 
                 double scale = Math.Min(
@@ -61,10 +60,10 @@
                 grid.Measure(oldSize);
 
                 ((UIElement)grid).Arrange(new Rect(new Point(0,0), oldSize));
-                */
             }
                 printDlg.PrintVisual(newVoterCard, "Print Single VoterCard");
-            }*/
+            }
         }
     }
 }
+*/

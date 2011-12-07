@@ -134,6 +134,7 @@ namespace DigitalVoterList.Election
         /// <param name="citizen">The citizen which the quizes should be saved to</param>
         /// <param name="quiz">The quizes to save</param>
         /// <returns></returns>
+        // TODO: HVAD ER DOG DETTE?! :-)
         bool Save(int citizenId, Quiz quiz);
 
         /// <summary>
