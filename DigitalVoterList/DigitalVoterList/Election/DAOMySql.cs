@@ -453,11 +453,10 @@ namespace DigitalVoterList.Election
                     person = updateFunc(person, rawPerson);
 
                     //Save updated data
-                    Save(person);
+                    //Save(person);
                 }
 
-                //Update people that are not in the raw data
-                this.MarkPeopleNotInRawDataUneligibleToVote();
+
             }
             catch (Exception ex)
             {
@@ -467,6 +466,10 @@ namespace DigitalVoterList.Election
             {
                 if (reader != null) reader.Close();
             }
+
+            //Update people that are not in the raw data
+            this.MarkPeopleNotInRawDataUneligibleToVote();
+
         }
 
         public VotingVenue FindVotingVenue(Citizen citizen)
