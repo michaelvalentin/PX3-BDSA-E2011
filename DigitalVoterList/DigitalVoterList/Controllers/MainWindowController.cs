@@ -19,14 +19,15 @@ namespace DigitalVoterList.Controllers
             _view.Show();
 
             _functionMapping = new Dictionary<MenuItem, ContentController>();
-            _functionMapping.Add(_view.NormalRegistration, new VoterRegistrationController(new VoterRegistrationView()));
-            _functionMapping.Add(_view.ManualRegistration, new ManualRegistrationController(new ManualRegistrationView()));
+            _functionMapping.Add(_view.NormalRegistration, new NormalVoterRegistrationController(new VoterRegistrationView()));
+            _functionMapping.Add(_view.ManualRegistration, new ManualVoterRegistrationController(new VoterRegistrationView()));
             _functionMapping.Add(_view.ElectionAdministration, new ElectionAdministrationController(new ElectionAdministrationView()));
 
             UpdateMenuAccess();
             ShowScreen(_functionMapping[_view.NormalRegistration]);
 
             _view.Exit.Click += (s, e) => VoterListApp.App.Shutdown();
+            _view.LogOut.Click += (s, e) => VoterListApp.LogOut();
         }
 
         public void UpdateMenuAccess()

@@ -1,17 +1,21 @@
-﻿using DigitalVoterList.Election;
+﻿using System;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using DigitalVoterList.Election;
 using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
-    using System;
 
     /// <summary>
     /// A controller for handling the registration of voters
     /// </summary>
-    public class VoterRegistrationController : ContentController
+    public abstract class VoterRegistrationController : ContentController
     {
         private VoterRegistrationView _view;
         private VoterCard _voterCard;
+        protected Citizen _citizen;
 
         public VoterRegistrationController(VoterRegistrationView view)
         {
@@ -21,53 +25,71 @@ namespace DigitalVoterList.Controllers
 
             _view = view;
             View = _view;
-            _view.VoterCardNumber.TextChanged += VoterCardNumberChanged;
-            _view.Cpr.LostFocus += CheckCpr;
-            _view.RegisterVoterButton.Click += RegisterVoter;
+
+            Disable(_view.VoterIdentification.VoterName);
+            Disable(_view.VoterIdentification.VoterAddress);
+
+            _view.VoterIdentification.VoterCardNumber.TextChanged += VoterCardNumberChanged;
+            _view.VoterIdentification.VoterCprDigits.LostFocus += CheckCpr;
+            _view.RegisterVoterButton.Click += RegisterVoterWrapper;
+            _view.RegisterVoterButton.KeyDown += RegisterVoterWrapper;
+        }
+
+        protected void Disable(TextBox t)
+        {
+            t.Background = new SolidColorBrush(Color.FromRgb(210, 210, 210));
+            t.IsEnabled = false;
+            t.IsTabStop = false;
         }
 
         private void VoterCardNumberChanged(object sender, EventArgs e)
         {
+            TextBox voterCardNumberBox = (TextBox)sender;
             _voterCard = null;
-            if (_view.VoterCardNumber.Text.Length == 8)
+            if (voterCardNumberBox.Text.Length == 8)
             {
                 IDataAccessObject dao = DAOFactory.CurrentUserDAO;
-                _voterCard = dao.LoadVoterCard(_view.VoterCardNumber.Text);
+                _voterCard = dao.LoadVoterCard(voterCardNumberBox.Text);
             }
-            if (_view.VoterCardNumber.Text.Length > 8)
+            if (voterCardNumberBox.Text.Length > 8)
             {
-                _view.VoterCardNumber.Text = _view.VoterCardNumber.Text.Substring(0, 8);
+                voterCardNumberBox.Text = voterCardNumberBox.Text.Substring(0, 8);
             }
-            _view.VoterCardNumber.Text = _view.VoterCardNumber.Text.ToUpper();
-            _view.VoterCardNumber.CaretIndex = 8;
-            LoadData();
+            voterCardNumberBox.Text = voterCardNumberBox.Text.ToUpper();
+            voterCardNumberBox.CaretIndex = 8;
+            LoadVoterData();
         }
 
-        private void LoadData()
+        protected void LoadVoterData()
         {
             if (_voterCard == null)
             {
-                _view.VoterName.Text = "";
-                _view.VoterAddress.Text = "";
-                _view.SecurityQuestion = new SecurityQuesitonView();
+                _view.VoterIdentification.VoterName.Text = "";
+                _view.VoterIdentification.VoterAddress.Text = "";
+                _view.VoterIdentification.VoterCprDigits.Password = "";
+                LoadVoterValidation(null);
+                _citizen = null;
             }
             else
             {
-                _view.VoterName.Text = _voterCard.Citizen.Name;
-                _view.VoterAddress.Text = _voterCard.Citizen.Address;
-                _view.SecurityQuestion = new SecurityQuesitonView();
-                new RandomQuestionController(_view.SecurityQuestion, _voterCard.Citizen);
+                _view.VoterIdentification.VoterName.Text = _voterCard.Citizen.Name;
+                _view.VoterIdentification.VoterAddress.Text = _voterCard.Citizen.Address;
+                SecurityQuesitonView questionView = new SecurityQuesitonView();
+                _citizen = _voterCard.Citizen;
             }
+            LoadVoterValidation(_citizen);
         }
 
-        private void CheckCpr(object sender, EventArgs e)
+        private void RegisterVoterWrapper(object sender, EventArgs e)
         {
-            // TODO: wirte.. :-)
+            if (e is KeyEventArgs && ((KeyEventArgs)e).Key != Key.Enter) return;
+            RegisterVoter(sender, e);
         }
 
-        private void RegisterVoter(object sender, EventArgs e)
-        {
+        protected abstract void LoadVoterValidation(Citizen c);
 
-        }
+        protected abstract void CheckCpr(object sender, EventArgs e);
+
+        protected abstract void RegisterVoter(object sender, EventArgs e);
     }
 }

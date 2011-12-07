@@ -13,6 +13,7 @@ namespace DigitalVoterList
     {
         private static User _currentUser;
         public static Application App;
+        private static MainWindow _mainWindow;
 
         public static User CurrentUser
         {
@@ -30,7 +31,8 @@ namespace DigitalVoterList
             VoterListApp.App = app;
             app.Startup += (o, e) =>
             {
-                RunApp(null);
+                User u = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
+                RunApp(u);
             };
             app.Run();
         }
@@ -39,13 +41,8 @@ namespace DigitalVoterList
         {
             if (user != null && user.Validated)
             {
-                MainWindow view = new MainWindow();
-                new MainWindowController(view);
-                /*
-                IDataAccessObject dao = DAOFactory.CurrentUserDAO;
-                User u = dao.LoadUser(2);
-                u.ChangePassword("12345");
-                 */
+                _mainWindow = new MainWindow();
+                new MainWindowController(_mainWindow);
             }
             else
             {
@@ -53,6 +50,18 @@ namespace DigitalVoterList
                 LoginWindow view = new LoginWindow();
                 new LoginController(view);
             }
+        }
+
+        public static void RunApp()
+        {
+            RunApp(CurrentUser);
+        }
+
+        public static void LogOut()
+        {
+            _currentUser = null;
+            RunApp();
+            _mainWindow.Close();
         }
     }
 }
