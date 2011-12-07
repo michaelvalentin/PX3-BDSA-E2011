@@ -312,18 +312,39 @@ namespace DigitalVoterList.Election
             return LoadVoterCard(id);
         }
 
+        private MySqlCommand FindByValues(string tableName, Dictionary<string, string> info)
+        {
+            var connection = this.GetSqlConnection();
+            var query = "SELECT * FROM person WHERE id=@1 AND name='Hans Hansen'";
+            var findData = new MySqlCommand(query, connection);
+            findData.Prepare();
+            findData.Parameters.AddWithValue("@1", Person.Name);
+        }
+
+
 
         public List<Person> Find(Person p)
         {
             Contract.Requires(p != null);
-
             Contract.Ensures(Contract.Result<List<Person>>() != null);
 
-            var connection = this.GetSqlConnection();
-            List<Person> persons = new List<Person>();
-            string query = "SELECT * FROM person WHERE cpr='" + p.Cpr + "' OR (name=@name AND address=@address) OR COALESCE(name=@name, address=@address) IS NOT NULL";
-            MySqlCommand find = new MySqlCommand(query, connection);
+            var tableName = "person";
+
+            var information = new Dictionary<string, string>
+                {
+                    { p.DbId.ToString(), "id" },
+                    { p.Name, "name" },
+                    { p.Cpr, "cpr" },
+                    { p.Address, "address" },
+                    { p.PassportNumber, "passport_number" },
+                    { p.PlaceOfBirth, "place_of_birth" }
+                };
+
+            MySqlCommand find = this.FindByValues(tableName, information);
             MySqlDataReader reader = null;
+
+            var persons = new List<Person>();
+
             try
             {
                 reader = find.ExecuteReader();
@@ -337,8 +358,6 @@ namespace DigitalVoterList.Election
                     DoIfNotDbNull(reader, "passport_number", lbl => pers.PassportNumber = reader.GetString(lbl));
                     persons.Add(pers);
                 }
-                if (persons.ToArray().Length == 0) return null;
-                return persons;
             }
             catch (Exception ex)
             {
@@ -347,8 +366,9 @@ namespace DigitalVoterList.Election
             finally
             {
                 if (reader != null) reader.Close();
-                this.ReleaseSqlConnection(connection);
+                this.ReleaseSqlConnection(find.Connection);
             }
+            return persons;
         }
 
         public List<User> Find(User u)
