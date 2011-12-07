@@ -18,12 +18,5 @@ namespace ParamTests
 {
     public partial class UnitTest1
     {
-[TestMethod]
-[PexGeneratedBy(typeof(UnitTest1))]
-[PexRaisedException(typeof(PermissionException))]
-public void TestDataTransformationThrowsPermissionException64()
-{
-    this.TestDataTransformation();
-}
     }
 }

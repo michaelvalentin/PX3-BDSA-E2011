@@ -5,9 +5,6 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList
 {
-    using System.Collections.Generic;
-
-    using DigitalVoterList.Utilities;
 
     /// <summary>
     /// The main class for initializing the application
@@ -16,6 +13,7 @@ namespace DigitalVoterList
     {
         private static User _currentUser;
         public static Application App;
+        private static MainWindow _mainWindow;
 
         public static User CurrentUser
         {
@@ -35,21 +33,19 @@ namespace DigitalVoterList
                 {
                     RunApp(null);
                 };
+            {
+                User u = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
+                RunApp(u);
+            };
             app.Run();
         }
 
         public static void RunApp(User user)
         {
-            VoterListApp.CurrentUser = user;
             if (user != null && user.Validated)
             {
-                MainWindow view = new MainWindow();
-                new MainWindowController(view);
-                /*
-                IDataAccessObject dao = DAOFactory.CurrentUserDAO;
-                User u = dao.LoadUser(2);
-                u.ChangePassword("12345");
-                 */
+                _mainWindow = new MainWindow();
+                new MainWindowController(_mainWindow);
             }
             else
             {
@@ -57,6 +53,18 @@ namespace DigitalVoterList
                 LoginWindow view = new LoginWindow();
                 new LoginController(view);
             }
+        }
+
+        public static void RunApp()
+        {
+            RunApp(CurrentUser);
+        }
+
+        public static void LogOut()
+        {
+            _currentUser = null;
+            RunApp();
+            _mainWindow.Close();
         }
     }
 }

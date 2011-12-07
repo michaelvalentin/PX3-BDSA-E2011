@@ -4,19 +4,22 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:Views="clr-namespace:DigitalVoterList.Views" mc:Ignorable="d" 
-             d:DesignHeight="335" d:DesignWidth="600">
-    <Grid Height="335">
-        <TextBox Height="27" HorizontalAlignment="Right" Margin="0,13,276,0" Name="VoterCardNumber" VerticalAlignment="Top" Width="206" IsReadOnly="False" IsReadOnlyCaretVisible="False" />
-        <Label Content="Name" Height="29" HorizontalAlignment="Left" Margin="12,47,0,0" Name="_voterNameLabel" VerticalAlignment="Top" Width="97" FontSize="14" FontWeight="Bold" VerticalContentAlignment="Center" />
-        <TextBox Height="27" HorizontalAlignment="Right" Margin="0,48,276,0" Name="VoterName" VerticalAlignment="Top" Width="206" IsReadOnly="True" Focusable="False" Background="#0E000000" Foreground="#FF323232" />
-        <Label Content="Voter card #" FontSize="14" FontWeight="Bold" Height="29" HorizontalAlignment="Left" Margin="12,13,0,0" Name="_voterCardNumberLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="97" />
-        <TextBox Height="62" HorizontalAlignment="Left" Margin="346,49,0,0" Name="VoterAddress" VerticalAlignment="Top" Width="242" IsReadOnly="True" Focusable="False" Background="#0E000000" Foreground="#FF323232" />
-        <PasswordBox Height="27" HorizontalAlignment="Right" Margin="0,84,276,0" Name="Cpr" VerticalAlignment="Top" Width="206" />
-        <Label Content="Last 4 CPR-digits" FontSize="10" FontWeight="Bold" Height="29" HorizontalAlignment="Left" Margin="12,82,0,0" Name="_cprLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="97" />
-        <Label Content="Address" FontSize="14" FontWeight="Bold" Height="29" HorizontalAlignment="Left" Margin="342,13,0,0" Name="_voterAddressLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="97" />
-        <Views:SecurityQuesitonView x:Name="SecurityQuestion" Margin="0,125,0,60" />
-        <Button Content="Register Vote" Height="44" HorizontalAlignment="Left" Margin="488,280,0,0" Name="RegisterVoterButton" VerticalAlignment="Top" Width="100" IsCancel="True" />
-        <TextBlock Height="44" HorizontalAlignment="Left" Margin="119,280,0,0" Name="StatusText" Text="" VerticalAlignment="Top" Width="363" />
-        <Image Height="44" HorizontalAlignment="Left" Margin="49,281,0,0" Name="StatusImage" Stretch="Fill" VerticalAlignment="Top" Width="47" />
+             d:DesignHeight="500" d:DesignWidth="960" Height="400">
+    <Grid>
+        <Views:VoterIdentificationView x:Name="VoterIdentification" Margin="0,0,0,0" Height="112" VerticalAlignment="Top" />
+        <Grid Height="63" HorizontalAlignment="Left" Margin="0,0,0,0" Name="grid1" VerticalAlignment="Bottom" Width="960">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="183*" />
+                <ColumnDefinition Width="777*" />
+            </Grid.ColumnDefinitions>
+            <Button Content="Register Vote" Height="44" Name="RegisterVoterButton" Width="100" IsCancel="True" Margin="675,9,2,10" Grid.Column="1" />
+            <TextBlock Height="44" Name="StatusText" Text="" Width="574" HorizontalAlignment="Left" Margin="86,9,0,10" Grid.Column="1" />
+            <Image Height="44" Name="StatusImage" Stretch="Fill" Width="47" Margin="18,9,712,10" Grid.Column="1" Source="/DigitalVoterList;component/Resources/Icons/error.png" />
+            <Button Content="Search Voter" Height="44" IsCancel="True" Margin="2,10,81,9" Name="SearchVoterButton" Width="100" Grid.Column="0" />
+        </Grid>
+        <Label Content="Voter validation" Height="31" HorizontalAlignment="Left" Margin="0,119,0,0" Name="label1" VerticalAlignment="Top" Width="137" FontSize="16" FontWeight="Bold" Padding="0" />
+        <Border BorderBrush="Silver" BorderThickness="0" Height="Auto" HorizontalAlignment="Left" Margin="0,156,0,0" Name="border1" VerticalAlignment="Top" Width="Auto">
+            <StackPanel Height="Auto" Name="VoterValidation" Width="960" />
+        </Border>
     </Grid>
 </UserControl>

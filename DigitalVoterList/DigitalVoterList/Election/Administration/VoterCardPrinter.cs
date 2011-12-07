@@ -1,13 +1,7 @@
 ﻿namespace DigitalVoterList.Election.Administration
 {
-    using System;
-    using System.IO;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Printing;
-    using System.Windows.Documents;
-    using System.Windows.Media;
-    using System.Windows.Xps;
 
     /// <summary>
     /// A printer used to create the physical voter cards
@@ -17,7 +11,7 @@
         public VoterCardPrinter()
         {
         }
-        
+
         public void Print(VoterCard voterCard)
         {
             PrintVoterCard printVoterCard = new PrintVoterCard(voterCard);
