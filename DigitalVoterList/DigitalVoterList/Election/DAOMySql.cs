@@ -8,7 +8,7 @@ namespace DigitalVoterList.Election
     using System.Windows.Documents;
     using DigitalVoterList.Utilities;
 
-    class DAOMySql : IDataAccessObject
+    public class DAOMySql : IDataAccessObject
     {
         private MySqlConnection _sqlConnection;
         private string _connectionString;
