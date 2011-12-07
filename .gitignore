@@ -41,8 +41,8 @@ Thumbs.db
 
 # Build files #
 ###############
-DigitalVoterList/DigitalVoterList/bin/
-DigitalVoterList/DigitalVoterList/obj/
+*/bin/*
+*/obj/*
 
 # Testfiles #
 #############
