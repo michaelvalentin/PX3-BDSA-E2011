@@ -21,9 +21,8 @@ namespace DigitalVoterList.Election
             {
                 IDataAccessObject dao = DAOMySql.GetDao(u);
                 daos[u] = dao;
-                return daos[u];
             }
-            return null;
+            return daos[u];
         }
 
         public static IDataAccessObject CurrentUserDAO

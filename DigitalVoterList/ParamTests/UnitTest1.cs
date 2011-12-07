@@ -23,8 +23,9 @@ namespace ParamTests
         [PexMethod]
         public void TestDataTransformation()
         {
-            var u = new User();
-            VoterListApp.CurrentUser = u;
+            VoterListApp.CurrentUser = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
+
+            User u = VoterListApp.CurrentUser;
 
             var t = new DataTransformer();
             t.TransformData(new ElectionEvent(DateTime.Today, "Test event"));
