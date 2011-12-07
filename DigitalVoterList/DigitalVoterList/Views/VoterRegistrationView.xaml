@@ -2,9 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:DigitalVoterList"
-             xmlns:src="clr-namespace:DigitalVoterList.Views"
-             mc:Ignorable="d" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:Views="clr-namespace:DigitalVoterList.Views" mc:Ignorable="d" 
              d:DesignHeight="335" d:DesignWidth="600">
     <Grid Height="335">
         <TextBox Height="27" HorizontalAlignment="Right" Margin="0,13,276,0" Name="VoterCardNumber" VerticalAlignment="Top" Width="206" IsReadOnly="False" IsReadOnlyCaretVisible="False" />
@@ -15,7 +14,7 @@
         <PasswordBox Height="27" HorizontalAlignment="Right" Margin="0,84,276,0" Name="Cpr" VerticalAlignment="Top" Width="206" />
         <Label Content="Last 4 CPR-digits" FontSize="10" FontWeight="Bold" Height="29" HorizontalAlignment="Left" Margin="12,82,0,0" Name="_cprLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="97" />
         <Label Content="Address" FontSize="14" FontWeight="Bold" Height="29" HorizontalAlignment="Left" Margin="342,13,0,0" Name="_voterAddressLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="97" />
-        <src:SecurityQuesitonView x:Name="SecurityQuestion" Margin="0,125,0,60" />
+        <Views:SecurityQuesitonView x:Name="SecurityQuestion" Margin="0,125,0,60" />
         <Button Content="Register Vote" Height="44" HorizontalAlignment="Left" Margin="488,280,0,0" Name="RegisterVoterButton" VerticalAlignment="Top" Width="100" IsCancel="True" />
         <TextBlock Height="44" HorizontalAlignment="Left" Margin="119,280,0,0" Name="StatusText" Text="" VerticalAlignment="Top" Width="363" />
         <Image Height="44" HorizontalAlignment="Left" Margin="49,281,0,0" Name="StatusImage" Stretch="Fill" VerticalAlignment="Top" Width="47" />

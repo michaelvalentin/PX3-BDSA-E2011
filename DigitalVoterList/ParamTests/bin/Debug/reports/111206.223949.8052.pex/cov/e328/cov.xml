@@ -1,0 +1,2308 @@
+﻿<documents created="2011-12-06 21:39:52Z"><document src="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\ParamTests\UnitTest1.cs" renderPrefix="s0"><chunk hits="-1" domain="unknown"><source><![CDATA[using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace ParamTests
+{
+    using DigitalVoterList.Election;
+
+    using Microsoft.Pex.Framework;
+
+    [TestClass]
+    public partial class UnitTest1
+    {
+        [TestMethod]
+        public void TestMethod1()
+        {
+
+        }
+
+        //[PexAssumeNotNull]
+
+
+        [PexMethod]
+        public void TestDataTransformation()
+        ]]></source>
+</chunk>
+<method name="TestDataTransformation" namespace="ParamTests" type="ParamTests.UnitTest1" typeName="UnitTest1" token="6000002" module="ParamTests.dll"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="3" value="1"/>
+<hit index="4" value="1"/>
+<hit index="5" value="1"/>
+<hit index="6" value="1"/>
+<hit index="8" value="1"/>
+<hit index="9" value="1"/>
+<hit index="10" value="1"/>
+<hit index="12" value="1"/>
+<hit index="14" value="1"/>
+</hits>
+<coverage domain="userortestcode" unit="block" covered="5" total="5" coveredRatio="1"/>
+</method>
+<chunk hits="1" offset="0000" domain="userortestcode"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0001" domain="userortestcode"><source><![CDATA[var t = new DataTransformer();]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0007" domain="userortestcode"><source><![CDATA[t.TransformData(new ElectionEvent(DateTime.Today, "Test event"));]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="001d" domain="userortestcode"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+
+
+
+        [PexMethod]
+        public void ParameterizedTest(string data)
+        {
+            //Asserts
+        }
+    }
+}
+]]></source>
+</chunk>
+</document>
+<document src="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\ElectionEvent.cs" renderPrefix="s1"><chunk hits="-1" domain="unknown"><source><![CDATA[using System;
+using System.Diagnostics.Contracts;
+
+
+namespace DigitalVoterList.Election
+{
+
+    /// <summary>
+    /// An actual election, that runs at a specific time, in a specific area and with a specific set of elegible voters.
+    /// </summary>
+    public class ElectionEvent
+    {
+        private DateTime _date;
+        private string _name;
+
+        ]]></source>
+</chunk>
+<method name=".ctor" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.ElectionEvent" typeName="ElectionEvent" token="600013b" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="3" value="1"/>
+<hit index="4" value="1"/>
+<hit index="5" value="1"/>
+<hit index="6" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="2" total="2" coveredRatio="1"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[public ElectionEvent(DateTime date, string name)]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="0007" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            Contract.Requires(!date.Equals(null));
+            Contract.Requires(!string.IsNullOrEmpty(name));
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0008" domain="usercodeundertest"><source><![CDATA[_date = date;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="2" offset="000f" domain="usercodeundertest"><source><![CDATA[_name = name;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="2" offset="0016" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        /// <summary>
+        /// A getter and setter for _date. The date is the scheduled date of the ElectionEvent.
+        /// </summary>
+        public DateTime Date
+        {
+            get
+            {
+                return _date;
+            }
+            set
+            {
+                Contract.Ensures(!value.Equals(null));
+                _date = value;
+            }
+        }
+
+        /// <summary>
+        /// A getter and setter for _name. The name is the name of the election.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                Contract.Ensures(!string.IsNullOrEmpty(value));
+                _name = value;
+            }
+        }
+
+        /// <summary>
+        /// What votingVenue should be used for this citizen
+        /// </summary>
+        /// <returns></returns>
+        public VotingVenue VotingVenueForCitizen(Citizen citizen)
+        {
+            return DAOFactory.CurrentUserDAO.FindVotingVenue(citizen);
+        }
+
+    }
+}
+]]></source>
+</chunk>
+</document>
+<document src="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\DataTransformer.cs" renderPrefix="s2"><chunk hits="-1" domain="unknown"><source><![CDATA[// -----------------------------------------------------------------------
+// <copyright file="DataCollector.cs" company="">
+// TODO: Update copyright text.
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace DigitalVoterList.Election
+{
+    using System;
+    using System.Collections.Generic;
+
+    using DigitalVoterList.Utilities;
+
+    /// <summary>
+    /// TODO: Update summary.
+    /// </summary>
+    public class DataTransformer
+    {
+        private ElectionEvent _electionEvent; //todo: Can we refer to the current electionEvent somehow?
+
+        public void TransformData(ElectionEvent electionEvent)
+        ]]></source>
+</chunk>
+<method name="TransformData" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.DataTransformer" typeName="DataTransformer" token="600008e" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="3" value="1"/>
+<hit index="4" value="1"/>
+<hit index="5" value="1"/>
+<hit index="7" value="1"/>
+<hit index="8" value="1"/>
+<hit index="9" value="1"/>
+<hit index="11" value="1"/>
+<hit index="13" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="4" total="4" coveredRatio="1"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0001" domain="usercodeundertest"><source><![CDATA[_electionEvent = electionEvent;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+            ]]></source>
+</chunk>
+<chunk hits="2" offset="0008" domain="usercodeundertest"><source><![CDATA[DAOFactory.CurrentUserDAO.UpdatePeople(new Func<Person, RawPerson, Person>(UpdatePerson));]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="001f" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        /// <summary>
+        /// Change this Person with this raw person data, and return the changed person.
+        /// </summary>
+        /// <param name="person"></param>
+        /// <param name="rawPerson"></param>
+        /// <returns></returns>
+        private Person UpdatePerson(Person person, RawPerson rawPerson)
+        {
+            person.Name = rawPerson.Name;
+            person.Cpr = rawPerson.CPR;
+            person.Address = rawPerson.Address;
+            person.PassportNumber = rawPerson.PassportNumber;
+            person.PlaceOfBirth = rawPerson.Birthplace;
+
+            if (person is Citizen)
+            {
+                var citizen = (Citizen)person;
+                citizen.EligibleToVote = CalculateEligibleToVote(rawPerson);
+                citizen.SecurityQuestions = this.GenerateSecurityQuestions(rawPerson);
+                citizen.VotingPlace = _electionEvent.VotingVenueForCitizen(citizen);
+                return citizen;
+            }
+            return person;
+        }
+
+        private HashSet<Quiz> GenerateSecurityQuestions(RawPerson rawPerson)
+        {
+            var quizzes = new HashSet<Quiz>();
+
+            if (rawPerson.Birthplace != null) quizzes.Add(new Quiz("Where were you born?", rawPerson.Birthplace));
+            if (rawPerson.Education != null) quizzes.Add(new Quiz("What is your education?", rawPerson.Education));
+
+            return quizzes;
+        }
+
+        //todo: Calculate eligible to vote better
+        private bool CalculateEligibleToVote(RawPerson rawPerson)
+        {
+            //Voter is disempowered to vote
+            if (rawPerson.Disempowered) return false;
+
+            //Person is too young
+            if (rawPerson.Age < 18) return false;
+
+            //Person is not danish
+            if (rawPerson.Nationality != "DNK") return false;
+
+            //Person is dead
+            if (rawPerson.Alive == false) return false;
+
+            return true;
+        }
+    }
+}
+]]></source>
+</chunk>
+</document>
+<document src="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\DAOFactory.cs" renderPrefix="s3"><chunk hits="-1" domain="unknown"><source><![CDATA[namespace DigitalVoterList.Election
+{
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
+    /// <summary>
+    /// A factory responsible of creating Data Access Objects.
+    /// </summary>
+    public static class DAOFactory
+    {
+        private static Dictionary<User, IDataAccessObject> daos = new Dictionary<User, IDataAccessObject>();
+
+        public static IDataAccessObject getDAO(User u)
+        ]]></source>
+</chunk>
+<method name="getDAO" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.DAOFactory" typeName="DAOFactory" token="60000ae" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="3" value="1"/>
+<hit index="4" value="2"/>
+<hit index="5" value="1"/>
+<hit index="6" value="1"/>
+<hit index="7" value="1"/>
+<hit index="8" value="1"/>
+<hit index="9" value="1"/>
+<hit index="10" value="1"/>
+<hit index="11" value="2"/>
+<hit index="12" value="1"/>
+<hit index="13" value="1"/>
+<hit index="14" value="1"/>
+<hit index="15" value="2"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="6" total="7" coveredRatio="0.8571428571428571"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            Contract.Ensures(
+                (Contract.Result<IDataAccessObject>() == null && !daos.ContainsKey(u)) ||
+                (Contract.Result<IDataAccessObject>() != null && daos.ContainsKey(u))
+            );
+
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0001" domain="usercodeundertest"><source><![CDATA[if (!daos.ContainsKey(u))]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0010" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                ]]></source>
+</chunk>
+<chunk hits="1" offset="0011" domain="usercodeundertest"><source><![CDATA[IDataAccessObject dao = DAOMySql.GetDao(u);]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                ]]></source>
+</chunk>
+<chunk hits="1" offset="0018" domain="usercodeundertest"><source><![CDATA[daos[u] = dao;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                ]]></source>
+</chunk>
+<chunk hits="3" offset="0025" domain="usercodeundertest"><source><![CDATA[return daos[u];]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            }
+            ]]></source>
+</chunk>
+<chunk hits="0" offset="0033" domain="usercodeundertest"><source><![CDATA[return null;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="3" offset="0037" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        public static IDataAccessObject CurrentUserDAO
+        {
+            get ]]></source>
+</chunk>
+<method name="get_CurrentUserDAO" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.DAOFactory" typeName="DAOFactory" token="60000af" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="3" value="1"/>
+<hit index="4" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="3" total="3" coveredRatio="1"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[ ]]></source>
+</chunk>
+<chunk hits="1" offset="0001" domain="usercodeundertest"><source><![CDATA[return getDAO(VoterListApp.CurrentUser);]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[ ]]></source>
+</chunk>
+<chunk hits="1" offset="000e" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        }
+    }
+}
+]]></source>
+</chunk>
+</document>
+<document src="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\VoterListApp.cs" renderPrefix="s4"><chunk hits="-1" domain="unknown"><source><![CDATA[using System.Windows;
+using DigitalVoterList.Controllers;
+using DigitalVoterList.Election;
+using DigitalVoterList.Views;
+
+namespace DigitalVoterList
+{
+
+    /// <summary>
+    /// The main class for initializing the application
+    /// </summary>
+    public class VoterListApp
+    {
+        private static User _currentUser;
+        public static Application App;
+
+        public static User CurrentUser
+        {
+            get ]]></source>
+</chunk>
+<method name="get_CurrentUser" namespace="DigitalVoterList" type="DigitalVoterList.VoterListApp" typeName="VoterListApp" token="6000042" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="4" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="3" total="3" coveredRatio="1"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[ ]]></source>
+</chunk>
+<chunk hits="1" offset="0001" domain="usercodeundertest"><source><![CDATA[return _currentUser ?? new User();]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[ ]]></source>
+</chunk>
+<chunk hits="1" offset="0012" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            set { _currentUser = value; }
+        }
+
+        /// <summary>
+        /// DigitalVoterList the application
+        /// </summary>
+        [System.STAThread]
+        public static void Main()
+        {
+            Application app = new Application();
+            VoterListApp.App = app;
+            app.Startup += (o, e) =>
+            {
+                RunApp(null);
+            };
+            app.Run();
+        }
+
+        public static void RunApp(User user)
+        {
+            VoterListApp.CurrentUser = user;
+            if (user != null && user.Validated)
+            {
+                MainWindow view = new MainWindow();
+                new MainWindowController(view);
+                /*
+                IDataAccessObject dao = DAOFactory.CurrentUserDAO;
+                User u = dao.LoadUser(2);
+                u.ChangePassword("12345");
+                 */
+            }
+            else
+            {
+                //Show the login window
+                LoginWindow view = new LoginWindow();
+                new LoginController(view);
+            }
+        }
+    }
+}
+]]></source>
+</chunk>
+</document>
+<document src="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\User.cs" renderPrefix="s5"><chunk hits="-1" domain="unknown"><source><![CDATA[using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace DigitalVoterList.Election
+{
+
+    /// <summary>
+    /// A person responsible of helping out at an election
+    /// </summary>
+    public class User : Person
+    {
+        private HashSet<SystemAction> _permissions;
+        private HashSet<VotingVenue> _workplaces;
+        private DateTime? _lastSuccessfullValidationTime;
+
+        /// <summary>
+        /// The users at the election venue and people adminitrating the electing, who have different priviledges.
+        /// </summary>
+        /// <param name="id">The database id of the user</param>
+        ]]></source>
+</chunk>
+<method name=".ctor" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.User" typeName="User" token="6000125" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="3" value="1"/>
+<hit index="5" value="1"/>
+<hit index="6" value="1"/>
+<hit index="7" value="1"/>
+<hit index="8" value="1"/>
+<hit index="10" value="1"/>
+<hit index="11" value="1"/>
+<hit index="12" value="1"/>
+<hit index="13" value="1"/>
+<hit index="14" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="4" total="4" coveredRatio="1"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[public User(int id)
+            : base(id)]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="0008" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0009" domain="usercodeundertest"><source><![CDATA[_permissions = new HashSet<SystemAction>();]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="2" offset="0014" domain="usercodeundertest"><source><![CDATA[_workplaces = new HashSet<VotingVenue>();]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="2" offset="001f" domain="usercodeundertest"><source><![CDATA[_lastSuccessfullValidationTime = null;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="002b" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        /// <summary>
+        /// The users at the election venue and people adminitrating the electing, who have different priviledges.
+        /// </summary>
+        ]]></source>
+</chunk>
+<method name=".ctor" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.User" typeName="User" token="6000126" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="2" total="2" coveredRatio="1"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[public User()
+            : this(0)]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="0008" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="0009" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        /// <summary>
+        /// Validate the user and load according permissions into the user object.
+        /// </summary>
+        /// <param name="uname">The username to validate</param>
+        /// <param name="pwd">The password to validate</param>
+        /// <returns>True on success. False otherwise.</returns>
+        public bool FetchPermissions(string uname, string pwd)
+        {
+            IDataAccessObject dao = DAOFactory.getDAO(this);
+            string pwdHash = HashPassword(pwd);
+            Debug.WriteLine("PwdHash: " + pwdHash);
+            Debug.WriteLine("UserSalt: " + UserSalt);
+            if (dao.ValidateUser(uname, pwdHash))
+            {
+                _lastSuccessfullValidationTime = new DateTime();
+                _permissions = dao.GetPermissions(this);
+                _workplaces = dao.GetWorkplaces(this);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// The user's username
+        /// </summary>
+        public string Username { get; set; }
+
+
+        public string UserSalt { get; set; }
+
+        public bool Valid { get; set; }
+
+        /// <summary>
+        /// Changes the password of this user
+        /// </summary>
+        /// <param name="oldPwd">The old password</param>
+        /// <param name="newPwd">The new password</param>
+        /// <returns>Was it succesful?</returns>
+        public void ChangePassword(string oldPwd, string newPwd)
+        {
+            IDataAccessObject dao = DAOFactory.getDAO(this);
+            dao.ChangePassword(this, HashPassword(newPwd), HashPassword(oldPwd));
+        }
+
+        /// <summary>
+        /// Changes the password of this user
+        /// </summary>
+        /// <param name="newPwd">The new password</param>
+        /// <returns>Was it succesful?</returns>
+        public void ChangePassword(string newPwd)
+        {
+            IDataAccessObject dao = DAOFactory.CurrentUserDAO;
+            dao.ChangePassword(this, HashPassword(newPwd));
+        }
+
+        /// <summary>
+        /// The user's id in the database
+        /// </summary>
+        public int DBId { get; private set; }
+
+        /// <summary>
+        /// The user's jobtitle
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// The users permission. Is an empty set if validation has expired, or has not been performed yet.
+        /// </summary>
+        public HashSet<SystemAction> Permissions
+        {
+            get
+            {
+                Contract.Requires(_permissions != null);
+                if (!Validated)
+                {
+                    return new HashSet<SystemAction>();
+                }
+                else
+                {
+                    if (_permissions != null)
+                    {
+                        return new HashSet<SystemAction>(_permissions);
+                    }
+                }
+                return new HashSet<SystemAction>();
+            }
+        }
+
+        /// <summary>
+        /// The voting venue(s) where the user works.
+        /// </summary>
+        public HashSet<VotingVenue> Workplaces
+        {
+            get
+            {
+                Contract.Requires(_permissions != null);
+                if (!Validated)
+                {
+                    return new HashSet<VotingVenue>();
+                }
+                else
+                {
+                    return new HashSet<VotingVenue>(_workplaces);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Has the user got permission to perform this SystemAction?
+        /// </summary>
+        /// <param name="a">The SystemAction to check for permission</param>
+        /// <returns>True if the user has the permission. False if not.</returns>
+        public bool HasPermission(SystemAction a)
+        ]]></source>
+</chunk>
+<method name="HasPermission" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.User" typeName="User" token="6000136" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="9" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="3" total="5" coveredRatio="0.6"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0001" domain="usercodeundertest"><source><![CDATA[return Validated && _permissions.Contains(a);]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="001b" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        /// <summary>
+        /// Checks if the user works at this specific voting venue
+        /// </summary>
+        /// <param name="v">The voting venue to check for</param>
+        /// <returns>True if the user works here. False if not</returns>
+        public bool WorksHere(VotingVenue v)
+        {
+            return Validated && _workplaces.Contains(v);
+        }
+
+        public bool Validated
+        {
+            get
+            ]]></source>
+</chunk>
+<method name="get_Validated" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.User" typeName="User" token="6000138" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="3" value="1"/>
+<hit index="4" value="1"/>
+<hit index="13" value="1"/>
+<hit index="20" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="4" total="10" coveredRatio="0.4"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                ]]></source>
+</chunk>
+<chunk hits="1" offset="0001" domain="usercodeundertest"><source><![CDATA[DateTime now = new DateTime();]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                ]]></source>
+</chunk>
+<chunk hits="1" offset="0009" domain="usercodeundertest"><source><![CDATA[if (_lastSuccessfullValidationTime == null || now.Subtract((DateTime)_lastSuccessfullValidationTime).Minutes > 15)]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                ]]></source>
+</chunk>
+<chunk hits="1" offset="003e" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                    ]]></source>
+</chunk>
+<chunk hits="1" offset="003f" domain="usercodeundertest"><source><![CDATA[return false;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                }
+                else
+                ]]></source>
+</chunk>
+<chunk hits="0" offset="0043" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                    ]]></source>
+</chunk>
+<chunk hits="0" offset="0044" domain="usercodeundertest"><source><![CDATA[_lastSuccessfullValidationTime = new DateTime();]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                    ]]></source>
+</chunk>
+<chunk hits="0" offset="0059" domain="usercodeundertest"><source><![CDATA[return true;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                }
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="005d" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        }
+
+        public new string ToString()
+        {
+            return "USER( username : " + Username + " , title : " + Title + " )";
+        }
+
+        private string HashPassword(string password)
+        {
+            string salted = UserSalt + password + "AX7530G7FR";
+            MD5 md5 = System.Security.Cryptography.MD5.Create();
+            byte[] inputBytes = System.Text.Encoding.UTF32.GetBytes(salted);
+            byte[] hash = md5.ComputeHash(inputBytes);
+            StringBuilder output = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++)
+            {
+                output.Append(hash[i].ToString("X2"));
+            }
+            return output.ToString();
+        }
+    }
+}
+]]></source>
+</chunk>
+</document>
+<document src="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\Person.cs" renderPrefix="s6"><chunk hits="-1" domain="unknown"><source><![CDATA[
+namespace DigitalVoterList.Election
+{
+
+    /// <summary>
+    /// A humanbeing with a name
+    /// </summary>
+    public class Person
+    {
+        /// <summary>
+        /// A human being 
+        /// </summary>
+        /// <param name="id">A database id. Set to 0 to create new person.</param>
+        ]]></source>
+</chunk>
+<method name=".ctor" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.Person" typeName="Person" token="6000005" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="3" value="1"/>
+<hit index="4" value="1"/>
+<hit index="5" value="1"/>
+<hit index="6" value="1"/>
+<hit index="7" value="1"/>
+<hit index="8" value="1"/>
+<hit index="9" value="1"/>
+<hit index="10" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="6" total="6" coveredRatio="1"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[public Person(int id)]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="0007" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0008" domain="usercodeundertest"><source><![CDATA[DbId = id;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0010" domain="usercodeundertest"><source><![CDATA[Name = "";]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="001c" domain="usercodeundertest"><source><![CDATA[Address = "";]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0028" domain="usercodeundertest"><source><![CDATA[PlaceOfBirth = "";]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="0034" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        /// <summary>
+        /// A human being
+        /// </summary>
+        public Person()
+            : this(0)
+        {
+
+        }
+
+        /// <summary>
+        /// The persons CPR-number
+        /// </summary>
+        public string Cpr { get; set; }
+
+        /// <summary>
+        /// The persons passport number
+        /// </summary>
+        public string PassportNumber { get; set; }
+
+        /// <summary>
+        /// The persons full name
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The persons address
+        /// </summary>
+        public string Address { get; set; }
+
+        /// <summary>
+        /// Where this person was born
+        /// </summary>
+        public string PlaceOfBirth { get; set; }
+
+        /// <summary>
+        /// The database id of the person
+        /// </summary>
+        public int DbId { get; private set; }
+
+        public new string ToString()
+        {
+            return "PERSON( navn : " + Name + " , cpr : " + Cpr + " )";
+        }
+    }
+}
+]]></source>
+</chunk>
+</document>
+<document src="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\DAOMySql.cs" renderPrefix="s7"><chunk hits="-1" domain="unknown"><source><![CDATA[using System;
+using System.Collections.Generic;
+using MySql.Data.MySqlClient;
+
+namespace DigitalVoterList.Election
+{
+    using System.Diagnostics.Contracts;
+    using System.Windows.Documents;
+    using DigitalVoterList.Utilities;
+
+    class DAOMySql : IDataAccessObject
+    {
+        private MySqlConnection _sqlConnection;
+        private string _connectionString;
+        private bool _isConnected;
+
+        ]]></source>
+</chunk>
+<method name=".ctor" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.DAOMySql" typeName="DAOMySql" token="6000062" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="4" value="1"/>
+<hit index="5" value="1"/>
+<hit index="6" value="1"/>
+<hit index="7" value="1"/>
+<hit index="8" value="1"/>
+<hit index="9" value="1"/>
+<hit index="10" value="1"/>
+<hit index="11" value="1"/>
+<hit index="12" value="1"/>
+<hit index="13" value="1"/>
+<hit index="14" value="1"/>
+<hit index="15" value="1"/>
+<hit index="16" value="1"/>
+<hit index="17" value="1"/>
+<hit index="18" value="1"/>
+<hit index="19" value="1"/>
+<hit index="20" value="1"/>
+<hit index="21" value="1"/>
+<hit index="22" value="1"/>
+<hit index="23" value="1"/>
+<hit index="24" value="1"/>
+<hit index="25" value="1"/>
+<hit index="26" value="1"/>
+<hit index="27" value="1"/>
+<hit index="28" value="1"/>
+<hit index="29" value="1"/>
+<hit index="30" value="1"/>
+<hit index="31" value="1"/>
+<hit index="32" value="1"/>
+<hit index="33" value="1"/>
+<hit index="34" value="1"/>
+<hit index="35" value="1"/>
+<hit index="36" value="1"/>
+<hit index="37" value="1"/>
+<hit index="38" value="1"/>
+<hit index="39" value="1"/>
+<hit index="40" value="1"/>
+<hit index="41" value="1"/>
+<hit index="42" value="1"/>
+<hit index="43" value="1"/>
+<hit index="44" value="1"/>
+<hit index="45" value="1"/>
+<hit index="46" value="1"/>
+<hit index="47" value="1"/>
+<hit index="49" value="1"/>
+<hit index="50" value="1"/>
+<hit index="51" value="1"/>
+<hit index="68" value="1"/>
+<hit index="69" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="4" total="8" coveredRatio="0.5"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[private DAOMySql()]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="0007" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0008" domain="usercodeundertest"><source><![CDATA[this._connectionString = "Server=" + Settings.DbHost + ";" +
+                                     "Database=" + Settings.DbName + ";" +
+                                     "Uid=" + Settings.DbUser + ";" +
+                                     "Pwd=" + Settings.DbPassword + ";";]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+            try
+            ]]></source>
+</chunk>
+<chunk hits="2" offset="0064" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                ]]></source>
+</chunk>
+<chunk hits="2" offset="0065" domain="usercodeundertest"><source><![CDATA[_sqlConnection = new MySqlConnection(this._connectionString);]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="2" offset="0076" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="0" offset="0079" domain="usercodeundertest"><source><![CDATA[catch (Exception excp)]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="0" offset="007a" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                ]]></source>
+</chunk>
+<chunk hits="0" offset="007b" domain="usercodeundertest"><source><![CDATA[Exception myExcp = new Exception("Error connecting you to " +
+                    "the my sql server. Internal error message: " + excp.Message, excp);]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                ]]></source>
+</chunk>
+<chunk hits="0" offset="0092" domain="usercodeundertest"><source><![CDATA[throw myExcp;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            }
+
+            ]]></source>
+</chunk>
+<chunk hits="2" offset="0095" domain="usercodeundertest"><source><![CDATA[this._isConnected = false;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="2" offset="009c" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        public static IDataAccessObject GetDao(User u)
+        ]]></source>
+</chunk>
+<method name="GetDao" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.DAOMySql" typeName="DAOMySql" token="6000063" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="3" value="1"/>
+<hit index="4" value="1"/>
+<hit index="6" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="3" total="3" coveredRatio="1"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0001" domain="usercodeundertest"><source><![CDATA[return new DAOPermissionProxy(u, new DAOMySql());]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="000f" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        ~DAOMySql()
+        {
+            Disconnect();
+        }
+
+        private void Connect()
+        {
+            bool success = true;
+
+            if (this._isConnected == false)
+            {
+                try
+                {
+                    this._sqlConnection.Open();
+                }
+                catch (Exception excp)
+                {
+                    this._isConnected = false;
+                    success = false;
+                    Exception myException = new Exception("Error opening connection" +
+                        " to the sql server. Error: " + excp.Message, excp);
+
+                    throw myException;
+                }
+
+                if (success)
+                {
+                    this._isConnected = true;
+                }
+            }
+        }
+
+        public void Disconnect()
+        {
+            if (this._isConnected)
+            {
+                this._sqlConnection.Close();
+            }
+        }
+
+        public Person LoadPerson(int id)
+        {
+            Connect();
+            string query = "SELECT * FROM person WHERE id=" + id + " LIMIT 1";
+            MySqlCommand loadPerson = new MySqlCommand(query, this._sqlConnection);
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = loadPerson.ExecuteReader();
+                if (!reader.Read()) return null;
+                if (reader.GetString("cpr").Equals(null))
+                {
+                    reader.Read();
+                    Person person = new Person(id);
+                    DoIfNotDbNull(reader, "name", lbl => person.Name = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "cpr", lbl => person.Cpr = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "address", lbl => person.Address = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "place_of_birth", lbl => person.PlaceOfBirth = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "passport_number", lbl => person.PassportNumber = reader.GetString(lbl));
+                    return person;
+                }
+                else
+                {
+                    Citizen citizen = new Citizen(id, reader.GetString("cpr"));
+                    DoIfNotDbNull(reader, "name", lbl => citizen.Name = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "place_of_birth", lbl => citizen.PlaceOfBirth = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "passport_number", lbl => citizen.PassportNumber = reader.GetString(lbl));
+                    citizen.EligibleToVote = reader.GetBoolean("eligible_to_vote");
+                    return citizen;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public User LoadUser(string username)
+        {
+            Connect();
+            MySqlCommand loadUser = new MySqlCommand(
+                "SELECT * FROM user INNER JOIN person ON person_id=person.id AND user_name=@uname",
+                 this._sqlConnection
+                 );
+            loadUser.Prepare();
+            loadUser.Parameters.AddWithValue("@uname", username);
+            return LoadUser(loadUser);
+        }
+
+        public User LoadUser(string username, string password)
+        {
+            User u = LoadUser(username);
+            if (u != null && u.FetchPermissions(username, password))
+            {
+                return u;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public User LoadUser(int id)
+        {
+            Connect();
+            string query = "SELECT * FROM user u LEFT JOIN person p ON u.person_id=p.id WHERE u.id=" + id;
+            return LoadUser(new MySqlCommand(query, this._sqlConnection));
+        }
+
+        private User LoadUser(MySqlCommand loadUser)
+        {
+            Connect();
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = loadUser.ExecuteReader();
+                if (!reader.Read()) return null;
+                User user = new User(reader.GetInt32("id"));
+                user.Username = reader.GetString("user_name");
+                user.Title = reader.GetString("title");
+                user.PassportNumber = reader.GetString("passport_number");
+                user.Name = reader.GetString("name");
+                user.PlaceOfBirth = reader.GetString("place_of_birth");
+                user.UserSalt = reader.GetString("user_salt");
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public bool ValidateUser(string username, string passwordHash)
+        {
+            Connect();
+            MySqlCommand validate = new MySqlCommand("SELECT id FROM user WHERE password_hash=@pwd_hash AND user_name=@uname LIMIT 1", _sqlConnection);
+            validate.Prepare();
+            validate.Parameters.AddWithValue("@pwd_hash", passwordHash);
+            validate.Parameters.AddWithValue("@uname", username);
+
+            object result = validate.ExecuteScalar();
+            return result != null && (int)result > 0;
+        }
+
+        public HashSet<SystemAction> GetPermissions(User u)
+        {
+            MySqlCommand getPermissions = new MySqlCommand("SELECT label FROM user u INNER JOIN permission p ON u.id = p.user_id INNER JOIN action a ON a.id = p.action_id WHERE u.id=" + u.DbId, _sqlConnection);
+            MySqlDataReader rdr = null;
+            HashSet<SystemAction> output = new HashSet<SystemAction>();
+
+            try
+            {
+                rdr = getPermissions.ExecuteReader();
+                while (rdr.Read())
+                {
+                    output.Add(SystemActions.getSystemAction(rdr.GetString(0)));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (rdr != null) rdr.Close();
+            }
+            return output;
+        }
+
+        public HashSet<VotingVenue> GetWorkplaces(User u)
+        {
+            MySqlCommand getWorkplaces = new MySqlCommand("SELECT * FROM user u INNER JOIN workplace w ON u.id = w.user_id INNER JOIN voting_venue v ON v.id = w.voting_venue_id WHERE u.id=" + u.DbId, _sqlConnection);
+            HashSet<VotingVenue> output = new HashSet<VotingVenue>();
+            MySqlDataReader rdr = null;
+            try
+            {
+                rdr = getWorkplaces.ExecuteReader();
+                while (rdr.Read())
+                {
+                    output.Add(new VotingVenue(rdr.GetInt32("id"), rdr.GetString("name"), rdr.GetString("address")));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (rdr != null) rdr.Close();
+            }
+            return output;
+        }
+
+        public VoterCard LoadVoterCard(int id)
+        {
+            Connect();
+            string query = "SELECT * FROM voter_card INNER JOIN person ON person.id=person_id AND voter_card.id=" + id;
+            MySqlCommand loadVoterCard = new MySqlCommand(query, this._sqlConnection);
+            MySqlDataReader reader = null;
+
+            try
+            {
+                reader = loadVoterCard.ExecuteReader();
+                reader.Read();
+                int personId = reader.GetInt32("person_id");
+                reader.Close();
+                Citizen citizen = (Citizen)this.LoadPerson(personId);
+
+                reader = loadVoterCard.ExecuteReader();
+                if (!reader.Read()) return null;
+                VoterCard voterCard = new VoterCard(Settings.Election, citizen);
+                voterCard.Id = id;
+                return voterCard;
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public VoterCard LoadVoterCard(string idKey)
+        {
+            Connect();
+            MySqlCommand loadVoterCardId = new MySqlCommand("SELECT id FROM voter_card WHERE id_key=@id_key", _sqlConnection);
+            loadVoterCardId.Prepare();
+            loadVoterCardId.Parameters.AddWithValue("id_key", idKey);
+            int id = (int)(loadVoterCardId.ExecuteScalar() ?? 0);
+            if (id == 0) return null;
+            return LoadVoterCard(id);
+        }
+
+
+        public List<Person> Find(Person p)
+        {
+            Contract.Ensures(Contract.Result<List<Person>>() != null);
+
+
+            Connect();
+            List<Person> persons = new List<Person>();
+            string query = "SELECT * FROM person WHERE cpr='" + p.Cpr + "' OR (name=@name AND address=@address) OR COALESCE(name=@name, address=@address) IS NOT NULL";
+            MySqlCommand find = new MySqlCommand(query, this._sqlConnection);
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = find.ExecuteReader();
+                while (reader.Read())
+                {
+                    Person pers = new Person(reader.GetInt32("id"));
+                    pers.Cpr = reader.GetString("cpr");
+                    DoIfNotDbNull(reader, "name", lbl => pers.Name = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "address", lbl => pers.Address = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "place_of_birth", lbl => pers.PlaceOfBirth = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "passport_number", lbl => pers.PassportNumber = reader.GetString(lbl));
+                    persons.Add(pers);
+                }
+                if (persons.ToArray().Length == 0) return null;
+                return persons;
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public List<User> Find(User u)
+        {
+            Connect();
+            List<User> users = new List<User>();
+            string query = "SELECT * FROM user INNER JOIN person ON person_id = person.id WHERE (title='" + u.Title + "' AND user_name='" + u.Username + "') OR COALESCE(title='" + u.Title + "', user_name='" + u.Username + "')";
+            MySqlCommand find = new MySqlCommand(query, this._sqlConnection);
+            MySqlDataReader reader = null;
+
+            try
+            {
+                reader = find.ExecuteReader();
+                while (reader.Read())
+                {
+                    User user = new User();
+                    user.Username = reader.GetString("user_name");
+                    user.Title = reader.GetString("title");
+                    user.Cpr = reader.GetString("cpr");
+                    DoIfNotDbNull(reader, "name", lbl => user.Name = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "address", lbl => user.Address = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "place_of_birth", lbl => user.PlaceOfBirth = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "passport_number", lbl => user.PassportNumber = reader.GetString(lbl));
+                    users.Add(user);
+                }
+                if (users.ToArray().Length == 0) return null;
+                return users;
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public List<VoterCard> Find(VoterCard voterCard)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerator<RawPerson> LoadRawPersonData()
+        {
+            Connect();
+            string query = "SELECT * FROM raw_person_data";
+            MySqlCommand loadRawPeople = new MySqlCommand(query, this._sqlConnection);
+
+            try
+            {
+                MySqlDataReader reader = loadRawPeople.ExecuteReader();
+                return readStuff(reader);
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+        }
+
+        // HAD TO MAKE A PRIVATE METHOD FOR TRY CATCH OF YIELD
+        private IEnumerator<RawPerson> readStuff(MySqlDataReader reader)
+        {
+            while (reader.Read())
+            {
+                var rawPerson = new RawPerson();
+                DoIfNotDbNull(reader, "name", lbl => rawPerson.Name = reader.GetString(lbl));
+                yield return rawPerson;
+            }
+        }
+
+        public List<Citizen> FindElegibleVoters()
+        {
+            Connect();
+            List<Citizen> citizens = new List<Citizen>();
+            string query = "SELECT * FROM person WHERE eligible_to_vote = '1'";
+            MySqlCommand findEligibleVoters = new MySqlCommand(query, this._sqlConnection);
+            MySqlDataReader reader = null;
+
+            try
+            {
+                reader = findEligibleVoters.ExecuteReader();
+                while (reader.Read())
+                {
+                    Citizen citizen = new Citizen(reader.GetInt32("id"), reader.GetString("cpr"));
+                    citizen.EligibleToVote = reader.GetBoolean("eligible_to_vote");
+                    DoIfNotDbNull(reader, "name", lbl => citizen.Name = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "address", lbl => citizen.Address = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "place_of_birth", lbl => citizen.PlaceOfBirth = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "passport_number", lbl => citizen.PassportNumber = reader.GetString(lbl));
+
+                    citizens.Add(citizen);
+                }
+                if (citizens.ToArray().Length == 0) return null;
+                return citizens;
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public void UpdatePeople(Func<Person, RawPerson, Person> updateFunc)
+        {
+            Connect();
+            string query = "SELECT * FROM raw_person_data";
+            MySqlCommand loadRowPeople = new MySqlCommand(query, this._sqlConnection);
+            MySqlDataReader reader = null;
+
+            try
+            {
+                reader = loadRowPeople.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    RawPerson rawPerson = new RawPerson();
+                    DoIfNotDbNull(reader, "name", lbl => rawPerson.Name = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "address", lbl => rawPerson.Address = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "birthplace", lbl => rawPerson.Birthplace = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "passport_number", lbl => rawPerson.PassportNumber = reader.GetString(lbl));
+
+                    //Make new person or find old in database
+                    var realPersonList = Find(new Person() { Cpr = rawPerson.CPR });
+                    Person person = (realPersonList.Count > 0) ? realPersonList[0] : person = new Person();
+
+                    //Update data with updatefunction
+                    person = updateFunc(person, rawPerson);
+
+                    //Save updated data
+                    Save(person);
+                }
+
+                //Update people that are not in the raw data
+                this.MarkPeopleNotInRawDataUneligibleToVote();
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public VotingVenue FindVotingVenue(Citizen citizen)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MarkPeopleNotInRawDataUneligibleToVote()
+        {
+            Connect();
+            try
+            {
+                new MySqlCommand("DELETE FROM person WHERE p.cpr NOT IN (SELECT r.cpr FROM raw_person_data);", _sqlConnection).ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+        }
+
+        public void Save(Person per)
+        {
+            Connect();
+            int id = per.DbId;
+
+            if (id != 0)
+            {
+                try
+                {
+                    MySqlCommand getPerson = new MySqlCommand(
+                        "SELECT id FROM person WHERE id=" + per.DbId, _sqlConnection);
+                    if (id != (int)getPerson.ExecuteScalar())
+                    {
+                        throw new DataAccessException(
+                            "Invalid id. The person you are trying to update has an ID that does not exist in the database.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+                }
+            }
+
+            MySqlCommand savePerson;
+            if (id == 0)
+            {
+                savePerson = new MySqlCommand("INSERT INTO person " +
+                    "(name,address,cpr,place_of_birth,passport_number) VALUES(@name,@address,@cpr,@place_of_birth,@passport_number)", _sqlConnection);
+            }
+            else
+            {
+                savePerson = new MySqlCommand("UPDATE person SET name=@name, address=@address, place_of_birth=@place_of_birth, passport_number=@passport_number WHERE id=@id LIMIT 1", _sqlConnection);
+            }
+            savePerson.Prepare();
+            savePerson.Parameters.AddWithValue("@name", per.Name ?? "");
+            savePerson.Parameters.AddWithValue("@address", per.Address ?? "");
+            savePerson.Parameters.AddWithValue("@cpr", per.Cpr);
+            savePerson.Parameters.AddWithValue("@place_of_birth", per.PlaceOfBirth ?? "");
+            savePerson.Parameters.AddWithValue("@passport_number", per.PassportNumber);
+            if (id != 0) savePerson.Parameters.AddWithValue("@id", per.DbId);
+            if (per is Citizen)
+                SaveQuizzes((Citizen)per);
+        }
+
+        private void SaveQuizzes(Citizen citizen)
+        {
+            Connect();
+            if (citizen.DbId == 0)
+            {
+                MySqlCommand deleteQuiz = new MySqlCommand(
+                    "DELETE FROM quiz WHERE person_id='" + citizen.DbId + "'", _sqlConnection);
+
+                MySqlDataReader reader = null;
+
+                try
+                {
+                    reader = deleteQuiz.ExecuteReader();
+
+                    foreach (var quiz in citizen.SecurityQuestions)
+                    {
+                        MySqlCommand saveQuiz =
+                            new MySqlCommand(
+                                "INSERT INTO quiz (question, answer, person_id) VALUES(@question, @answer, @person_id)",
+                                _sqlConnection);
+                        saveQuiz.Prepare();
+                        saveQuiz.Parameters.AddWithValue("@question", quiz.Question);
+                        saveQuiz.Parameters.AddWithValue("@answer", quiz.Answer);
+                        saveQuiz.Parameters.AddWithValue("@person_id", citizen.DbId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+                }
+                finally
+                {
+                    if (reader != null) reader.Close();
+                }
+            }
+        }
+
+        public void Save(User u)
+        {
+            Connect();
+            int id = u.DbId;
+            if (u.DbId != 0)
+            {
+                try
+                {
+                    MySqlCommand getUser = new MySqlCommand(
+                        "SELECT id FROM user WHERE id=" + u.DbId, _sqlConnection);
+                    if (id != (int)getUser.ExecuteScalar())
+                    {
+                        throw new DataAccessException(
+                            "Invalid id. The user you are trying to update has an ID that does not exist in the database.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+                }
+            }
+
+            MySqlCommand saveUser;
+
+            if (id == 0)
+            {
+                saveUser = new MySqlCommand("INSERT INTO user " +
+                    "(user_name, title) VALUES(@user_name, @title)", _sqlConnection);
+            }
+            else
+            {
+                saveUser = new MySqlCommand("UPDATE user SET user_name=@user_name, title=@title, WHERE id=@id LIMIT 1", _sqlConnection);
+            }
+            saveUser.Prepare();
+            saveUser.Parameters.AddWithValue("@user_name", u.Username);
+            saveUser.Parameters.AddWithValue("@title", u.Title);
+            if (id != 0) saveUser.Parameters.AddWithValue("@id", u.DbId);
+            saveUser.ExecuteNonQuery();
+        }
+
+        public void Save(VoterCard vc)
+        {
+            Connect();
+            int id = vc.Id;
+            if (vc.Id != 0)
+            {
+                try
+                {
+                    MySqlCommand getVoterCard = new MySqlCommand(
+                        "SELECT id FROM voter_card WHERE id=" + vc.Id, _sqlConnection);
+                    if (id != (int)getVoterCard.ExecuteScalar())
+                    {
+                        throw new DataAccessException(
+                            "Invalid id. The votercard you are trying to update has an ID that does not exist in the database.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+                }
+            }
+
+            MySqlCommand saveVoterCard;
+
+            if (id == 0)
+            {
+                saveVoterCard = new MySqlCommand("INSERT INTO voter_card " +
+                    "(person_id, valid) VALUES(@person_id, @valid, @id_key)", _sqlConnection);
+            }
+            else
+            {
+                saveVoterCard = new MySqlCommand("UPDATE voter_card SET person_id=@person_id, valid=@valid, id_key=@id_key WHERE id=@id LIMIT 1", _sqlConnection);
+            }
+            saveVoterCard.Prepare();
+            saveVoterCard.Parameters.AddWithValue("@person_id", vc.Citizen.DbId);
+            saveVoterCard.Parameters.AddWithValue("@valid", vc.Valid);
+            saveVoterCard.Parameters.AddWithValue("@id_key", vc.IdKey);
+            if (id != 0) saveVoterCard.Parameters.AddWithValue("@id", vc.Id);
+            //return saveVoterCard.ExecuteNonQuery() == 1;
+        }
+
+        public bool Save(int citizenId, Quiz q)
+        {
+            Connect();
+            MySqlCommand cId = new MySqlCommand("SELECT id FROM person WHERE id='" + citizenId + "' LIMIT 1");
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = cId.ExecuteReader();
+                if (reader.Read() && reader.GetInt32("id") != 0)
+                {
+                    MySqlCommand quiz =
+                        new MySqlCommand(
+                            "INSERT INTO quiz (question, answer, person_id) VALUES(@question, @answer, @person_id)",
+                            _sqlConnection);
+                    quiz.Parameters.AddWithValue("@question", q.Question);
+                    quiz.Parameters.AddWithValue("@answer", q.Answer);
+                    quiz.Parameters.AddWithValue("@person_id", citizenId);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public void SetHasVoted(Citizen citizen, int cprKey)
+        {
+            Connect();
+            try
+            {
+                MySqlCommand getCpr = new MySqlCommand(
+                    "SELECT cpr FROM person WHERE id='" + citizen.DbId + "'", _sqlConnection);
+                int citizenKeyPhrase = Convert.ToInt32(getCpr.ToString().Substring(7, 4));
+                if (cprKey == citizenKeyPhrase)
+                {
+                    try
+                    {
+                        MySqlCommand setHasVoted = new MySqlCommand("SELECT person SET has_voted = '1' WHERE id='" + citizen.DbId + "'", _sqlConnection);
+                        citizen.SetHasVoted();
+                        //return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+                    }
+                }
+                //return false;
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+        }
+
+        public void SetHasVoted(Citizen citizen)
+        {
+            Connect();
+            try
+            {
+                MySqlCommand setHasVoted = new MySqlCommand("SELECT person SET has_voted = '1' WHERE id='" + citizen.DbId + "'", _sqlConnection);
+                if (setHasVoted.ExecuteNonQuery() == 1)
+                {
+                    //return true;
+                }
+                else
+                {
+                    //return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+        }
+
+        public void ChangePassword(User user, string newPassword)
+        {
+            Connect();
+
+            try
+            {
+                User u = LoadUser(user.DBId);
+                u.ChangePassword(newPassword);
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+
+        }
+
+        public void ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
+        {
+            Connect();
+            try
+            {
+                User u = LoadUser(user.DBId);
+                u.ChangePassword(oldPasswordHash, newPasswordHash);
+
+                MySqlCommand loadUser = new MySqlCommand("SELECT id FROM user WHERE id=@id AND password_hash=@oldPasswordHash", _sqlConnection);
+                loadUser.Prepare();
+                loadUser.Parameters.AddWithValue("id", user.DbId);
+                loadUser.Parameters.AddWithValue("oldPasswordHash", oldPasswordHash);
+                if (loadUser.ExecuteScalar() != null) ChangePassword(user.DbId, newPasswordHash);
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+        }
+
+        private bool ChangePassword(int userDbId, string newPasswordHash)
+        {
+            MySqlCommand changePassword = new MySqlCommand("UPDATE user SET password_hash=@newPasswordHash WHERE id=@id", _sqlConnection);
+            changePassword.Prepare();
+            changePassword.Parameters.AddWithValue("id", userDbId);
+            changePassword.Parameters.AddWithValue("newPasswordHash", newPasswordHash);
+            return changePassword.ExecuteNonQuery() == 1;
+        }
+
+        public void MarkUserInvalid(User user)
+        {
+
+        }
+
+        public void RestoreUser(User user)
+        {
+
+        }
+
+        public void MarkVoterCardInvalid(VoterCard vc)
+        {
+            Connect();
+            try
+            {
+                MySqlCommand setInvalid = new MySqlCommand("SELECT voter_card SET valid = '0' WHERE id='" + vc.Id + "'", _sqlConnection);
+                if (setInvalid.ExecuteNonQuery() == 1)
+                {
+                    //return true;
+                }
+                //return false;
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+        }
+
+        private void DoIfNotDbNull(MySqlDataReader rdr, string label, Action<string> action)
+        {
+            if (!rdr.IsDBNull(rdr.GetOrdinal(label)))
+            {
+                action.Invoke(label);
+            }
+        }
+    }
+}
+]]></source>
+</chunk>
+</document>
+<document src="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\DAOPermissionProxy.cs" renderPrefix="s8"><chunk hits="-1" domain="unknown"><source><![CDATA[using System.Collections.Generic;
+
+namespace DigitalVoterList.Election
+{
+    using System;
+    using System.Diagnostics.Contracts;
+
+    /// <summary>
+    /// A proxy to handle permissions for data access actions
+    /// </summary>
+    // TODO: Consider voting-venues?
+    public class DAOPermissionProxy : IDataAccessObject
+    {
+        private readonly User _user;
+        private readonly IDataAccessObject _dao;
+
+        ]]></source>
+</chunk>
+<method name=".ctor" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.DAOPermissionProxy" typeName="DAOPermissionProxy" token="60000d2" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="3" value="1"/>
+<hit index="4" value="1"/>
+<hit index="5" value="1"/>
+<hit index="6" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="2" total="2" coveredRatio="1"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[public DAOPermissionProxy(User u, IDataAccessObject dao)]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="0007" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0008" domain="usercodeundertest"><source><![CDATA[_user = u;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="2" offset="000f" domain="usercodeundertest"><source><![CDATA[_dao = dao;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="2" offset="0016" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        private bool ActionPermitted(SystemAction a, string msg = "You don't have permission to perform this SystemAction.")
+        ]]></source>
+</chunk>
+<method name="ActionPermitted" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.DAOPermissionProxy" typeName="DAOPermissionProxy" token="60000d3" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="3" value="1"/>
+<hit index="4" value="1"/>
+<hit index="5" value="2"/>
+<hit index="6" value="1"/>
+<hit index="7" value="1"/>
+<hit index="8" value="1"/>
+<hit index="10" value="1"/>
+<hit index="11" value="1"/>
+<hit index="14" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="4" total="5" coveredRatio="0.8"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            Contract.Ensures(
+                (!_user.HasPermission(a) && Contract.Result<bool>() == false)
+                || (_user.HasPermission(a) && Contract.Result<bool>() == false));
+
+
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0001" domain="usercodeundertest"><source><![CDATA[if (!_user.HasPermission(a))]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0011" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                //todo: Enten skal denne metode retunere en bool eller kaste en exception, ikke begge?
+                ]]></source>
+</chunk>
+<chunk hits="1" offset="0012" domain="usercodeundertest"><source><![CDATA[throw new PermissionException(a, _user, msg);]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                return false;
+            }
+
+            ]]></source>
+</chunk>
+<chunk hits="0" offset="0020" domain="usercodeundertest"><source><![CDATA[return true;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="0" offset="0024" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        private bool ActionPermittedForThisUser(User user, SystemAction a, string msg = "You don't have permission to perform this SystemAction.")
+        {
+            Contract.Ensures(
+                (!_user.HasPermission(a) && Contract.Result<bool>() == false)
+                || (_user.HasPermission(a) && Contract.Result<bool>() == false));
+
+            if (!user.Equals(_user) || !_user.HasPermission(a))
+            {
+                throw new PermissionException(a, _user, msg);
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool WorksHere(VotingVenue v, string msg = "You can't perform this action, as you don't work in the right voting venue")
+        {
+            return _user.Workplaces.Contains(v) || ActionPermitted(SystemAction.AllVotingPlaces);
+        }
+
+        public Person LoadPerson(int id)
+        {
+            if (ActionPermitted(SystemAction.LoadPerson))
+            {
+                return _dao.LoadPerson(id);
+            }
+            return null;
+        }
+
+        public User LoadUser(string username)
+        {
+            return _dao.LoadUser(username);
+        }
+
+        public User LoadUser(string username, string password)
+        {
+            return _dao.LoadUser(username, password);
+        }
+
+        public User LoadUser(int id)
+        {
+            if (ActionPermitted(SystemAction.LoadUser))
+            {
+                return _dao.LoadUser(id);
+            }
+            return null;
+        }
+
+        public bool ValidateUser(string username, string passwordHash)
+        {
+            return _dao.ValidateUser(username, passwordHash);
+        }
+
+        public HashSet<SystemAction> GetPermissions(User u)
+        {
+            return _dao.GetPermissions(u);
+        }
+
+        public HashSet<VotingVenue> GetWorkplaces(User u)
+        {
+            return _dao.GetWorkplaces(u);
+        }
+
+        public HashSet<VotingVenue> Workplaces(User u)
+        {
+            return _dao.GetWorkplaces(u);
+        }
+
+        public VoterCard LoadVoterCard(int id)
+        {
+            if (ActionPermitted(SystemAction.LoadVoterCard))
+            {
+                return _dao.LoadVoterCard(id);
+            }
+            return null;
+        }
+
+        public VoterCard LoadVoterCard(string idKey)
+        {
+            if (ActionPermitted(SystemAction.ScanVoterCard))
+            {
+                return _dao.LoadVoterCard(idKey);
+            }
+            return null;
+        }
+
+        public List<Person> Find(Person person)
+        {
+            if (ActionPermitted(SystemAction.FindPerson))
+            {
+                return _dao.Find(person);
+            }
+            return null;
+        }
+
+        public List<User> Find(User user)
+        {
+            if (ActionPermitted(SystemAction.FindUser))
+            {
+                return _dao.Find(user);
+            }
+            return null;
+        }
+
+        public List<VoterCard> Find(VoterCard voterCard)
+        {
+            if (ActionPermitted(SystemAction.FindVoterCard))
+            {
+                return _dao.Find(voterCard);
+            }
+            return null;
+        }
+
+        public List<Citizen> FindElegibleVoters()
+        {
+            if (ActionPermitted(SystemAction.FindElegibleVoters))
+            {
+                return _dao.FindElegibleVoters();
+            }
+            return null;
+        }
+
+        public IEnumerable<RawPerson> LoadRawPeople()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Save(Person person)
+        {
+            if (ActionPermitted(SystemAction.SavePerson))
+            {
+                _dao.Save(person);
+            }
+        }
+
+        public void Save(User user)
+        {
+            if (ActionPermitted(SystemAction.SaveUser))
+            {
+                _dao.Save(user);
+            }
+        }
+
+        public void Save(VoterCard voterCard)
+        {
+            if (ActionPermitted(SystemAction.SaveVoterCard))
+            {
+                _dao.Save(voterCard);
+            }
+        }
+
+        public void SetHasVoted(Citizen citizen, int cprKey)
+        {
+            if (ActionPermitted(SystemAction.SetHasVoted) && WorksHere(citizen.VotingPlace))
+            {
+                _dao.SetHasVoted(citizen, cprKey);
+            }
+        }
+
+        public void SetHasVoted(Citizen citizen)
+        {
+            if (ActionPermitted(SystemAction.SetHasVotedManually))
+            {
+                _dao.Save(citizen);
+            }
+        }
+
+        public void ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
+        {
+            if (ActionPermittedForThisUser(user, SystemAction.ChangeOwnPassword))
+            {
+                _dao.ChangePassword(user, newPasswordHash, oldPasswordHash);
+            }
+        }
+
+        public void ChangePassword(User user, string newPasswordHash)
+        {
+            if (ActionPermitted(SystemAction.ChangeOthersPassword))
+            {
+                _dao.ChangePassword(user, newPasswordHash);
+            }
+        }
+
+        public void MarkUserInvalid(User user)
+        {
+            if (ActionPermitted(SystemAction.MarkUserInvalid))
+            {
+                _dao.MarkUserInvalid(user);
+            }
+        }
+
+        public void RestoreUser(User user)
+        {
+            if (ActionPermitted(SystemAction.RestoreUser))
+            {
+                _dao.RestoreUser(user);
+            }
+        }
+
+        public void MarkVoterCardInvalid(VoterCard voterCard)
+        {
+            if (ActionPermitted(SystemAction.MarkVoteCardInvalid))
+            {
+                _dao.MarkVoterCardInvalid(voterCard);
+            }
+        }
+
+        public void MarkPeopleNotInRawDataUneligibleToVote()
+        {
+            if (ActionPermitted(SystemAction.MarkPeopleNotInRawDataUneligibleToVote))
+            {
+                _dao.MarkPeopleNotInRawDataUneligibleToVote();
+            }
+        }
+
+        public void UpdatePeople(Func<Person, RawPerson, Person> update)
+        ]]></source>
+</chunk>
+<method name="UpdatePeople" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.DAOPermissionProxy" typeName="DAOPermissionProxy" token="60000f0" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="11" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="1" total="5" coveredRatio="0.2"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0001" domain="usercodeundertest"><source><![CDATA[if (ActionPermitted(SystemAction.UpdatePeople))]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="0" offset="0015" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                ]]></source>
+</chunk>
+<chunk hits="0" offset="0016" domain="usercodeundertest"><source><![CDATA[_dao.UpdatePeople(update);]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="0" offset="0023" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="0" offset="0024" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        public VotingVenue FindVotingVenue(Citizen citizen)
+        {
+            if (ActionPermitted(SystemAction.FindVotingVenue))
+            {
+                return _dao.FindVotingVenue(citizen);
+            }
+            return null;
+        }
+    }
+}
+]]></source>
+</chunk>
+</document>
+<document src="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\DigitalVoterList\Election\PermissionException.cs" renderPrefix="s9"><chunk hits="-1" domain="unknown"><source><![CDATA[namespace DigitalVoterList.Election
+{
+    using System;
+
+    /// <summary>
+    /// Exception for indicating a permission violation. That is when a user tries to access a method, which he has no permission to use.
+    /// </summary>
+    public class PermissionException : Exception
+    {
+        private readonly SystemAction _systemAction;
+        private readonly User _user;
+
+        ]]></source>
+</chunk>
+<method name=".ctor" namespace="DigitalVoterList.Election" type="DigitalVoterList.Election.PermissionException" typeName="PermissionException" token="6000089" module="DigitalVoterList.exe"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="3" value="1"/>
+<hit index="4" value="1"/>
+<hit index="5" value="1"/>
+<hit index="6" value="1"/>
+</hits>
+<coverage domain="usercodeundertest" unit="block" covered="2" total="2" coveredRatio="1"/>
+</method>
+<chunk hits="1" offset="0000" domain="usercodeundertest"><source><![CDATA[public PermissionException(SystemAction systemAction, User user, string msg = "You don't have permission to perform this SystemAction.")
+            : base(msg)]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="0008" domain="usercodeundertest"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0009" domain="usercodeundertest"><source><![CDATA[_systemAction = systemAction;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="2" offset="0010" domain="usercodeundertest"><source><![CDATA[_user = user;]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="2" offset="0017" domain="usercodeundertest"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+
+        public SystemAction SystemAction { get; private set; }
+
+        public User User { get; private set; }
+    }
+}
+]]></source>
+</chunk>
+</document>
+<document src="(no sources available for some parts of MySql.Data, DigitalVoterList)" missing="true"><method name=".ctor" type="MySql.Data.MySqlClient.MySqlConnection" token="600015a" module="MySql.Data.dll"><hits/>
+<coverage domain="userortestcode" unit="block" covered="0" total="0" coveredRatio="0"/>
+</method>
+<method name=".ctor" type="DigitalVoterList.Election.DataTransformer" token="6000092" module="DigitalVoterList.exe"><hits/>
+<coverage domain="usercodeundertest" unit="block" covered="2" total="2" coveredRatio="1"/>
+</method>
+<method name="set_DbId" type="DigitalVoterList.Election.Person" token="6000012" module="DigitalVoterList.exe"><hits/>
+<coverage domain="usercodeundertest" unit="block" covered="1" total="1" coveredRatio="1"/>
+</method>
+<method name="set_Name" type="DigitalVoterList.Election.Person" token="600000c" module="DigitalVoterList.exe"><hits/>
+<coverage domain="usercodeundertest" unit="block" covered="1" total="1" coveredRatio="1"/>
+</method>
+<method name="set_Address" type="DigitalVoterList.Election.Person" token="600000e" module="DigitalVoterList.exe"><hits/>
+<coverage domain="usercodeundertest" unit="block" covered="1" total="1" coveredRatio="1"/>
+</method>
+<method name="set_PlaceOfBirth" type="DigitalVoterList.Election.Person" token="6000010" module="DigitalVoterList.exe"><hits/>
+<coverage domain="usercodeundertest" unit="block" covered="1" total="1" coveredRatio="1"/>
+</method>
+</document>
+</documents>

@@ -20,12 +20,6 @@
         
         public void Print(VoterCard voterCard)
         {
-            {
-                PrintVoterCard printVoterCard = new PrintVoterCard(voterCard);
-                PrintDialog dialog = new PrintDialog();
-                if (dialog.ShowDialog() == true)
-                { dialog.PrintVisual(printVoterCard.PrintPage, "Print Voter Card"); }
-            }
         }
     }
 }

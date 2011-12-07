@@ -13,8 +13,6 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class VoterCard
     {
-        private string _idKey;
-        private int _id; //The database id
 
         public VoterCard(ElectionEvent electionEvent, Citizen citizen)
         {

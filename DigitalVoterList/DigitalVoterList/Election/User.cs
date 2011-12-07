@@ -13,9 +13,6 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class User : Person
     {
-        private string _title;
-        private string _usersalt;
-        private bool _valid;
         private HashSet<SystemAction> _permissions;
         private HashSet<VotingVenue> _workplaces;
         private DateTime? _lastSuccessfullValidationTime;
@@ -27,7 +24,6 @@ namespace DigitalVoterList.Election
         public User(int id)
             : base(id)
         {
-            _title = "";
             _permissions = new HashSet<SystemAction>();
             _workplaces = new HashSet<VotingVenue>();
             _lastSuccessfullValidationTime = null;
@@ -68,6 +64,7 @@ namespace DigitalVoterList.Election
         /// </summary>
         public string Username { get; set; }
 
+
         public string UserSalt { get; set; }
 
         public bool Valid { get; set; }
@@ -78,10 +75,10 @@ namespace DigitalVoterList.Election
         /// <param name="oldPwd">The old password</param>
         /// <param name="newPwd">The new password</param>
         /// <returns>Was it succesful?</returns>
-        public bool ChangePassword(string oldPwd, string newPwd)
+        public void ChangePassword(string oldPwd, string newPwd)
         {
             IDataAccessObject dao = DAOFactory.getDAO(this);
-            return dao.ChangePassword(this, HashPassword(newPwd), HashPassword(oldPwd));
+            dao.ChangePassword(this, HashPassword(newPwd), HashPassword(oldPwd));
         }
 
         /// <summary>
@@ -89,10 +86,10 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="newPwd">The new password</param>
         /// <returns>Was it succesful?</returns>
-        public bool ChangePassword(string newPwd)
+        public void ChangePassword(string newPwd)
         {
-            IDataAccessObject dao = DAOFactory.GlobalDAO;
-            return dao.ChangePassword(this, HashPassword(newPwd));
+            IDataAccessObject dao = DAOFactory.CurrentUserDAO;
+            dao.ChangePassword(this, HashPassword(newPwd));
         }
 
         /// <summary>

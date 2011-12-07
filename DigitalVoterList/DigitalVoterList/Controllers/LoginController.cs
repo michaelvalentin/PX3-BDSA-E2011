@@ -22,7 +22,7 @@ namespace DigitalVoterList.Controllers
         private void ValidateUser(Object sender, LoginEventArgs e)
         {
             _view.StatusText.Text = "";
-            IDataAccessObject dao = DAOFactory.GlobalDAO;
+            IDataAccessObject dao = DAOFactory.CurrentUserDAO;
             User u = dao.LoadUser(e.Username, e.Password);
             if (u == null)
             {
@@ -33,7 +33,7 @@ namespace DigitalVoterList.Controllers
             {
                 _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(0, 235, 0));
                 _view.StatusText.Text = "Login was successfull. Loading the Digital Voter List.";
-                Start.RunApp(u);
+                VoterListApp.RunApp(u);
                 _view.Close();
             }
         }

@@ -1,0 +1,54 @@
+﻿<documents created="2011-12-06 21:20:15Z"><document src="C:\Users\mollerhoj\Documents\Projects\PX3\DigitalVoterList\ParamTests\UnitTest1.cs" renderPrefix="s0"><chunk hits="-1" domain="unknown"><source><![CDATA[using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace ParamTests
+{
+    using Microsoft.Pex.Framework;
+
+    [TestClass]
+    public class UnitTest1
+    {
+        [TestMethod]
+        public void TestMethod1()
+        {
+
+        }
+
+        [PexMethod]
+        public void ParameterizedTest(int i)
+        ]]></source>
+</chunk>
+<method name="ParameterizedTest" namespace="ParamTests" type="ParamTests.UnitTest1" typeName="UnitTest1" token="6000002" module="ParamTests.dll"><hits><hit index="0" value="1"/>
+<hit index="1" value="1"/>
+<hit index="2" value="1"/>
+<hit index="4" value="1"/>
+<hit index="5" value="1"/>
+<hit index="6" value="1"/>
+<hit index="7" value="1"/>
+</hits>
+<coverage domain="userortestcode" unit="block" covered="4" total="4" coveredRatio="1"/>
+</method>
+<chunk hits="1" offset="0000" domain="userortestcode"><source><![CDATA[{]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+            ]]></source>
+</chunk>
+<chunk hits="1" offset="0001" domain="userortestcode"><source><![CDATA[if (i == 123)]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+                ]]></source>
+</chunk>
+<chunk hits="1" offset="000d" domain="userortestcode"><source><![CDATA[throw new ArgumentException("i");]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+        ]]></source>
+</chunk>
+<chunk hits="1" offset="0018" domain="userortestcode"><source><![CDATA[}]]></source>
+</chunk>
+<chunk hits="-1" domain="unknown"><source><![CDATA[
+    }
+}
+]]></source>
+</chunk>
+</document>
+</documents>

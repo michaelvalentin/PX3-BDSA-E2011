@@ -3,15 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="397" Width="620" xmlns:my="clr-namespace:DigitalVoterList.Views">
     <Grid>
-        <Menu Height="21" HorizontalAlignment="Left" Name="menu1" VerticalAlignment="Top" Width="598">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Log out" />
-                <MenuItem Header="_Exit" />
+        <Menu Height="21" HorizontalAlignment="Left" Name="TopMenu" VerticalAlignment="Top" Width="598">
+            <MenuItem Header="_File" Name="FileMenu">
+                <MenuItem Header="_Change Password" Name="ChangePassword" />
+                <MenuItem Header="_Log out" Name="LogOut" />
+                <MenuItem Header="_Exit" Name="Exit" />
             </MenuItem>
-            <MenuItem Header="_View">
-                <MenuItem Header="_Normal Registration" />
-                <MenuItem Header="_Manual Registration" />
-                <MenuItem Header="_Election Administration" />
+            <MenuItem Header="_View" Name="ViewMenu" IsEnabled="True" IsHitTestVisible="True" Visibility="Visible">
+                <MenuItem Header="_Normal Registration" Name="NormalRegistration" Visibility="Visible" />
+                <MenuItem Header="_Manual Registration" Name="ManualRegistration" Visibility="Visible" />
+                <MenuItem Header="_Election Administration" Name="ElectionAdministration" Visibility="Visible" />
             </MenuItem>
             
         </Menu>
