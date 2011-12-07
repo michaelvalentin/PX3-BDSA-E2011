@@ -39,7 +39,6 @@ namespace DigitalVoterList
 
         public static void RunApp(User user)
         {
-            VoterListApp.CurrentUser = user;
             if (user != null && user.Validated)
             {
                 _mainWindow = new MainWindow();
