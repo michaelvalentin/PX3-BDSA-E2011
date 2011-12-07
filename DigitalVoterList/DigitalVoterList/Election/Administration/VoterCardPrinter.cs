@@ -20,13 +20,10 @@
         
         public void Print(VoterCard voterCard)
         {
-            DAOMySql dao = new DAOMySql();
-            Citizen citizen = (Citizen)dao.LoadPerson(1);
-            VoterCard vc = dao.LoadVoterCard(1);
-            PrintVoterCard voterCard = new PrintVoterCard(vc);
+            PrintVoterCard printVoterCard = new PrintVoterCard(voterCard);
             PrintDialog dialog = new PrintDialog();
             if (dialog.ShowDialog() == true)
-            { dialog.PrintVisual(voterCard.printPage, "Print Voter Card"); }
+            { dialog.PrintVisual(printVoterCard.printPage, "Print Voter Card"); }
         }
     }
 }

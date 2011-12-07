@@ -29,11 +29,10 @@ namespace DigitalVoterList.Election.Administration
             InitializeComponent();
             
             ElectionNameLabel.Content = voterCard.ElectionEvent.Name;
-            //VotingVenueTextBlock.Text = voterCard.VotingVenue,name;
+            VotingVenueTextBlock.Text = voterCard.Citizen.VotingPlace.Name;
             IdLabel.Content = voterCard.Id;
             voterCard.IdKey = "1234abcd";
             BarcodeLabel.Content = voterCard.IdKey;
-            Debug.WriteLine("IDKEY: "+voterCard.IdKey);
             BarCodeTextBlock.Text = voterCard.IdKey;
             AddressTextBlock.Text = voterCard.Citizen.Name + Environment.NewLine + voterCard.Citizen.Address;
         }

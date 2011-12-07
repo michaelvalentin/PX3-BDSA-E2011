@@ -89,6 +89,9 @@
     <Compile Include="Controllers\ManualRegistrationController.cs" />
     <Compile Include="Controllers\RandomQuestionController.cs" />
     <Compile Include="Controllers\VoterRegistrationController.cs" />
+    <Compile Include="Election\Administration\PrintVoterCard.xaml.cs">
+      <DependentUpon>PrintVoterCard.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Election\DataTransformer.cs" />
     <Compile Include="Election\RawPerson.cs" />
     <Compile Include="Election\SystemAction.cs" />
@@ -99,11 +102,23 @@
     <Compile Include="Election\PermissionException.cs" />
     <Compile Include="Election\VotingVenue.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Views\CitizenDetailView.xaml.cs">
+      <DependentUpon>CitizenDetailView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ElectionAdministrationView.xaml.cs">
       <DependentUpon>ElectionAdministrationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ManualRegistrationView.xaml.cs">
       <DependentUpon>ManualRegistrationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ManualVoterValidationView.xaml.cs">
+      <DependentUpon>ManualVoterValidationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\QuestionListView.xaml.cs">
+      <DependentUpon>QuestionListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Test.xaml.cs">
+      <DependentUpon>Test.xaml</DependentUpon>
     </Compile>
     <Compile Include="VoterListApp.cs" />
     <Compile Include="Utilities\Barcode.cs" />
@@ -136,7 +151,15 @@
     <Compile Include="Views\VoterRegistrationView.xaml.cs">
       <DependentUpon>VoterRegistrationView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Election\Administration\PrintVoterCard.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\AdministrationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CitizenDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -156,7 +179,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ManualVoterValidationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\QuestionListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SecurityQuesitonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Test.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

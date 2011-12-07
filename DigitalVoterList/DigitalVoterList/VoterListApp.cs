@@ -5,6 +5,9 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList
 {
+    using System.Collections.Generic;
+
+    using DigitalVoterList.Utilities;
 
     /// <summary>
     /// The main class for initializing the application
@@ -29,9 +32,9 @@ namespace DigitalVoterList
             Application app = new Application();
             VoterListApp.App = app;
             app.Startup += (o, e) =>
-            {
-                RunApp(null);
-            };
+                {
+                    RunApp(null);
+                };
             app.Run();
         }
 
