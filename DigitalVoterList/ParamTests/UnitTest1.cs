@@ -3,6 +3,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ParamTests
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
     using DigitalVoterList;
     using DigitalVoterList.Election;
 
@@ -11,15 +14,35 @@ namespace ParamTests
     [TestClass]
     public partial class UnitTest1
     {
-        public static void Main()
-        {
+        private HashSet<int> _personIds;
 
+        [TestInitialize()]
+        public void Prepare()
+        {
+            _personIds = new HashSet<int> { 1, 2, 3, 6 };
+            VoterListApp.CurrentUser = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
         }
 
 
         [TestMethod]
         public void TestMethod1()
         {
+            var x = _personIds;
+            var p = x.Contains(1);
+        }
+
+        [TestMethod]
+        public void TestFindPerson()
+        {
+            var p = DAOMySql.GetDao(VoterListApp.CurrentUser).Find(new Person(1));
+            Contract.Ensures(p[0].Name == "Hans Hansen");
+        }
+
+        [TestMethod]
+        public void TestLoadPerson()
+        {
+            var p = DAOMySql.GetDao(VoterListApp.CurrentUser).LoadPerson(1);
+            Contract.Ensures(p.Name == "Hans Hansen");
 
         }
 
@@ -29,13 +52,10 @@ namespace ParamTests
         [PexMethod]
         public void TestDataTransformation()
         {
-            VoterListApp.CurrentUser = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
-
-            var u = VoterListApp.CurrentUser;
-
             var t = new DataTransformer();
             t.TransformData(new ElectionEvent(DateTime.Today, "Test event"));
         }
+
 
 
 

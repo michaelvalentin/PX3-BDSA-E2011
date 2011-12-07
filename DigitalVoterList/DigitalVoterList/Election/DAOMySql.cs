@@ -315,6 +315,8 @@ namespace DigitalVoterList.Election
 
         public List<Person> Find(Person p)
         {
+            Contract.Requires(p != null);
+
             Contract.Ensures(Contract.Result<List<Person>>() != null);
 
             var connection = this.GetSqlConnection();
