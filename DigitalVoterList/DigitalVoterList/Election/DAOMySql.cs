@@ -5,14 +5,18 @@ using MySql.Data.MySqlClient;
 namespace DigitalVoterList.Election
 {
     using System.Diagnostics.Contracts;
-    using System.Windows.Documents;
+
     using DigitalVoterList.Utilities;
 
     public class DAOMySql : IDataAccessObject
     {
-        private MySqlConnection _sqlConnection;
+        private int _readers = 0;
+
+        private Stack<MySqlConnection> _freeConnections = new Stack<MySqlConnection>();
+        private HashSet<MySqlConnection> _workingConnections = new HashSet<MySqlConnection>();
         private string _connectionString;
-        private bool _isConnected;
+
+        private MySqlConnection con;
 
         private DAOMySql()
         {
@@ -20,19 +24,6 @@ namespace DigitalVoterList.Election
                                      "Database=" + Settings.DbName + ";" +
                                      "Uid=" + Settings.DbUser + ";" +
                                      "Pwd=" + Settings.DbPassword + ";";
-
-            try
-            {
-                _sqlConnection = new MySqlConnection(this._connectionString);
-            }
-            catch (Exception excp)
-            {
-                Exception myExcp = new Exception("Error connecting you to " +
-                    "the my sql server. Internal error message: " + excp.Message, excp);
-                throw myExcp;
-            }
-
-            this._isConnected = false;
         }
 
         public static IDataAccessObject GetDao(User u)
@@ -40,52 +31,80 @@ namespace DigitalVoterList.Election
             return new DAOPermissionProxy(u, new DAOMySql());
         }
 
+        private MySqlConnection GetSqlConnection()
+        {
+            Contract.Ensures(Contract.Result<MySqlConnection>() != null);
+
+            MySqlConnection workingConnection = null;
+
+            if (_freeConnections.Count != 0)
+            {
+                workingConnection = _freeConnections.Pop();
+                this._workingConnections.Add(workingConnection);
+            }
+            else
+            {
+                workingConnection = this.NewSqlConnection();
+                workingConnection.Open();
+                this._workingConnections.Add(workingConnection);
+            }
+
+            return workingConnection;
+        }
+
+        private void ReleaseSqlConnection(MySqlConnection connection)
+        {
+            if (_freeConnections.Count != 0)
+            {
+                connection.Close();
+                this._workingConnections.Remove(connection);
+            }
+            else
+            {
+                this._freeConnections.Push(connection);
+                this._workingConnections.Remove(connection);
+            }
+        }
+
+        private MySqlConnection NewSqlConnection()
+        {
+            try
+            {
+                return new MySqlConnection(this._connectionString);
+            }
+            catch (Exception excp)
+            {
+                Exception myExcp = new Exception("Error connecting you to " +
+                    "the my sql server. Internal error message: " + excp.Message, excp);
+                throw myExcp;
+            }
+        }
+
         ~DAOMySql()
         {
             Disconnect();
         }
 
-        private void Connect()
+        private void Disconnect()
         {
-            bool success = true;
-
-            if (this._isConnected == false)
+            foreach (var mySqlConnection in _freeConnections)
             {
-                try
-                {
-                    this._sqlConnection.Open();
-                }
-                catch (Exception excp)
-                {
-                    this._isConnected = false;
-                    success = false;
-                    Exception myException = new Exception("Error opening connection" +
-                        " to the sql server. Error: " + excp.Message, excp);
-
-                    throw myException;
-                }
-
-                if (success)
-                {
-                    this._isConnected = true;
-                }
+                mySqlConnection.Close();
             }
-        }
 
-        public void Disconnect()
-        {
-            if (this._isConnected)
+            foreach (var mySqlConnection in _workingConnections)
             {
-                this._sqlConnection.Close();
+                mySqlConnection.Close();
             }
         }
 
         public Person LoadPerson(int id)
         {
-            Connect();
+            var connection = this.GetSqlConnection();
             string query = "SELECT * FROM person WHERE id=" + id + " LIMIT 1";
-            MySqlCommand loadPerson = new MySqlCommand(query, this._sqlConnection);
+            MySqlCommand loadPerson = new MySqlCommand(query, connection);
             MySqlDataReader reader = null;
+
             try
             {
                 reader = loadPerson.ExecuteReader();
@@ -119,19 +138,8 @@ namespace DigitalVoterList.Election
             finally
             {
                 if (reader != null) reader.Close();
+                this.ReleaseSqlConnection(connection);
             }
-        }
-
-        public User LoadUser(string username)
-        {
-            Connect();
-            MySqlCommand loadUser = new MySqlCommand(
-                "SELECT * FROM user INNER JOIN person ON person_id=person.id AND user_name=@uname",
-                 this._sqlConnection
-                 );
-            loadUser.Prepare();
-            loadUser.Parameters.AddWithValue("@uname", username);
-            return LoadUser(loadUser);
         }
 
         public User LoadUser(string username, string password)
@@ -147,16 +155,27 @@ namespace DigitalVoterList.Election
             }
         }
 
+        public User LoadUser(string username)
+        {
+            var connection = this.GetSqlConnection();
+            var loadUser = new MySqlCommand(
+                "SELECT * FROM user INNER JOIN person ON person_id=person.id AND user_name=@uname", connection);
+            loadUser.Prepare();
+            loadUser.Parameters.AddWithValue("@uname", username);
+            return LoadUser(loadUser);
+        }
+
         public User LoadUser(int id)
         {
-            Connect();
             string query = "SELECT * FROM user u LEFT JOIN person p ON u.person_id=p.id WHERE u.id=" + id;
-            return LoadUser(new MySqlCommand(query, this._sqlConnection));
+            var connection = this.GetSqlConnection();
+            return LoadUser(new MySqlCommand(query, connection));
         }
 
         private User LoadUser(MySqlCommand loadUser)
         {
-            Connect();
+            Contract.Requires(loadUser != null & loadUser.Connection != null);
+
             MySqlDataReader reader = null;
             try
             {
@@ -179,33 +198,37 @@ namespace DigitalVoterList.Election
             finally
             {
                 if (reader != null) reader.Close();
+                this.ReleaseSqlConnection(loadUser.Connection);
             }
         }
 
         public bool ValidateUser(string username, string passwordHash)
         {
-            Connect();
-            MySqlCommand validate = new MySqlCommand("SELECT id FROM user WHERE password_hash=@pwd_hash AND user_name=@uname LIMIT 1", _sqlConnection);
+            var connection = this.GetSqlConnection();
+            MySqlCommand validate = new MySqlCommand("SELECT id FROM user WHERE password_hash=@pwd_hash AND user_name=@uname LIMIT 1", connection);
             validate.Prepare();
             validate.Parameters.AddWithValue("@pwd_hash", passwordHash);
             validate.Parameters.AddWithValue("@uname", username);
 
             object result = validate.ExecuteScalar();
+
+            this.ReleaseSqlConnection(connection);
             return result != null && (int)result > 0;
         }
 
         public HashSet<SystemAction> GetPermissions(User u)
         {
-            MySqlCommand getPermissions = new MySqlCommand("SELECT label FROM user u INNER JOIN permission p ON u.id = p.user_id INNER JOIN action a ON a.id = p.action_id WHERE u.id=" + u.DbId, _sqlConnection);
-            MySqlDataReader rdr = null;
+            var connection = this.GetSqlConnection();
+            MySqlCommand getPermissions = new MySqlCommand("SELECT label FROM user u INNER JOIN permission p ON u.id = p.user_id INNER JOIN action a ON a.id = p.action_id WHERE u.id=" + u.DbId, connection);
+            MySqlDataReader reader = null;
             HashSet<SystemAction> output = new HashSet<SystemAction>();
 
             try
             {
-                rdr = getPermissions.ExecuteReader();
-                while (rdr.Read())
+                reader = getPermissions.ExecuteReader();
+                while (reader.Read())
                 {
-                    output.Add(SystemActions.getSystemAction(rdr.GetString(0)));
+                    output.Add(SystemActions.getSystemAction(reader.GetString(0)));
                 }
             }
             catch (Exception ex)
@@ -214,22 +237,24 @@ namespace DigitalVoterList.Election
             }
             finally
             {
-                if (rdr != null) rdr.Close();
+                if (reader != null) reader.Close();
+                this.ReleaseSqlConnection(connection);
             }
             return output;
         }
 
         public HashSet<VotingVenue> GetWorkplaces(User u)
         {
-            MySqlCommand getWorkplaces = new MySqlCommand("SELECT * FROM user u INNER JOIN workplace w ON u.id = w.user_id INNER JOIN voting_venue v ON v.id = w.voting_venue_id WHERE u.id=" + u.DbId, _sqlConnection);
+            var connection = this.GetSqlConnection();
+            MySqlCommand getWorkplaces = new MySqlCommand("SELECT * FROM user u INNER JOIN workplace w ON u.id = w.user_id INNER JOIN voting_venue v ON v.id = w.voting_venue_id WHERE u.id=" + u.DbId, connection);
             HashSet<VotingVenue> output = new HashSet<VotingVenue>();
-            MySqlDataReader rdr = null;
+            MySqlDataReader reader = null;
             try
             {
-                rdr = getWorkplaces.ExecuteReader();
-                while (rdr.Read())
+                reader = getWorkplaces.ExecuteReader();
+                while (reader.Read())
                 {
-                    output.Add(new VotingVenue(rdr.GetInt32("id"), rdr.GetString("name"), rdr.GetString("address")));
+                    output.Add(new VotingVenue(reader.GetInt32("id"), reader.GetString("name"), reader.GetString("address")));
                 }
             }
             catch (Exception ex)
@@ -238,16 +263,17 @@ namespace DigitalVoterList.Election
             }
             finally
             {
-                if (rdr != null) rdr.Close();
+                if (reader != null) reader.Close();
+                this.ReleaseSqlConnection(connection);
             }
             return output;
         }
 
         public VoterCard LoadVoterCard(int id)
         {
-            Connect();
+            var connection = this.GetSqlConnection();
             string query = "SELECT * FROM voter_card INNER JOIN person ON person.id=person_id AND voter_card.id=" + id;
-            MySqlCommand loadVoterCard = new MySqlCommand(query, this._sqlConnection);
+            MySqlCommand loadVoterCard = new MySqlCommand(query, connection);
             MySqlDataReader reader = null;
 
             try
@@ -271,13 +297,14 @@ namespace DigitalVoterList.Election
             finally
             {
                 if (reader != null) reader.Close();
+                this.ReleaseSqlConnection(connection);
             }
         }
 
         public VoterCard LoadVoterCard(string idKey)
         {
-            Connect();
-            MySqlCommand loadVoterCardId = new MySqlCommand("SELECT id FROM voter_card WHERE id_key=@id_key", _sqlConnection);
+            var connection = this.GetSqlConnection();
+            MySqlCommand loadVoterCardId = new MySqlCommand("SELECT id FROM voter_card WHERE id_key=@id_key", connection);
             loadVoterCardId.Prepare();
             loadVoterCardId.Parameters.AddWithValue("id_key", idKey);
             int id = (int)(loadVoterCardId.ExecuteScalar() ?? 0);
@@ -290,11 +317,10 @@ namespace DigitalVoterList.Election
         {
             Contract.Ensures(Contract.Result<List<Person>>() != null);
 
-
-            Connect();
+            var connection = this.GetSqlConnection();
             List<Person> persons = new List<Person>();
             string query = "SELECT * FROM person WHERE cpr='" + p.Cpr + "' OR (name=@name AND address=@address) OR COALESCE(name=@name, address=@address) IS NOT NULL";
-            MySqlCommand find = new MySqlCommand(query, this._sqlConnection);
+            MySqlCommand find = new MySqlCommand(query, connection);
             MySqlDataReader reader = null;
             try
             {
@@ -319,15 +345,16 @@ namespace DigitalVoterList.Election
             finally
             {
                 if (reader != null) reader.Close();
+                this.ReleaseSqlConnection(connection);
             }
         }
 
         public List<User> Find(User u)
         {
-            Connect();
+            var connection = GetSqlConnection();
             List<User> users = new List<User>();
             string query = "SELECT * FROM user INNER JOIN person ON person_id = person.id WHERE (title='" + u.Title + "' AND user_name='" + u.Username + "') OR COALESCE(title='" + u.Title + "', user_name='" + u.Username + "')";
-            MySqlCommand find = new MySqlCommand(query, this._sqlConnection);
+            MySqlCommand find = new MySqlCommand(query, connection);
             MySqlDataReader reader = null;
 
             try
@@ -355,6 +382,7 @@ namespace DigitalVoterList.Election
             finally
             {
                 if (reader != null) reader.Close();
+                this.ReleaseSqlConnection(connection);
             }
         }
 
@@ -363,40 +391,12 @@ namespace DigitalVoterList.Election
             throw new NotImplementedException();
         }
 
-        public IEnumerator<RawPerson> LoadRawPersonData()
-        {
-            Connect();
-            string query = "SELECT * FROM raw_person_data";
-            MySqlCommand loadRawPeople = new MySqlCommand(query, this._sqlConnection);
-
-            try
-            {
-                MySqlDataReader reader = loadRawPeople.ExecuteReader();
-                return readStuff(reader);
-            }
-            catch (Exception ex)
-            {
-                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
-            }
-        }
-
-        // HAD TO MAKE A PRIVATE METHOD FOR TRY CATCH OF YIELD
-        private IEnumerator<RawPerson> readStuff(MySqlDataReader reader)
-        {
-            while (reader.Read())
-            {
-                var rawPerson = new RawPerson();
-                DoIfNotDbNull(reader, "name", lbl => rawPerson.Name = reader.GetString(lbl));
-                yield return rawPerson;
-            }
-        }
-
         public List<Citizen> FindElegibleVoters()
         {
-            Connect();
+            var connection = GetSqlConnection();
             List<Citizen> citizens = new List<Citizen>();
             string query = "SELECT * FROM person WHERE eligible_to_vote = '1'";
-            MySqlCommand findEligibleVoters = new MySqlCommand(query, this._sqlConnection);
+            MySqlCommand findEligibleVoters = new MySqlCommand(query, connection);
             MySqlDataReader reader = null;
 
             try
@@ -423,14 +423,15 @@ namespace DigitalVoterList.Election
             finally
             {
                 if (reader != null) reader.Close();
+                this.ReleaseSqlConnection(connection);
             }
         }
 
         public void UpdatePeople(Func<Person, RawPerson, Person> updateFunc)
         {
-            Connect();
+            var connection = GetSqlConnection();
             string query = "SELECT * FROM raw_person_data";
-            MySqlCommand loadRowPeople = new MySqlCommand(query, this._sqlConnection);
+            MySqlCommand loadRowPeople = new MySqlCommand(query, connection);
             MySqlDataReader reader = null;
 
             try
@@ -465,6 +466,7 @@ namespace DigitalVoterList.Election
             finally
             {
                 if (reader != null) reader.Close();
+                this.ReleaseSqlConnection(connection);
             }
 
             //Update people that are not in the raw data
@@ -479,10 +481,10 @@ namespace DigitalVoterList.Election
 
         public void MarkPeopleNotInRawDataUneligibleToVote()
         {
-            Connect();
+            var connection = GetSqlConnection();
             try
             {
-                new MySqlCommand("DELETE FROM person WHERE p.cpr NOT IN (SELECT r.cpr FROM raw_person_data);", _sqlConnection).ExecuteNonQuery();
+                new MySqlCommand("DELETE FROM person WHERE p.cpr NOT IN (SELECT r.cpr FROM raw_person_data);", connection).ExecuteNonQuery();
             }
             catch (Exception ex)
             {
@@ -492,7 +494,7 @@ namespace DigitalVoterList.Election
 
         public void Save(Person per)
         {
-            Connect();
+            var connection = GetSqlConnection();
             int id = per.DbId;
 
             if (id != 0)
@@ -500,7 +502,7 @@ namespace DigitalVoterList.Election
                 try
                 {
                     MySqlCommand getPerson = new MySqlCommand(
-                        "SELECT id FROM person WHERE id=" + per.DbId, _sqlConnection);
+                        "SELECT id FROM person WHERE id=" + per.DbId, connection);
                     if (id != (int)getPerson.ExecuteScalar())
                     {
                         throw new DataAccessException(
@@ -517,11 +519,11 @@ namespace DigitalVoterList.Election
             if (id == 0)
             {
                 savePerson = new MySqlCommand("INSERT INTO person " +
-                    "(name,address,cpr,place_of_birth,passport_number) VALUES(@name,@address,@cpr,@place_of_birth,@passport_number)", _sqlConnection);
+                    "(name,address,cpr,place_of_birth,passport_number) VALUES(@name,@address,@cpr,@place_of_birth,@passport_number)", connection);
             }
             else
             {
-                savePerson = new MySqlCommand("UPDATE person SET name=@name, address=@address, place_of_birth=@place_of_birth, passport_number=@passport_number WHERE id=@id LIMIT 1", _sqlConnection);
+                savePerson = new MySqlCommand("UPDATE person SET name=@name, address=@address, place_of_birth=@place_of_birth, passport_number=@passport_number WHERE id=@id LIMIT 1", connection);
             }
             savePerson.Prepare();
             savePerson.Parameters.AddWithValue("@name", per.Name ?? "");
@@ -536,11 +538,11 @@ namespace DigitalVoterList.Election
 
         private void SaveQuizzes(Citizen citizen)
         {
-            Connect();
+            var connection = GetSqlConnection();
             if (citizen.DbId == 0)
             {
                 MySqlCommand deleteQuiz = new MySqlCommand(
-                    "DELETE FROM quiz WHERE person_id='" + citizen.DbId + "'", _sqlConnection);
+                    "DELETE FROM quiz WHERE person_id='" + citizen.DbId + "'", connection);
 
                 MySqlDataReader reader = null;
 
@@ -553,7 +555,7 @@ namespace DigitalVoterList.Election
                         MySqlCommand saveQuiz =
                             new MySqlCommand(
                                 "INSERT INTO quiz (question, answer, person_id) VALUES(@question, @answer, @person_id)",
-                                _sqlConnection);
+connection);
                         saveQuiz.Prepare();
                         saveQuiz.Parameters.AddWithValue("@question", quiz.Question);
                         saveQuiz.Parameters.AddWithValue("@answer", quiz.Answer);
@@ -567,20 +569,21 @@ namespace DigitalVoterList.Election
                 finally
                 {
                     if (reader != null) reader.Close();
+                    this.ReleaseSqlConnection(connection);
                 }
             }
         }
 
         public void Save(User u)
         {
-            Connect();
+            var connection = GetSqlConnection();
             int id = u.DbId;
             if (u.DbId != 0)
             {
                 try
                 {
                     MySqlCommand getUser = new MySqlCommand(
-                        "SELECT id FROM user WHERE id=" + u.DbId, _sqlConnection);
+                        "SELECT id FROM user WHERE id=" + u.DbId, connection);
                     if (id != (int)getUser.ExecuteScalar())
                     {
                         throw new DataAccessException(
@@ -598,11 +601,11 @@ namespace DigitalVoterList.Election
             if (id == 0)
             {
                 saveUser = new MySqlCommand("INSERT INTO user " +
-                    "(user_name, title) VALUES(@user_name, @title)", _sqlConnection);
+                    "(user_name, title) VALUES(@user_name, @title)", connection);
             }
             else
             {
-                saveUser = new MySqlCommand("UPDATE user SET user_name=@user_name, title=@title, WHERE id=@id LIMIT 1", _sqlConnection);
+                saveUser = new MySqlCommand("UPDATE user SET user_name=@user_name, title=@title, WHERE id=@id LIMIT 1", connection);
             }
             saveUser.Prepare();
             saveUser.Parameters.AddWithValue("@user_name", u.Username);
@@ -613,14 +616,14 @@ namespace DigitalVoterList.Election
 
         public void Save(VoterCard vc)
         {
-            Connect();
+            var connection = GetSqlConnection();
             int id = vc.Id;
             if (vc.Id != 0)
             {
                 try
                 {
                     MySqlCommand getVoterCard = new MySqlCommand(
-                        "SELECT id FROM voter_card WHERE id=" + vc.Id, _sqlConnection);
+                        "SELECT id FROM voter_card WHERE id=" + vc.Id, connection);
                     if (id != (int)getVoterCard.ExecuteScalar())
                     {
                         throw new DataAccessException(
@@ -638,11 +641,11 @@ namespace DigitalVoterList.Election
             if (id == 0)
             {
                 saveVoterCard = new MySqlCommand("INSERT INTO voter_card " +
-                    "(person_id, valid) VALUES(@person_id, @valid, @id_key)", _sqlConnection);
+                    "(person_id, valid) VALUES(@person_id, @valid, @id_key)", connection);
             }
             else
             {
-                saveVoterCard = new MySqlCommand("UPDATE voter_card SET person_id=@person_id, valid=@valid, id_key=@id_key WHERE id=@id LIMIT 1", _sqlConnection);
+                saveVoterCard = new MySqlCommand("UPDATE voter_card SET person_id=@person_id, valid=@valid, id_key=@id_key WHERE id=@id LIMIT 1", connection);
             }
             saveVoterCard.Prepare();
             saveVoterCard.Parameters.AddWithValue("@person_id", vc.Citizen.DbId);
@@ -654,7 +657,7 @@ namespace DigitalVoterList.Election
 
         public bool Save(int citizenId, Quiz q)
         {
-            Connect();
+            var connection = GetSqlConnection();
             MySqlCommand cId = new MySqlCommand("SELECT id FROM person WHERE id='" + citizenId + "' LIMIT 1");
             MySqlDataReader reader = null;
             try
@@ -665,7 +668,7 @@ namespace DigitalVoterList.Election
                     MySqlCommand quiz =
                         new MySqlCommand(
                             "INSERT INTO quiz (question, answer, person_id) VALUES(@question, @answer, @person_id)",
-                            _sqlConnection);
+                            connection);
                     quiz.Parameters.AddWithValue("@question", q.Question);
                     quiz.Parameters.AddWithValue("@answer", q.Answer);
                     quiz.Parameters.AddWithValue("@person_id", citizenId);
@@ -684,22 +687,23 @@ namespace DigitalVoterList.Election
             finally
             {
                 if (reader != null) reader.Close();
+                this.ReleaseSqlConnection(connection);
             }
         }
 
         public void SetHasVoted(Citizen citizen, int cprKey)
         {
-            Connect();
+            var connection = GetSqlConnection();
             try
             {
                 MySqlCommand getCpr = new MySqlCommand(
-                    "SELECT cpr FROM person WHERE id='" + citizen.DbId + "'", _sqlConnection);
+                    "SELECT cpr FROM person WHERE id='" + citizen.DbId + "'", connection);
                 int citizenKeyPhrase = Convert.ToInt32(getCpr.ToString().Substring(7, 4));
                 if (cprKey == citizenKeyPhrase)
                 {
                     try
                     {
-                        MySqlCommand setHasVoted = new MySqlCommand("SELECT person SET has_voted = '1' WHERE id='" + citizen.DbId + "'", _sqlConnection);
+                        MySqlCommand setHasVoted = new MySqlCommand("SELECT person SET has_voted = '1' WHERE id='" + citizen.DbId + "'", connection);
                         citizen.SetHasVoted();
                         //return true;
                     }
@@ -718,10 +722,10 @@ namespace DigitalVoterList.Election
 
         public void SetHasVoted(Citizen citizen)
         {
-            Connect();
+            var connection = GetSqlConnection();
             try
             {
-                MySqlCommand setHasVoted = new MySqlCommand("SELECT person SET has_voted = '1' WHERE id='" + citizen.DbId + "'", _sqlConnection);
+                MySqlCommand setHasVoted = new MySqlCommand("SELECT person SET has_voted = '1' WHERE id='" + citizen.DbId + "'", connection);
                 if (setHasVoted.ExecuteNonQuery() == 1)
                 {
                     //return true;
@@ -739,7 +743,7 @@ namespace DigitalVoterList.Election
 
         public void ChangePassword(User user, string newPassword)
         {
-            Connect();
+            var connection = GetSqlConnection();
 
             try
             {
@@ -755,13 +759,13 @@ namespace DigitalVoterList.Election
 
         public void ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
         {
-            Connect();
+            var connection = GetSqlConnection();
             try
             {
                 User u = LoadUser(user.DBId);
                 u.ChangePassword(oldPasswordHash, newPasswordHash);
 
-                MySqlCommand loadUser = new MySqlCommand("SELECT id FROM user WHERE id=@id AND password_hash=@oldPasswordHash", _sqlConnection);
+                MySqlCommand loadUser = new MySqlCommand("SELECT id FROM user WHERE id=@id AND password_hash=@oldPasswordHash", connection);
                 loadUser.Prepare();
                 loadUser.Parameters.AddWithValue("id", user.DbId);
                 loadUser.Parameters.AddWithValue("oldPasswordHash", oldPasswordHash);
@@ -775,7 +779,8 @@ namespace DigitalVoterList.Election
 
         private bool ChangePassword(int userDbId, string newPasswordHash)
         {
-            MySqlCommand changePassword = new MySqlCommand("UPDATE user SET password_hash=@newPasswordHash WHERE id=@id", _sqlConnection);
+            var connection = this.GetSqlConnection();
+            MySqlCommand changePassword = new MySqlCommand("UPDATE user SET password_hash=@newPasswordHash WHERE id=@id", connection);
             changePassword.Prepare();
             changePassword.Parameters.AddWithValue("id", userDbId);
             changePassword.Parameters.AddWithValue("newPasswordHash", newPasswordHash);
@@ -794,10 +799,10 @@ namespace DigitalVoterList.Election
 
         public void MarkVoterCardInvalid(VoterCard vc)
         {
-            Connect();
+            var connection = this.GetSqlConnection();
             try
             {
-                MySqlCommand setInvalid = new MySqlCommand("SELECT voter_card SET valid = '0' WHERE id='" + vc.Id + "'", _sqlConnection);
+                MySqlCommand setInvalid = new MySqlCommand("SELECT voter_card SET valid = '0' WHERE id='" + vc.Id + "'", connection);
                 if (setInvalid.ExecuteNonQuery() == 1)
                 {
                     //return true;

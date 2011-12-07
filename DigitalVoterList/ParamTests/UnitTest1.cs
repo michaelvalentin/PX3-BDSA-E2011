@@ -11,6 +11,12 @@ namespace ParamTests
     [TestClass]
     public partial class UnitTest1
     {
+        public static void Main()
+        {
+
+        }
+
+
         [TestMethod]
         public void TestMethod1()
         {
@@ -25,7 +31,7 @@ namespace ParamTests
         {
             VoterListApp.CurrentUser = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
 
-            User u = VoterListApp.CurrentUser;
+            var u = VoterListApp.CurrentUser;
 
             var t = new DataTransformer();
             t.TransformData(new ElectionEvent(DateTime.Today, "Test event"));
