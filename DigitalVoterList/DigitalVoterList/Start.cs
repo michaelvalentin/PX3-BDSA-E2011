@@ -10,6 +10,8 @@ namespace DigitalVoterList
     using System.Windows.Controls;
     using System.Windows.Documents;
 
+    using DigitalVoterList.Election.Administration;
+
     /// <summary>
     /// The main class for initializing the application
     /// </summary>
@@ -21,18 +23,12 @@ namespace DigitalVoterList
         [System.STAThread]
         public static void Main()
         {
-            //DAOMySql dao = new DAOMySql();
-            //Citizen c = (Citizen)dao.LoadPerson(1);
-            //VoterCard vc = new VoterCard(Settings.Election, c);
-            //PrintVoterCard pv = new PrintVoterCard(vc);
-            //pv.Show();
-
-            //VoterCardPrinter vcp = new VoterCardPrinter();
-            //vcp.Print(vc);
-            //Debug.WriteLine("JEG ER HER!!");
+            DAOMySql dao = new DAOMySql();
+            Citizen c = (Citizen)dao.LoadPerson(1);
+            VoterCard vc = new VoterCard(Settings.Election, c);
+            PrintVoterCard pv = new PrintVoterCard(vc);
             VoterCardPrinter vcp = new VoterCardPrinter();
             vcp.Print(vc);
-            Debug.WriteLine("JEG ER HER!!");*/
             Application app = new Application();
             app.Startup += (o, e) =>
             {

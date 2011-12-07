@@ -9,7 +9,7 @@ namespace DigitalVoterList.Election
 
     using DigitalVoterList.Utilities;
 
-    class DAOMySql : IDataAccessObject
+    public class DAOMySql : IDataAccessObject
     {
         private MySqlConnection _sqlConnection;
         private string _connectionString;

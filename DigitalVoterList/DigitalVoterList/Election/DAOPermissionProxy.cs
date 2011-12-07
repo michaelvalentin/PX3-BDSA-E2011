@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 namespace DigitalVoterList.Election
 {
+    using DigitalVoterList.Utilities;
 
     /// <summary>
     /// A proxy to handle permissions for data access actions
@@ -172,6 +173,11 @@ namespace DigitalVoterList.Election
                 return _dao.Save(voterCard);
             }
             return false;
+        }
+
+        public bool Save(int citizenId, Quiz quiz)
+        {
+            throw new System.NotImplementedException();
         }
 
         public bool SetHasVoted(Citizen citizen, int cprKey)

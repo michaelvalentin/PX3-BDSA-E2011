@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitalVoterList", "DigitalVoterList\DigitalVoterList.csproj", "{EEF1AB52-58A1-43C9-84EB-28A3574B7E6B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitalVoterListTEST", "DigitalVoterListTEST\DigitalVoterListTEST.csproj", "{61B48550-1B94-41AB-BC54-4B2DB0FA328F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,6 +15,10 @@ Global
 		{EEF1AB52-58A1-43C9-84EB-28A3574B7E6B}.Debug|x86.Build.0 = Debug|x86
 		{EEF1AB52-58A1-43C9-84EB-28A3574B7E6B}.Release|x86.ActiveCfg = Release|x86
 		{EEF1AB52-58A1-43C9-84EB-28A3574B7E6B}.Release|x86.Build.0 = Release|x86
+		{61B48550-1B94-41AB-BC54-4B2DB0FA328F}.Debug|x86.ActiveCfg = Debug|x86
+		{61B48550-1B94-41AB-BC54-4B2DB0FA328F}.Debug|x86.Build.0 = Debug|x86
+		{61B48550-1B94-41AB-BC54-4B2DB0FA328F}.Release|x86.ActiveCfg = Release|x86
+		{61B48550-1B94-41AB-BC54-4B2DB0FA328F}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
