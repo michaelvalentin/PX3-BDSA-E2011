@@ -11,25 +11,20 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class Citizen : Person
     {
-        private bool _eligibleToVote;
-        private bool _hasVoted;
-        private HashSet<VoterCard> _voterCards = null;
-        private HashSet<Quiz> _securityQuestions = null;
-        private VotingVenue _votingPlace;
-
         public Citizen(int id, string cpr)
             : base(id)
         {
             Cpr = cpr;
         }
 
-        //TODO: Make this... :-)
+        private HashSet<VoterCard> _voterCards;
+
+        private HashSet<Quiz> _securityQuestions;
+
         public bool EligibleToVote { get; set; }
 
-        //TODO: Make this... :-)
-        public VotingVenue VotingPlace { get; private set; }
+        public VotingVenue VotingPlace { get; set; }
 
-        //TODO: Make this... :-)
         public HashSet<VoterCard> VoterCards
         {
             get { return _voterCards ?? new HashSet<VoterCard>(); }
@@ -44,15 +39,11 @@ namespace DigitalVoterList.Election
 
         public bool HasVoted { get; private set; }
 
-        public bool SetHasVoted()
+        public void SetHasVoted()
         {
             IDataAccessObject dao = DAOFactory.CurrentUserDAO;
-            if (dao.SetHasVoted(this))
-            {
-                _hasVoted = true;
-                return true;
-            }
-            return false;
+            dao.SetHasVoted(this);
+            HasVoted = true;
         }
 
         [ContractInvariantMethod]

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace DigitalVoterList.Election
 {
+    using System;
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// A proxy to handle permissions for data access actions
@@ -21,18 +22,34 @@ namespace DigitalVoterList.Election
 
         private bool ActionPermitted(SystemAction a, string msg = "You don't have permission to perform this SystemAction.")
         {
+            Contract.Ensures(
+                (!_user.HasPermission(a) && Contract.Result<bool>() == false)
+                || (_user.HasPermission(a) && Contract.Result<bool>() == false));
+
+
             if (!_user.HasPermission(a))
             {
-                foreach (SystemAction ac in _user.Permissions)
-                {
-                    Debug.WriteLine("User permission: " + ac.ToString());
-                }
+                //todo: Enten skal denne metode retunere en bool eller kaste en exception, ikke begge?
                 throw new PermissionException(a, _user, msg);
+                return false;
             }
-            else
+
+            return true;
+        }
+
+        private bool ActionPermittedForThisUser(User user, SystemAction a, string msg = "You don't have permission to perform this SystemAction.")
+        {
+            Contract.Ensures(
+                (!_user.HasPermission(a) && Contract.Result<bool>() == false)
+                || (_user.HasPermission(a) && Contract.Result<bool>() == false));
+
+            if (!user.Equals(_user) || !_user.HasPermission(a))
             {
-                return true;
+                throw new PermissionException(a, _user, msg);
+                return false;
             }
+
+            return true;
         }
 
         private bool WorksHere(VotingVenue v, string msg = "You can't perform this action, as you don't work in the right voting venue")
@@ -147,97 +164,109 @@ namespace DigitalVoterList.Election
             throw new System.NotImplementedException();
         }
 
-        public bool Save(Person person)
+        public void Save(Person person)
         {
             if (ActionPermitted(SystemAction.SavePerson))
             {
-                return _dao.Save(person);
+                _dao.Save(person);
             }
-            return false;
         }
 
-        public bool Save(User user)
+        public void Save(User user)
         {
             if (ActionPermitted(SystemAction.SaveUser))
             {
-                return _dao.Save(user);
+                _dao.Save(user);
             }
-            return false;
         }
 
-        public bool Save(VoterCard voterCard)
+        public void Save(VoterCard voterCard)
         {
             if (ActionPermitted(SystemAction.SaveVoterCard))
             {
-                return _dao.Save(voterCard);
+                _dao.Save(voterCard);
             }
-            return false;
         }
 
-        public bool SetHasVoted(Citizen citizen, int cprKey)
+        public void SetHasVoted(Citizen citizen, int cprKey)
         {
             if (ActionPermitted(SystemAction.SetHasVoted) && WorksHere(citizen.VotingPlace))
             {
-                return _dao.SetHasVoted(citizen, cprKey);
+                _dao.SetHasVoted(citizen, cprKey);
             }
-            return false;
         }
 
-        public bool SetHasVoted(Citizen citizen)
+        public void SetHasVoted(Citizen citizen)
         {
             if (ActionPermitted(SystemAction.SetHasVotedManually))
             {
-                return _dao.Save(citizen);
+                _dao.Save(citizen);
             }
-            return false;
         }
 
-        public bool ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
+        public void ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
         {
-            if (user.Equals(_user))
+            if (ActionPermittedForThisUser(user, SystemAction.ChangeOwnPassword))
             {
-                if (ActionPermitted(SystemAction.ChangeOwnPassword))
-                {
-                    return _dao.ChangePassword(user, newPasswordHash, oldPasswordHash);
-                }
+                _dao.ChangePassword(user, newPasswordHash, oldPasswordHash);
             }
-            return false;
         }
 
-        public bool ChangePassword(User user, string newPasswordHash)
+        public void ChangePassword(User user, string newPasswordHash)
         {
             if (ActionPermitted(SystemAction.ChangeOthersPassword))
             {
-                return _dao.ChangePassword(user, newPasswordHash);
+                _dao.ChangePassword(user, newPasswordHash);
             }
-            return false;
         }
 
-        public bool MarkUserInvalid(User user)
+        public void MarkUserInvalid(User user)
         {
             if (ActionPermitted(SystemAction.MarkUserInvalid))
             {
-                return _dao.MarkUserInvalid(user);
+                _dao.MarkUserInvalid(user);
             }
-            return false;
         }
 
-        public bool RestoreUser(User user)
+        public void RestoreUser(User user)
         {
             if (ActionPermitted(SystemAction.RestoreUser))
             {
-                return _dao.RestoreUser(user);
+                _dao.RestoreUser(user);
             }
-            return false;
         }
 
-        public bool MarkVoterCardInvalid(VoterCard voterCard)
+        public void MarkVoterCardInvalid(VoterCard voterCard)
         {
             if (ActionPermitted(SystemAction.MarkVoteCardInvalid))
             {
-                return _dao.Save(voterCard);
+                _dao.MarkVoterCardInvalid(voterCard);
             }
-            return false;
+        }
+
+        public void MarkPeopleNotInRawDataUneligibleToVote()
+        {
+            if (ActionPermitted(SystemAction.MarkPeopleNotInRawDataUneligibleToVote))
+            {
+                _dao.MarkPeopleNotInRawDataUneligibleToVote();
+            }
+        }
+
+        public void UpdatePeople(Func<Person, RawPerson, Person> update)
+        {
+            if (ActionPermitted(SystemAction.UpdatePeople))
+            {
+                _dao.UpdatePeople(update);
+            }
+        }
+
+        public VotingVenue FindVotingVenue(Citizen citizen)
+        {
+            if (ActionPermitted(SystemAction.FindVotingVenue))
+            {
+                return _dao.FindVotingVenue(citizen);
+            }
+            return null;
         }
     }
 }

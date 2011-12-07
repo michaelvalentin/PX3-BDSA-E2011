@@ -5,10 +5,6 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList
 {
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Windows.Controls;
-    using System.Windows.Documents;
 
     /// <summary>
     /// The main class for initializing the application
@@ -17,6 +13,7 @@ namespace DigitalVoterList
     {
         private static User _currentUser;
         public static Application App;
+        private static MainWindow _mainWindow;
 
         public static User CurrentUser
         {
@@ -30,23 +27,12 @@ namespace DigitalVoterList
         [System.STAThread]
         public static void Main()
         {
-            //DAOMySql dao = new DAOMySql();
-            //Citizen c = (Citizen)dao.LoadPerson(1);
-            //VoterCard vc = new VoterCard(Settings.Election, c);
-            //PrintVoterCard pv = new PrintVoterCard(vc);
-            //pv.Show();
-
-            //VoterCardPrinter vcp = new VoterCardPrinter();
-            //vcp.Print(vc);
-            //Debug.WriteLine("JEG ER HER!!");
-            VoterCardPrinter vcp = new VoterCardPrinter();
-            vcp.Print(vc);
-            Debug.WriteLine("JEG ER HER!!");*/
             Application app = new Application();
             VoterListApp.App = app;
             app.Startup += (o, e) =>
             {
-                RunApp(null);
+                User u = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
+                RunApp(u);
             };
             app.Run();
         }
@@ -56,13 +42,8 @@ namespace DigitalVoterList
             VoterListApp.CurrentUser = user;
             if (user != null && user.Validated)
             {
-                MainWindow view = new MainWindow();
-                new MainWindowController(view);
-                /*
-                IDataAccessObject dao = DAOFactory.CurrentUserDAO;
-                User u = dao.LoadUser(2);
-                u.ChangePassword("12345");
-                 */
+                _mainWindow = new MainWindow();
+                new MainWindowController(_mainWindow);
             }
             else
             {
@@ -70,6 +51,18 @@ namespace DigitalVoterList
                 LoginWindow view = new LoginWindow();
                 new LoginController(view);
             }
+        }
+
+        public static void RunApp()
+        {
+            RunApp(CurrentUser);
+        }
+
+        public static void LogOut()
+        {
+            _currentUser = null;
+            RunApp();
+            _mainWindow.Close();
         }
     }
 }

@@ -60,6 +60,10 @@
                 grid.Measure(oldSize);
 
                 ((UIElement)grid).Arrange(new Rect(new Point(0,0), oldSize));
+<<<<<<< HEAD
+=======
+                
+>>>>>>> a83e28e80aa467862a407d6debd788c7c3132dc0
             }
                 printDlg.PrintVisual(newVoterCard, "Print Single VoterCard");
             }

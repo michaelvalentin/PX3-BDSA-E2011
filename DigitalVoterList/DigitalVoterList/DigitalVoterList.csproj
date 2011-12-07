@@ -86,9 +86,11 @@
     <Compile Include="Controllers\ElectionAdministrationController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MainWindowController.cs" />
-    <Compile Include="Controllers\ManualRegistrationController.cs" />
+    <Compile Include="Controllers\ManualVoterRegistrationController.cs" />
+    <Compile Include="Controllers\NormalVoterRegistrationController.cs" />
     <Compile Include="Controllers\RandomQuestionController.cs" />
     <Compile Include="Controllers\VoterRegistrationController.cs" />
+    <Compile Include="Election\DataTransformer.cs" />
     <Compile Include="Election\RawPerson.cs" />
     <Compile Include="Election\SystemAction.cs" />
     <Compile Include="Election\DAOFactory.cs" />
@@ -101,8 +103,8 @@
     <Compile Include="Views\ElectionAdministrationView.xaml.cs">
       <DependentUpon>ElectionAdministrationView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ManualRegistrationView.xaml.cs">
-      <DependentUpon>ManualRegistrationView.xaml</DependentUpon>
+    <Compile Include="Views\VoterIdentificationView.xaml.cs">
+      <DependentUpon>VoterIdentificationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="VoterListApp.cs" />
     <Compile Include="Utilities\Barcode.cs" />
@@ -151,15 +153,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ManualRegistrationView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\SecurityQuesitonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UserWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VoterIdentificationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -191,6 +193,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\error.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

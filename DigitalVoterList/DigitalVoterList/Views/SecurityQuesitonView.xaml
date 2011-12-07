@@ -4,15 +4,18 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
-             d:DesignHeight="150" d:DesignWidth="600">
+             d:DesignHeight="150" d:DesignWidth="960">
     <Grid>
-        <Rectangle Height="60" HorizontalAlignment="Left" Margin="116,12,0,0" Name="_questionBorder" Stroke="Black" VerticalAlignment="Top" Width="367" />
-        <TextBlock Height="60" HorizontalAlignment="Left" Margin="116,12,0,0" Name="Question" Text="" VerticalAlignment="Top" Width="367" Foreground="#FFBE0000" />
-        <Rectangle Height="60" HorizontalAlignment="Left" Margin="116,82,0,0" Name="_answerBorder" Stroke="Black" VerticalAlignment="Top" Width="367" />
-        <TextBlock Height="60" HorizontalAlignment="Left" Margin="116,82,0,0" Name="Answer" Text="" VerticalAlignment="Top" Width="367" Foreground="#FF009300" />
-        <Label Content="Question" Height="44" HorizontalAlignment="Left" Margin="8,12,0,0" Name="_questionLabel" VerticalAlignment="Top" Width="105" FontSize="18" FontWeight="Bold" />
-        <Label Content="Answer" FontSize="18" FontWeight="Bold" Height="44" HorizontalAlignment="Left" Margin="8,81,0,0" Name="_answerLabel" VerticalAlignment="Top" Width="105" />
-        <Button Content="New Question" Height="23" HorizontalAlignment="Left" Margin="488,12,0,0" Name="_newQuestionBtn" VerticalAlignment="Top" Width="105" Click="_newQuestionBtn_Click" />
-        <TextBlock Height="101" HorizontalAlignment="Left" Margin="488,41,0,0" Name="StatusText" Text="" VerticalAlignment="Top" Width="105" FontSize="10" />
+        <Label Content="Question" Height="24" HorizontalAlignment="Left" Name="_questionLabel" VerticalAlignment="Top" Width="105" FontSize="16" FontWeight="Bold" Padding="0" />
+        <Button Content="New Question" Height="41" HorizontalAlignment="Left" Margin="1,97,0,0" Name="_newQuestionBtn" VerticalAlignment="Top" Width="105" Click="_newQuestionBtn_Click" />
+        <TextBlock  Height="32" HorizontalAlignment="Left" Margin="122,106,0,0" Name="StatusText" Text="" VerticalAlignment="Top" Width="622" FontSize="12" TextWrapping="Wrap" />
+        <Border BorderBrush="Silver" BorderThickness="1" Height="Auto" HorizontalAlignment="Left" Margin="0,29,0,0" Name="_questionBorder" VerticalAlignment="Top" Width="Auto">
+            <TextBlock Height="60" Name="Question" Text="" Width="456" Foreground="#FFBE0000" TextWrapping="Wrap" />
+        </Border>
+        <Label Content="Answer" FontSize="16" FontWeight="Bold" Height="24" HorizontalAlignment="Left" Margin="503,0,0,0" Name="_answerLabel" Padding="0" VerticalAlignment="Top" Width="105" />
+        <Border BorderBrush="Silver" BorderThickness="1" Height="Auto" HorizontalAlignment="Left" Margin="503,29,0,0" Name="border1" VerticalAlignment="Top" Width="Auto">
+            <TextBlock Foreground="#FFBE0000" Height="60" Name="Answer" Text="" TextWrapping="Wrap" Width="456" />
+            
+        </Border>
     </Grid>
 </UserControl>

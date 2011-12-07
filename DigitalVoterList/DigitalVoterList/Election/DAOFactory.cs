@@ -1,6 +1,7 @@
 namespace DigitalVoterList.Election
 {
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// A factory responsible of creating Data Access Objects.
@@ -11,6 +12,11 @@ namespace DigitalVoterList.Election
 
         public static IDataAccessObject getDAO(User u)
         {
+            Contract.Ensures(
+                (Contract.Result<IDataAccessObject>() == null && !daos.ContainsKey(u)) ||
+                (Contract.Result<IDataAccessObject>() != null && daos.ContainsKey(u))
+            );
+
             if (!daos.ContainsKey(u))
             {
                 IDataAccessObject dao = DAOMySql.GetDao(u);
@@ -18,7 +24,6 @@ namespace DigitalVoterList.Election
             }
             return daos[u];
         }
-
 
         public static IDataAccessObject CurrentUserDAO
         {
