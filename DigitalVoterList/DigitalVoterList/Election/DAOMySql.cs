@@ -5,6 +5,7 @@ using MySql.Data.MySqlClient;
 namespace DigitalVoterList.Election
 {
     using System.Diagnostics.Contracts;
+    using System.Text;
 
     using DigitalVoterList.Utilities;
 
@@ -181,13 +182,14 @@ namespace DigitalVoterList.Election
             {
                 reader = loadUser.ExecuteReader();
                 if (!reader.Read()) return null;
+
                 User user = new User(reader.GetInt32("id"));
-                user.Username = reader.GetString("user_name");
-                user.Title = reader.GetString("title");
-                user.PassportNumber = reader.GetString("passport_number");
-                user.Name = reader.GetString("name");
-                user.PlaceOfBirth = reader.GetString("place_of_birth");
-                user.UserSalt = reader.GetString("user_salt");
+                DoIfNotDbNull(reader, "user_name", lbl => user.Username = reader.GetString(lbl));
+                DoIfNotDbNull(reader, "title", lbl => user.Title = reader.GetString(lbl));
+                DoIfNotDbNull(reader, "passport_number", lbl => user.PassportNumber = reader.GetString(lbl));
+                DoIfNotDbNull(reader, "name", lbl => user.Name = reader.GetString(lbl));
+                DoIfNotDbNull(reader, "place_of_birth", lbl => user.PlaceOfBirth = reader.GetString(lbl));
+                DoIfNotDbNull(reader, "user_salt", lbl => user.UserSalt = reader.GetString(lbl));
 
                 return user;
             }
@@ -312,13 +314,30 @@ namespace DigitalVoterList.Election
             return LoadVoterCard(id);
         }
 
-        private MySqlCommand FindByValues(string tableName, Dictionary<string, string> info)
+        private MySqlCommand CommandFromValues(string tableName, Dictionary<string, string> info)
         {
+            Contract.Requires(tableName != null);
+            Contract.Requires(info != null);
+
             var connection = this.GetSqlConnection();
-            var query = "SELECT * FROM person WHERE id=@1 AND name='Hans Hansen'";
-            var findData = new MySqlCommand(query, connection);
-            findData.Prepare();
-            findData.Parameters.AddWithValue("@1", Person.Name);
+            var queryBuilder = new StringBuilder("SELECT * FROM " + tableName + " WHERE ");
+            var insertAnd = false;
+
+            foreach (KeyValuePair<String, String> entry in info)
+            {
+                if (string.IsNullOrEmpty(entry.Value)) continue;
+                if (insertAnd) queryBuilder.Append(" AND ");
+                queryBuilder.Append(entry.Key);
+                queryBuilder.Append(" = '");
+                queryBuilder.Append(entry.Value);
+                queryBuilder.Append("'");
+                insertAnd = true;
+            }
+            queryBuilder.Append(";");
+
+            var findData = new MySqlCommand(queryBuilder.ToString(), connection);
+
+            return findData;
         }
 
 
@@ -332,15 +351,15 @@ namespace DigitalVoterList.Election
 
             var information = new Dictionary<string, string>
                 {
-                    { p.DbId.ToString(), "id" },
-                    { p.Name, "name" },
-                    { p.Cpr, "cpr" },
-                    { p.Address, "address" },
-                    { p.PassportNumber, "passport_number" },
-                    { p.PlaceOfBirth, "place_of_birth" }
+                    { "id", p.DbId.ToString() },
+                    { "name",p.Name },
+                    {  "cpr",p.Cpr },
+                    { "address",p.Address },
+                    { "passport_number",p.PassportNumber },
+                    { "place_of_birth",p.PlaceOfBirth }
                 };
 
-            MySqlCommand find = this.FindByValues(tableName, information);
+            MySqlCommand find = this.CommandFromValues(tableName, information);
             MySqlDataReader reader = null;
 
             var persons = new List<Person>();
@@ -464,6 +483,7 @@ namespace DigitalVoterList.Election
                 {
                     RawPerson rawPerson = new RawPerson();
                     DoIfNotDbNull(reader, "name", lbl => rawPerson.Name = reader.GetString(lbl));
+                    DoIfNotDbNull(reader, "CPR", lbl => rawPerson.CPR = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "address", lbl => rawPerson.Address = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "birthplace", lbl => rawPerson.Birthplace = reader.GetString(lbl));
                     DoIfNotDbNull(reader, "passport_number", lbl => rawPerson.PassportNumber = reader.GetString(lbl));
@@ -476,7 +496,7 @@ namespace DigitalVoterList.Election
                     person = updateFunc(person, rawPerson);
 
                     //Save updated data
-                    //Save(person);
+                    Save(person);
                 }
 
 
@@ -506,7 +526,7 @@ namespace DigitalVoterList.Election
             var connection = GetSqlConnection();
             try
             {
-                new MySqlCommand("DELETE FROM person WHERE p.cpr NOT IN (SELECT r.cpr FROM raw_person_data);", connection).ExecuteNonQuery();
+                new MySqlCommand("DELETE FROM person WHERE cpr NOT IN (SELECT cpr FROM raw_person_data);", connection).ExecuteNonQuery();
             }
             catch (Exception ex)
             {
@@ -556,6 +576,9 @@ namespace DigitalVoterList.Election
             if (id != 0) savePerson.Parameters.AddWithValue("@id", per.DbId);
             if (per is Citizen)
                 SaveQuizzes((Citizen)per);
+
+            savePerson.ExecuteNonQuery();
+
         }
 
         private void SaveQuizzes(Citizen citizen)

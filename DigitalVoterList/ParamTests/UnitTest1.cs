@@ -32,10 +32,29 @@ namespace ParamTests
         }
 
         [TestMethod]
+        public void TestLoadUser()
+        {
+            var u = DAOMySql.GetDao(VoterListApp.CurrentUser).LoadUser(3);
+            Contract.Ensures(u.Name == "Michael");
+        }
+
+
+        [TestMethod]
         public void TestFindPerson()
         {
             var p = DAOMySql.GetDao(VoterListApp.CurrentUser).Find(new Person(1));
             Contract.Ensures(p[0].Name == "Hans Hansen");
+        }
+
+        [TestMethod]
+        public void TestSavePerson()
+        {
+            var person = new Person();
+            person.Name = "Jens Dahl Møllerhøj";
+            person.Address = "Nørre Alle 75";
+
+            DAOMySql.GetDao(VoterListApp.CurrentUser).Save(person);
+            Contract.Ensures(DAOMySql.GetDao(VoterListApp.CurrentUser).Find(person).Equals(person));
         }
 
         [TestMethod]
@@ -53,7 +72,8 @@ namespace ParamTests
         public void TestDataTransformation()
         {
             var t = new DataTransformer();
-            t.TransformData(new ElectionEvent(DateTime.Today, "Test event"));
+            var e = new ElectionEvent(DateTime.Today, "Test event");
+            t.TransformData(e);
         }
 
 

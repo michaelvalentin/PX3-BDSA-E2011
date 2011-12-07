@@ -12,6 +12,8 @@ namespace DigitalVoterList.Election
 
         public static IDataAccessObject getDAO(User u)
         {
+            Contract.Ensures(Contract.Result<IDataAccessObject>() != null);
+
             Contract.Ensures(
                 (Contract.Result<IDataAccessObject>() == null && !daos.ContainsKey(u)) ||
                 (Contract.Result<IDataAccessObject>() != null && daos.ContainsKey(u))
