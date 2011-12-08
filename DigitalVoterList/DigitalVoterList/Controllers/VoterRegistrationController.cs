@@ -69,6 +69,7 @@ namespace DigitalVoterList.Controllers
                 _view.VoterIdentification.VoterCprDigits.Password = "";
                 LoadVoterValidation(null);
                 Citizen = null;
+
             }
             else
             {

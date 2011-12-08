@@ -1,5 +1,9 @@
 ﻿
 
+using System.Data;
+using System.Diagnostics.Contracts;
+using MySql.Data.MySqlClient;
+
 namespace DigitalVoterList.Election
 {
     using System;
@@ -7,12 +11,54 @@ namespace DigitalVoterList.Election
 
     public class DAOMySql : IDataAccessObject
     {
-        public DAOMySql()
-        {
 
+        private DAOMySql()
+        {
+        }
+
+        public static IDataAccessObject GetDAO(User u)
+        {
+            return new DAOPermissionProxy(u, new DAOMySql());
         }
 
         #region Implementation of IDataAccessObject
+
+        //DØD BABY!
+        /*public Person LoadPerson(string cpr)
+        {
+            Person p;
+            DoTransaction(() => { p = PriLoadPerson(cpr); });
+            return p;
+        }*/
+
+        public Person LoadPerson(string cpr)
+        {
+            return (Person)LoadWithTransaction(() => PriLoadPerson(cpr));
+        }
+
+        /*private Person PriLoadPerson(string cpr)
+        {
+            Contract.Requires(CprExists(cpr, trans));
+            MySqlCommand command = Prepare("SELECT id FROM person WHERE cpr=@cpr");
+            command.Parameters.AddWithValue("@cpr", cpr);
+            int personId = 0;
+            Query(command, (object id) => personId = (int)id);
+            return LoadPerson(personId);
+        }*/
+
+
+        //Other way...
+        private Person PriLoadPerson(string cpr)
+        {
+            Contract.Requires(Find(new Person() { Cpr = cpr }).Count == 1);
+            Contract.Ensures(Contract.Result<Person>() != null);
+            MySqlCommand command = Prepare("SELECT id FROM person WHERE cpr=@cpr");
+            command.Parameters.AddWithValue("@cpr", cpr);
+            int id = 0;
+            Query(command, (object o) => { id = (int)o; });
+            return PriLoadPerson(id);
+        }
+
 
         /// <summary>
         /// What person has this id?
@@ -21,7 +67,23 @@ namespace DigitalVoterList.Election
         /// <returns>The Person object loaded from the database</returns>
         public Person LoadPerson(int id)
         {
-            throw new NotImplementedException();
+            return (Person)LoadWithTransaction(() => PriLoadPerson(id));
+        }
+
+        private Person PriLoadPerson(int id)
+        {
+            //Contract.Requires(_transaction != null); //Must be included for all "Pri" methods.. Requirement to even make Contracts!!
+            //Contract.Requires(PersonExistsWithId(id, trans));
+            MySqlCommand command = Prepare("SELECT * FROM person WHERE id=@id");
+            command.Parameters.AddWithValue("id", id);
+            Person p = new Person(id);
+            Query(command, (MySqlDataReader rdr) =>
+            {
+                rdr.Read();
+                p.Name = rdr.GetString("name");
+                p.PassportNumber = rdr.GetString("passport_number");
+            });
+            return p;
         }
 
         /// <summary>
@@ -280,6 +342,164 @@ namespace DigitalVoterList.Election
             throw new NotImplementedException();
         }
 
+        #endregion
+
+        #region private SQL features
+        //We keep track of all open connections, to enable later maintainance of eventual onclosed connections..
+        private MySqlConnection _connection; //Current connection
+        private MySqlTransaction _transaction; //Current transaction
+        private string _connectionString = "SERVER=localhost;" +
+                "DATABASE=px3;" +
+                "UID=root;" +
+                "PASSWORD=abcd1234;";
+        private Dictionary<string, MySqlCommand> _preparedStatements = new Dictionary<string, MySqlCommand>();
+
+        /// <summary>
+        /// An open connection for the database
+        /// </summary>
+        private MySqlConnection Connection
+        {
+            get
+            {
+                if (_connection == null)
+                {
+                    _connection = new MySqlConnection(_connectionString);
+                    _connection.Open();
+                }
+                return _connection;
+                /*if (_connection != null && _connection.State.Equals("Open"))
+                {
+                    return _connection;
+                }
+                else
+                {
+                    RetryUtility.RetryAction(() => Reconnect(), 3, 500);
+                    return Connection;
+                }*/
+            }
+        }
+
+        /// <summary>
+        /// Try to reconnect to the database
+        /// </summary>
+        private void Reconnect()
+        {
+            try
+            {
+                if (_connection != null) _connection.Close();
+            }
+            catch { }
+            _connection = new MySqlConnection(_connectionString);
+            _connection.Open();
+            _preparedStatements = new Dictionary<string, MySqlCommand>();
+        }
+
+        /// <summary>
+        /// Do this in a transaction, and handle all transaction and connection issues that might occur
+        /// </summary>
+        /// <param name="act">What to do...</param>
+        private void DoTransaction(Action act)
+        {
+            _transaction = Connection.BeginTransaction(IsolationLevel.Serializable);
+            try
+            {
+                act();
+                _transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    _transaction.Rollback();
+                }
+                catch (MySqlException excep)
+                {
+                    // TODO: Make a logging function and maybe a security alert...
+                    throw;
+                }
+            }
+            _transaction = null;
+        }
+
+        /// <summary>
+        /// Load this in a transaction, and handle all transaction and connection issues that might occur
+        /// </summary>
+        /// <param name="func">How to load this?</param>
+        /// <returns></returns>
+        private object LoadWithTransaction(Func<object> func)
+        {
+            object o = null;
+            DoTransaction(() => { o = func(); });
+            return o;
+        }
+
+        /// <summary>
+        /// Prepare this string for query, on this 
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        private MySqlCommand Prepare(string query)
+        {
+            if (_preparedStatements.ContainsKey(query))
+            {
+                return _preparedStatements[query];
+            }
+            MySqlCommand cmd = new MySqlCommand(query);
+            cmd.Connection = Connection;
+            if (_transaction != null) cmd.Transaction = _transaction;
+            cmd.Prepare();
+            _preparedStatements.Add(query, cmd);
+            return cmd;
+        }
+
+        private void Execute(MySqlCommand cmd)
+        {
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                //TODO: Write some catch shit...!!!!
+            }
+        }
+
+        //Brug en scalar
+        private void Query(MySqlCommand cmd, Action<object> func)
+        {
+            try
+            {
+                object o = cmd.ExecuteScalar();
+                func(o);
+            }
+            catch (Exception ex)
+            {
+                //TODO: Write some catch shit...!!!!
+            }
+        }
+
+        //Returner scalar
+        private object Query(MySqlCommand cmd, Func<object, object> func)
+        {
+            object o = null;
+            Query(cmd, (object obj) => { o = func(obj); });
+            return o;
+        }
+
+        //Brug en reader
+        private void Query(MySqlCommand cmd, Action<MySqlDataReader> func)
+        {
+            try
+            {
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                func(rdr);
+                rdr.Close();
+            }
+            catch (Exception ex)
+            {
+                //TODO: Write some catch shit...!!!!
+            }
+        }
         #endregion
     }
 }
