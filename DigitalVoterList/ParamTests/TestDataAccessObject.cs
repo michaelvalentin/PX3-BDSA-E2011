@@ -14,6 +14,7 @@ namespace ParamTests
     {
         private IDataAccessObject dao;
         private MySqlConnection conn;
+        private MySqlConnection conn2;
 
         [TestFixtureSetUp]
         public void PrepareClass()
@@ -24,7 +25,12 @@ namespace ParamTests
                 "DATABASE=px3;" +
                 "UID=root;" +
                 "PASSWORD=abcd1234;");
+            conn2 = new MySqlConnection("SERVER=localhost;" +
+                "DATABASE=px3;" +
+                "UID=root;" +
+                "PASSWORD=abcd1234;");
             conn.Open();
+            conn2.Open();
         }
 
         [TestFixtureTearDown]
@@ -52,7 +58,45 @@ namespace ParamTests
             object o = insertPerson.ExecuteScalar();
             int id = Convert.ToInt32(o);
             Person p = dao.LoadPerson(id);
+            Assert.That(p.Name.Equals("Hans Peter"));
+            MySqlCommand deletePerson = new MySqlCommand("DELETE FROM person WHERE id = " + id, conn);
+            deletePerson.ExecuteNonQuery();
         }
+
+        [Test]
+        public void ReproduceCommitProblem()
+        {
+            MySqlTransaction trans = conn.BeginTransaction();
+            MySqlCommand loadPersons = new MySqlCommand("SELECT * FROM person", conn, trans);
+            MySqlDataReader rdr = loadPersons.ExecuteReader();
+            rdr.Read();
+            int i = rdr.GetInt32("id");
+            rdr.Close();
+            loadPersons = new MySqlCommand("SELECT * FROM person", conn, trans);
+            rdr = loadPersons.ExecuteReader();
+            rdr.Read();
+            i = rdr.GetInt32("id");
+            rdr.Close();
+            loadPersons = new MySqlCommand("SELECT * FROM person", conn, trans);
+            rdr = loadPersons.ExecuteReader();
+            rdr.Read();
+            i = rdr.GetInt32("id");
+            rdr.Close();
+            trans.Commit();
+        }
+
+        /*[Test]
+        public void TestConcurrency()
+        {
+            new MySqlCommand("START TRANSACTION; SET autocommit=0; SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;", conn).ExecuteNonQuery();
+            new MySqlCommand("START TRANSACTION; SET autocommit=0; SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;", conn2).ExecuteNonQuery();
+            string value = (string)new MySqlCommand("SELECT name FROM person WHERE name LIKE '%Jonas%'", conn2).ExecuteScalar();
+            int i = new MySqlCommand("UPDATE person SET name = 'Jonas Schmidt' WHERE name LIKE '%Jonas%'", conn).ExecuteNonQuery();
+            string value2 = (string)new MySqlCommand("SELECT name FROM person WHERE name LIKE '%Jonas%'", conn2).ExecuteScalar();
+            new MySqlCommand("COMMIT;", conn).ExecuteNonQuery();
+            int j = new MySqlCommand("UPDATE person SET name = 'Jonas Jensen2' WHERE name LIKE '%Jonas%'", conn2).ExecuteNonQuery();
+            new MySqlCommand("COMMIT;", conn2).ExecuteNonQuery();
+        }*/
 
         /*private HashSet<int> _personIds;
 

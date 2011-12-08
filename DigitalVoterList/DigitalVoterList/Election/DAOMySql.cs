@@ -398,11 +398,11 @@ namespace DigitalVoterList.Election
         /// Do this in a transaction, and handle all transaction and connection issues that might occur
         /// </summary>
         /// <param name="act">What to do...</param>
-        private void DoTransaction(Action act)
+        private void DoTransaction(Action act, IsolationLevel isolationLevel)
         {
-            _transaction = Connection.BeginTransaction(IsolationLevel.Serializable);
             try
             {
+                _transaction = Connection.BeginTransaction(isolationLevel);
                 act();
                 _transaction.Commit();
             }
@@ -419,6 +419,15 @@ namespace DigitalVoterList.Election
                 }
             }
             _transaction = null;
+        }
+
+        /// <summary>
+        /// Do this in a transaction, and handle all transaction and connection issues that might occur
+        /// </summary>
+        /// <param name="act">What to do...</param>
+        private void DoTransaction(Action act)
+        {
+            DoTransaction(act, IsolationLevel.Serializable);
         }
 
         /// <summary>
@@ -489,15 +498,19 @@ namespace DigitalVoterList.Election
         //Brug en reader
         private void Query(MySqlCommand cmd, Action<MySqlDataReader> func)
         {
+            MySqlDataReader rdr = null;
             try
             {
-                MySqlDataReader rdr = cmd.ExecuteReader();
+                rdr = cmd.ExecuteReader();
                 func(rdr);
-                rdr.Close();
             }
             catch (Exception ex)
             {
                 //TODO: Write some catch shit...!!!!
+            }
+            finally
+            {
+                if (rdr != null) rdr.Close();
             }
         }
         #endregion
