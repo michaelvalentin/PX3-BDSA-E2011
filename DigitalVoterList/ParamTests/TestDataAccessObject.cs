@@ -1,20 +1,60 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿
+using System;
+using MySql.Data.MySqlClient;
 
 namespace ParamTests
 {
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
 
-    using DigitalVoterList;
     using DigitalVoterList.Election;
+    using NUnit.Framework;
 
-    using Microsoft.Pex.Framework;
 
-    [TestClass]
-    public partial class UnitTest1
+    [TestFixture]
+    public partial class TestDataAccessObject
     {
-        private HashSet<int> _personIds;
+        private IDataAccessObject dao;
+        private MySqlConnection conn;
+
+        [TestFixtureSetUp]
+        public void PrepareClass()
+        {
+            //VoterListApp.CurrentUser = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
+            dao = DAOFactory.CurrentUserDAO;
+            conn = new MySqlConnection("SERVER=localhost;" +
+                "DATABASE=px3;" +
+                "UID=root;" +
+                "PASSWORD=abcd1234;");
+            conn.Open();
+        }
+
+        [TestFixtureTearDown]
+        public void EndTesting()
+        {
+            conn.Close();
+        }
+
+        [SetUp]
+        public void PrepareForTest()
+        {
+
+        }
+
+        [TearDown]
+        public void CleanUpAfterTest()
+        {
+
+        }
+
+        [Test]
+        public void TestLoadPersonById()
+        {
+            MySqlCommand insertPerson = new MySqlCommand("INSERT INTO person (name) VALUES ('Hans Peter'); SELECT LAST_INSERT_ID();", conn);
+            object o = insertPerson.ExecuteScalar();
+            int id = Convert.ToInt32(o);
+            Person p = dao.LoadPerson(id);
+        }
+
+        /*private HashSet<int> _personIds;
 
         [TestInitialize()]
         public void Prepare()
@@ -83,6 +123,6 @@ namespace ParamTests
         public void ParameterizedTest(string data)
         {
             //Asserts
-        }
+        }*/
     }
 }

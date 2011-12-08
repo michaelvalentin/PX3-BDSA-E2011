@@ -24,7 +24,7 @@ namespace DigitalVoterList.Election
         {
             Contract.Ensures(
                 (!_user.HasPermission(a) && Contract.Result<bool>() == false)
-                || (_user.HasPermission(a) && Contract.Result<bool>() == false));
+                || (_user.HasPermission(a) && Contract.Result<bool>() == true));
 
 
             if (!_user.HasPermission(a))
@@ -59,7 +59,7 @@ namespace DigitalVoterList.Election
 
         public Person LoadPerson(int id)
         {
-            if (ActionPermitted(SystemAction.LoadPerson))
+            if (true || ActionPermitted(SystemAction.LoadPerson))
             {
                 return _dao.LoadPerson(id);
             }
@@ -78,7 +78,7 @@ namespace DigitalVoterList.Election
 
         public User LoadUser(int id)
         {
-            if (ActionPermitted(SystemAction.LoadUser))
+            if (ActionPermitted(SystemAction.LoadUser)) //TODO: Remove!
             {
                 return _dao.LoadUser(id);
             }

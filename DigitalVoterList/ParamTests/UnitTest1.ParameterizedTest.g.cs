@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ParamTests
 {
-    public partial class UnitTest1
+    public partial class TestDataAccessObject
     {
     }
 }

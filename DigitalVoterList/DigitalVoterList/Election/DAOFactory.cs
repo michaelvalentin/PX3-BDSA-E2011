@@ -21,7 +21,7 @@ namespace DigitalVoterList.Election
 
             if (!daos.ContainsKey(u))
             {
-                IDataAccessObject dao = DAOMySql.GetDao(u);
+                IDataAccessObject dao = DAOMySql.GetDAO(u);
                 daos[u] = dao;
             }
             return daos[u];
