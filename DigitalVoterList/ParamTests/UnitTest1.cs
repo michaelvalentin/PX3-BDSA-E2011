@@ -38,6 +38,13 @@ namespace ParamTests
             Contract.Ensures(u.Name == "Michael");
         }
 
+        [TestMethod]
+        public void TestLoadPerson()
+        {
+            var u = DAOMySql.GetDao(VoterListApp.CurrentUser).LoadPerson(3);
+            Contract.Ensures(u.Name == "Frederik Paulsen");
+        }
+
 
         [TestMethod]
         public void TestFindPerson()
@@ -55,14 +62,6 @@ namespace ParamTests
 
             DAOMySql.GetDao(VoterListApp.CurrentUser).Save(person);
             Contract.Ensures(DAOMySql.GetDao(VoterListApp.CurrentUser).Find(person).Equals(person));
-        }
-
-        [TestMethod]
-        public void TestLoadPerson()
-        {
-            var p = DAOMySql.GetDao(VoterListApp.CurrentUser).LoadPerson(1);
-            Contract.Ensures(p.Name == "Hans Hansen");
-
         }
 
         //[PexAssumeNotNull]

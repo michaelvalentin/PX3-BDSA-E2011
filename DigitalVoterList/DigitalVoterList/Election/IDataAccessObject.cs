@@ -179,11 +179,6 @@ namespace DigitalVoterList.Election
         void MarkVoterCardInvalid(VoterCard voterCard);
 
         /// <summary>
-        /// Make people that are not in the raw dataset unable to vote
-        /// </summary>
-        void MarkPeopleNotInRawDataUneligibleToVote();
-
-        /// <summary>
         /// Update all persons in the dataset with this update
         /// </summary>
         /// <param name="voterCard"></param>

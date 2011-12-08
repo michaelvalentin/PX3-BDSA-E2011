@@ -244,14 +244,6 @@ namespace DigitalVoterList.Election
             }
         }
 
-        public void MarkPeopleNotInRawDataUneligibleToVote()
-        {
-            if (ActionPermitted(SystemAction.MarkPeopleNotInRawDataUneligibleToVote))
-            {
-                _dao.MarkPeopleNotInRawDataUneligibleToVote();
-            }
-        }
-
         public void UpdatePeople(Func<Person, RawPerson, Person> update)
         {
             if (ActionPermitted(SystemAction.UpdatePeople))
