@@ -30,9 +30,6 @@ namespace DigitalVoterList
             Application app = new Application();
             VoterListApp.App = app;
             app.Startup += (o, e) =>
-                {
-                    RunApp(null);
-                };
             {
                 User u = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
                 RunApp(u);
@@ -42,6 +39,7 @@ namespace DigitalVoterList
 
         public static void RunApp(User user)
         {
+            _currentUser = user;
             if (user != null && user.Validated)
             {
                 _mainWindow = new MainWindow();

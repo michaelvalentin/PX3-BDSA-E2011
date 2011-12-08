@@ -188,7 +188,7 @@ namespace DigitalVoterList.Election
             }
         }
 
-        public void SetHasVoted(Citizen citizen, int cprKey)
+        public void SetHasVoted(Citizen citizen, string cprKey)
         {
             if (ActionPermitted(SystemAction.SetHasVoted) && WorksHere(citizen.VotingPlace))
             {
@@ -241,14 +241,6 @@ namespace DigitalVoterList.Election
             if (ActionPermitted(SystemAction.MarkVoteCardInvalid))
             {
                 _dao.MarkVoterCardInvalid(voterCard);
-            }
-        }
-
-        public void MarkPeopleNotInRawDataUneligibleToVote()
-        {
-            if (ActionPermitted(SystemAction.MarkPeopleNotInRawDataUneligibleToVote))
-            {
-                _dao.MarkPeopleNotInRawDataUneligibleToVote();
             }
         }
 
