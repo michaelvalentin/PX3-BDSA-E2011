@@ -15,7 +15,7 @@ namespace DigitalVoterList.Controllers
     {
         private VoterRegistrationView _view;
         private VoterCard _voterCard;
-        protected Citizen _citizen;
+        protected Citizen Citizen;
 
         public VoterRegistrationController(VoterRegistrationView view)
         {
@@ -68,16 +68,17 @@ namespace DigitalVoterList.Controllers
                 _view.VoterIdentification.VoterAddress.Text = "";
                 _view.VoterIdentification.VoterCprDigits.Password = "";
                 LoadVoterValidation(null);
-                _citizen = null;
+                Citizen = null;
             }
             else
             {
                 _view.VoterIdentification.VoterName.Text = _voterCard.Citizen.Name;
                 _view.VoterIdentification.VoterAddress.Text = _voterCard.Citizen.Address;
                 SecurityQuesitonView questionView = new SecurityQuesitonView();
-                _citizen = _voterCard.Citizen;
+                Citizen = _voterCard.Citizen;
             }
-            LoadVoterValidation(_citizen);
+            _view.StatusText.Text = "";
+            LoadVoterValidation(Citizen);
         }
 
         private void RegisterVoterWrapper(object sender, EventArgs e)

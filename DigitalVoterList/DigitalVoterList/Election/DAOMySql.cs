@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using MySql.Data.MySqlClient;
 
 namespace DigitalVoterList.Election
@@ -736,15 +737,16 @@ connection);
             }
         }
 
-        public void SetHasVoted(Citizen citizen, int cprKey)
+        public void SetHasVoted(Citizen citizen, string cprKey)
         {
             var connection = GetSqlConnection();
             try
             {
                 MySqlCommand getCpr = new MySqlCommand(
                     "SELECT cpr FROM person WHERE id='" + citizen.DbId + "'", connection);
-                int citizenKeyPhrase = Convert.ToInt32(getCpr.ToString().Substring(7, 4));
-                if (cprKey == citizenKeyPhrase)
+                string cpr = (string)getCpr.ExecuteScalar();
+                Regex cprKeyPattern = new Regex(".{6}" + cprKey);
+                if (cprKeyPattern.IsMatch(cpr))
                 {
                     try
                     {
@@ -757,7 +759,10 @@ connection);
                         throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
                     }
                 }
-                //return false;
+                else
+                {
+                    throw new DataAccessException("Wrong CPR-key");
+                }
             }
             catch (Exception ex)
             {

@@ -131,7 +131,7 @@ namespace DigitalVoterList.Election
         /// <param name="citizen">The citizen who should be marked as voted</param>
         /// <param name="cprKey">The last four digits of the citizen's CPR-Number</param>
         /// <returns>Was the attempt successful?</returns>
-        void SetHasVoted(Citizen citizen, int cprKey);
+        void SetHasVoted(Citizen citizen, string cprKey);
 
         /// <summary>
         /// Mark that a voter has voted with manual validation!
