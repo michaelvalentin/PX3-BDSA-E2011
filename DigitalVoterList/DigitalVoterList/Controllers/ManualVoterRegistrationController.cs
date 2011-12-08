@@ -22,12 +22,12 @@ namespace DigitalVoterList.Controllers
 
         protected override void LoadVoterValidation(Citizen c)
         {
-            throw new NotImplementedException();
+            //TODO: Make
         }
 
         protected override void CheckCpr(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            //TODO: Make
         }
 
         protected override void RegisterVoter(object sender, EventArgs e)

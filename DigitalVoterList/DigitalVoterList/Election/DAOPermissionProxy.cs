@@ -188,7 +188,7 @@ namespace DigitalVoterList.Election
             }
         }
 
-        public void SetHasVoted(Citizen citizen, int cprKey)
+        public void SetHasVoted(Citizen citizen, string cprKey)
         {
             if (ActionPermitted(SystemAction.SetHasVoted) && WorksHere(citizen.VotingPlace))
             {

@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 ﻿
+=======
+﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using MySql.Data.MySqlClient;
+
+>>>>>>> 9435b06c1c4e53a1ee3c752186644408d37cc68d
 namespace DigitalVoterList.Election
 {
     using System;
@@ -174,6 +182,7 @@ namespace DigitalVoterList.Election
             throw new NotImplementedException();
         }
 
+<<<<<<< HEAD
         /// <summary>
         /// Mark that a voter has voted with standard validation!
         /// </summary>
@@ -183,6 +192,39 @@ namespace DigitalVoterList.Election
         public void SetHasVoted(Citizen citizen, int cprKey)
         {
             throw new NotImplementedException();
+=======
+        public void SetHasVoted(Citizen citizen, string cprKey)
+        {
+            var connection = GetSqlConnection();
+            try
+            {
+                MySqlCommand getCpr = new MySqlCommand(
+                    "SELECT cpr FROM person WHERE id='" + citizen.DbId + "'", connection);
+                string cpr = (string)getCpr.ExecuteScalar();
+                Regex cprKeyPattern = new Regex(".{6}" + cprKey);
+                if (cprKeyPattern.IsMatch(cpr))
+                {
+                    try
+                    {
+                        MySqlCommand setHasVoted = new MySqlCommand("SELECT person SET has_voted = '1' WHERE id='" + citizen.DbId + "'", connection);
+                        citizen.SetHasVoted();
+                        //return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+                    }
+                }
+                else
+                {
+                    throw new DataAccessException("Wrong CPR-key");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+>>>>>>> 9435b06c1c4e53a1ee3c752186644408d37cc68d
         }
 
         /// <summary>

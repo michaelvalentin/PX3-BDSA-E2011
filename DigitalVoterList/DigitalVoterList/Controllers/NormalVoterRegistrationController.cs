@@ -29,7 +29,7 @@ namespace DigitalVoterList.Controllers
             _view.SearchVoterButton.Visibility = Visibility.Hidden;
 
             _view.VoterValidation.Children.Add(new SecurityQuesitonView());
-            _view.Height = 305;
+            _view.Height = 314;
         }
 
         protected override void LoadVoterValidation(Citizen c)
@@ -53,11 +53,12 @@ namespace DigitalVoterList.Controllers
             //TODO: Make sure we meet pre-conditions..
             try
             {
-                DAOFactory.CurrentUserDAO.SetHasVoted(_citizen);
+                DAOFactory.CurrentUserDAO.SetHasVoted(Citizen, _view.VoterIdentification.VoterCprDigits.Password);
                 //_view.StatusImage.Source = new BitmapImage(new Uri(@"pack://application:,,,/DigitalVoterList;component/Resources/Icons/success.png"));
             }
             catch (Exception ex)
             {
+                //throw ex;
                 //_view.StatusImage.Source = new BitmapImage(new Uri(@"pack://application:,,,/DigitalVoterList;component/Resources/Icons/error.png"));
                 _view.StatusText.Text = ex.Message;
             }
