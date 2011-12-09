@@ -9,9 +9,11 @@ namespace DigitalVoterList.Election
     public static class DAOFactory
     {
         private static Dictionary<User, IDataAccessObject> daos = new Dictionary<User, IDataAccessObject>();
+        public static string ConnectionString { private get; set; }
 
         public static IDataAccessObject getDAO(User u)
         {
+            Contract.Requires(ConnectionString != null);
             Contract.Ensures(Contract.Result<IDataAccessObject>() != null);
 
             Contract.Ensures(
@@ -21,7 +23,7 @@ namespace DigitalVoterList.Election
 
             if (!daos.ContainsKey(u))
             {
-                IDataAccessObject dao = DAOMySql.GetDAO(u);
+                IDataAccessObject dao = DAOMySql.GetDAO(u, ConnectionString);
                 daos[u] = dao;
             }
             return daos[u];
