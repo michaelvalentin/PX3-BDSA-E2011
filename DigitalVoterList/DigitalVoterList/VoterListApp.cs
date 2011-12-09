@@ -31,6 +31,10 @@ namespace DigitalVoterList
             VoterListApp.App = app;
             app.Startup += (o, e) =>
             {
+                DAOFactory.ConnectionString = "SERVER=localhost;" +
+                "DATABASE=px3;" +
+                "UID=root;" +
+                "PASSWORD=abcd1234;";
                 User u = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
                 RunApp(u);
             };
