@@ -22,8 +22,7 @@ namespace DigitalVoterList.Controllers
         private void ValidateUser(Object sender, LoginEventArgs e)
         {
             _view.StatusText.Text = "";
-            IDataAccessObject dao = DAOFactory.CurrentUserDAO;
-            User u = dao.LoadUser(e.Username, e.Password);
+            User u = User.GetUser(e.Username, e.Password);
             if (u == null)
             {
                 _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(225, 0, 0));

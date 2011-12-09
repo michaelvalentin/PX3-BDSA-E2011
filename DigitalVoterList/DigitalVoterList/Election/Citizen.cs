@@ -17,9 +17,17 @@ namespace DigitalVoterList.Election
             Cpr = cpr;
         }
 
+        public Citizen(int id, string cpr, bool hasVoted)
+            : this(id, cpr)
+        {
+            HasVoted = hasVoted;
+        }
+
         private HashSet<VoterCard> _voterCards;
 
         private HashSet<Quiz> _securityQuestions;
+
+        public bool HasVoted { get; private set; }
 
         public bool EligibleToVote { get; set; }
 
@@ -37,7 +45,6 @@ namespace DigitalVoterList.Election
             set { _securityQuestions = value ?? new HashSet<Quiz>(); }
         }
 
-        public bool HasVoted { get; private set; }
 
         public void SetHasVoted()
         {

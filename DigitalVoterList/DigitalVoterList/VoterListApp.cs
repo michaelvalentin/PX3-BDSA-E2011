@@ -35,7 +35,7 @@ namespace DigitalVoterList
                 "DATABASE=px3;" +
                 "UID=root;" +
                 "PASSWORD=abcd1234;";
-                User u = DAOFactory.CurrentUserDAO.LoadUser("mier",VoterListApp.CurrentUser.HashPassword("12345"));
+                User u = User.GetUser("mier", "12345");
                 RunApp(u);
             };
             app.Run();

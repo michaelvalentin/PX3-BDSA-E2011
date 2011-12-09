@@ -56,14 +56,30 @@ namespace DigitalVoterList.Election
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(ExistsWithId("person", id), "Person must exist in the database to be loaded.");
             Contract.Ensures(Contract.Result<Person>() != null);
-            MySqlCommand command = Prepare("SELECT * FROM person WHERE id=@id");
-            command.Parameters.AddWithValue("id", id);
-            Person p = new Person(id);
+            MySqlCommand command = Prepare("SELECT * FROM person p LEFT JOIN voting_venue v ON v.id=p.voting_venue_id WHERE p.id=@id");
+            command.Parameters.AddWithValue("@id", id);
+            Person p = null;
             Query(command, (MySqlDataReader rdr) =>
             {
                 rdr.Read();
-                p.Name = rdr.GetString("name");
-                p.PassportNumber = rdr.GetString("passport_number");
+                DoIfNotDbNull(rdr, "cpr", lbl =>
+                {
+                    var c = new Citizen(id, rdr.GetString(lbl), rdr.GetInt32("has_voted") != 0);
+                    c.EligibleToVote = rdr.GetInt16("elegible_to_vote") == 1;
+                    DoIfNotDbNull(rdr, "voting_venue_id", label =>
+                        {
+                            c.VotingPlace = new VotingVenue(
+                                rdr.GetInt32(label),
+                                rdr.GetString("name"),
+                                rdr.GetString("address"));
+                        });
+                    p = c;
+                });
+                if (p == null) p = new Person();
+                DoIfNotDbNull(rdr, "name", lbl => { p.Name = rdr.GetString(lbl); });
+                DoIfNotDbNull(rdr, "address", lbl => { p.Address = rdr.GetString(lbl); });
+                DoIfNotDbNull(rdr, "place_of_birth", lbl => { p.PlaceOfBirth = rdr.GetString(lbl); });
+                DoIfNotDbNull(rdr, "passport_number", lbl => { p.PassportNumber = rdr.GetString(lbl); });
             });
             return p;
         }
@@ -274,7 +290,7 @@ namespace DigitalVoterList.Election
         /// <returns>A voter card</returns>
         public VoterCard LoadVoterCard(int id)
         {
-            throw new NotImplementedException();
+
         }
 
         /// <summary>
@@ -334,6 +350,11 @@ namespace DigitalVoterList.Election
         public void Save(Person person)
         {
             throw new NotImplementedException();
+        }
+
+        private void PriSave(Person person)
+        {
+
         }
 
         /// <summary>
