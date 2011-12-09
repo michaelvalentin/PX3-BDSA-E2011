@@ -4,7 +4,6 @@ using MySql.Data.MySqlClient;
 
 namespace ParamTests
 {
-    using System.Collections.Generic;
     using System.IO;
 
     using DigitalVoterList;
@@ -101,6 +100,16 @@ namespace ParamTests
         {
             Person p = this._dao.LoadPerson(1);
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
+
+            Person p2 = this._dao.LoadPerson(3);
+            Assert.That(p2.Name.Equals("Mathilde Roed Birk")); // This doesn't work because the loadpersons function loads votingvenue wrong.
+        }
+
+        [Test]
+        public void TestLoadPersonByCpr()
+        {
+            Person p = this._dao.LoadPerson("2405901253");
+            Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
         }
 
         [Test]
@@ -120,15 +129,25 @@ namespace ParamTests
         [Test]
         public void TestValidateUser()
         {
-            Assert.That(this._dao.ValidateUser("jdmo", "someHash")); //todo: insert hash
+            Assert.That(this._dao.ValidateUser("jdmo", VoterListApp.CurrentUser.HashPassword("12345")));
+            Assert.That(!this._dao.ValidateUser("jdmo2", VoterListApp.CurrentUser.HashPassword("12345")));
+            Assert.That(!this._dao.ValidateUser("jdmo", VoterListApp.CurrentUser.HashPassword("1235")));
         }
 
         [Test]
         public void TestGetPermissions()
         {
-            HashSet<SystemAction> permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
+            var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
 
             Assert.That(permissions.Count == 22);
+        }
+
+        [Test]
+        public void TestGetWorkplaces()
+        {
+            var workplaces = this._dao.GetWorkplaces(VoterListApp.CurrentUser);
+
+            Assert.That(workplaces.Count == 1);
         }
 
         [Test]
@@ -147,7 +166,7 @@ namespace ParamTests
             Assert.That(votercard.Id == 3);
         }
 
-        [Test]
+        /*[Test]
         public void TestFindPersonByCpr()
         {
             var person = this._dao.Find(new Person() { Cpr = "2405901253" });
@@ -174,6 +193,7 @@ namespace ParamTests
             Assert.That(((int)o) == 1);
         }
 
+         * */
         //void Save(User user);
 
         //void Save(VoterCard voterCard);

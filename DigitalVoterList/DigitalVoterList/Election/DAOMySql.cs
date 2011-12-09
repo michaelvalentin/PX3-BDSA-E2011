@@ -70,8 +70,8 @@ namespace DigitalVoterList.Election
                         {
                             c.VotingPlace = new VotingVenue(
                                 rdr.GetInt32(label),
-                                rdr.GetString("name"),
-                                rdr.GetString("address"));
+                                rdr.GetString("name"), //todo: This name is the name of the person, not the voting_venue 
+                                rdr.GetString("address")); //todo: This address is the address of the person
                         });
                     p = c;
                 });
@@ -608,7 +608,9 @@ namespace DigitalVoterList.Election
         {
             if (_preparedStatements.ContainsKey(query))
             {
-                return _preparedStatements[query];
+                var ps = _preparedStatements[query];
+                ps.Parameters.Clear(); //todo: I think we need this
+                return ps;
             }
             MySqlCommand cmd = new MySqlCommand(query);
             cmd.Connection = Connection;

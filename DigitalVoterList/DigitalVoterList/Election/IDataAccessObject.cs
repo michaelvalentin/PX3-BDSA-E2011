@@ -19,6 +19,8 @@ namespace DigitalVoterList.Election
         /// <returns>The Person object loaded from the database</returns>
         Person LoadPerson(int id);
 
+        Person LoadPerson(string cpr);
+
         /// <summary>
         /// What user has this username?
         /// </summary>

@@ -59,6 +59,15 @@ namespace DigitalVoterList.Election
             return null;
         }
 
+        public Person LoadPerson(string cpr)
+        {
+            if (ActionPermitted(SystemAction.LoadPerson))
+            {
+                return _dao.LoadPerson(cpr);
+            }
+            return null;
+        }
+
         public User LoadUser(string username)
         {
             return _dao.LoadUser(username);
