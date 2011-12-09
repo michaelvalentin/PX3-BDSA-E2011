@@ -12,13 +12,14 @@ namespace DigitalVoterList.Election
     public class DAOMySql : IDataAccessObject
     {
 
-        private DAOMySql()
+        private DAOMySql(string connectionString)
         {
+            _connectionString = connectionString;
         }
 
-        public static IDataAccessObject GetDAO(User u)
+        public static IDataAccessObject GetDAO(User u, string connectionString)
         {
-            return new DAOPermissionProxy(u, new DAOMySql());
+            return new DAOPermissionProxy(u, new DAOMySql(connectionString));
         }
 
         #region Implementation of IDataAccessObject
@@ -348,10 +349,7 @@ namespace DigitalVoterList.Election
         //We keep track of all open connections, to enable later maintainance of eventual onclosed connections..
         private MySqlConnection _connection; //Current connection
         private MySqlTransaction _transaction; //Current transaction
-        private string _connectionString = "SERVER=localhost;" +
-                "DATABASE=px3;" +
-                "UID=root;" +
-                "PASSWORD=abcd1234;";
+        private readonly string _connectionString; //The string to use when connecting to the database
         private Dictionary<string, MySqlCommand> _preparedStatements = new Dictionary<string, MySqlCommand>();
 
         /// <summary>
