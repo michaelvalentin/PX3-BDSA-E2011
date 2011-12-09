@@ -56,13 +56,29 @@ namespace DigitalVoterList.Election
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(ExistsWithId("person", id), "Person must exist in the database to be loaded.");
             Contract.Ensures(Contract.Result<Person>() != null);
-            MySqlCommand command = Prepare("SELECT * FROM person WHERE id=@id");
-            command.Parameters.AddWithValue("id", id);
-            Person p = new Person(id);
+            MySqlCommand command = Prepare("SELECT * FROM person p LEFT JOIN voting_venue v ON v.id=p.voting_venue_id WHERE p.id=@id");
+            command.Parameters.AddWithValue("@id", id);
+            Person p = null;
             Query(command, (MySqlDataReader rdr) =>
             {
                 rdr.Read();
-                p.Name = rdr.GetString("name");
+                DoIfNotDbNull(rdr, "cpr", lbl =>
+                {
+                    var c = new Citizen(id,rdr.GetString(lbl));
+                    if(rdr.GetInt16("elegible_to_vote") == 1) c.SetEligibleToVote(;
+                    if(rdr.GetInt16("has_voted")==1) c.SetHasVoted();
+
+                    p = c;
+                });
+                if(p==null) p = new Person();
+                DoIfNotDbNull(rdr, "name", lbl => { p.Name = rdr.GetString(lbl); });
+                DoIfNotDbNull(rdr, "address", lbl => { p.Address = rdr.GetString(lbl); });
+                DoIfNotDbNull(rdr, "place_of_birth", lbl => { p.PlaceOfBirth = rdr.GetString(lbl); });
+                DoIfNotDbNull(rdr, "passport_number", lbl => { p.PassportNumber = rdr.GetString(lbl); });
+                DoIfNotDbNull(rdr, "voting_venue_id", lbl =>
+                                                          {
+                                                              p.
+                                                          });
                 p.PassportNumber = rdr.GetString("passport_number");
             });
             return p;
@@ -106,29 +122,6 @@ namespace DigitalVoterList.Election
         }
 
         /// <summary>
-        /// What authenticated user exists with this username and password?
-        /// </summary>
-        /// <param name="username">The username to search for</param>
-        /// <param name="password">The passwordHash to validate with</param>
-        /// <returns>An authenticated user object, null if no user matched the details</returns>
-        public User LoadUser(string username, string passwordHash)
-        {
-            Contract.Requires(username != null, "The input username must not be null!");
-            Contract.Requires(passwordHash != null, "The input password must not be null!");
-            User u = null;
-            DoTransaction(() =>
-                              {
-                                  bool valid = PriValidateUser(username, passwordHash);
-                                  if (valid)
-                                  {
-                                      u = PriLoadUser(username);
-                                  }
-                              });
-            u.FetchPermissions(username, passwordHash);
-            return u;
-        }
-
-        /// <summary>
         /// What user has this id?
         /// </summary>
         /// <param name="id">The database id of the user to load</param>
@@ -148,7 +141,7 @@ namespace DigitalVoterList.Election
             Contract.Requires(ExistsWithId("user", id), "User must exist in the database to be loaded.");
             Contract.Requires(id > 0, "The input id must be larger than zero.");
             Contract.Ensures(Contract.Result<User>() != null);
-            MySqlCommand cmd = Prepare("SELECT * FROM user u INNER JOIN person p ON u.person_id=p.id WHERE id=@id");
+            MySqlCommand cmd = Prepare("SELECT * FROM user u INNER JOIN person p ON u.person_id=p.id WHERE u.id=@id");
             cmd.Parameters.AddWithValue("@id", id);
             User u = new User(id);
             Query(cmd, rdr =>

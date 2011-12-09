@@ -18,6 +18,22 @@ namespace DigitalVoterList.Election
         private DateTime? _lastSuccessfullValidationTime;
 
         /// <summary>
+        /// What user has this login?
+        /// </summary>
+        /// <param name="username">Username</param>
+        /// <param name="password">Password</param>
+        /// <returns>A validated user obejct, null if the login is not found.</returns>
+        public static User GetUser(string username, string password)
+        {
+            IDataAccessObject dao = DAOFactory.CurrentUserDAO;
+            User u = dao.LoadUser(username);
+            if (u == null) return null;
+            u.FetchPermissions(username, password);
+            if (!u.Validated) return null;
+            return u;
+        }
+
+        /// <summary>
         /// The users at the election venue and people adminitrating the electing, who have different priviledges.
         /// </summary>
         /// <param name="id">The database id of the user</param>
