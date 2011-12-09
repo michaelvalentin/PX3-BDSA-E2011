@@ -124,7 +124,7 @@ namespace DigitalVoterList.Election
                                       u = PriLoadUser(username);
                                   }
                               });
-            u.FetchPermissions(username, passwordHash);
+            if (u != null) u.FetchPermissions(username, passwordHash);
             return u;
         }
 
@@ -148,7 +148,7 @@ namespace DigitalVoterList.Election
             Contract.Requires(ExistsWithId("user", id), "User must exist in the database to be loaded.");
             Contract.Requires(id > 0, "The input id must be larger than zero.");
             Contract.Ensures(Contract.Result<User>() != null);
-            MySqlCommand cmd = Prepare("SELECT * FROM user u INNER JOIN person p ON u.person_id=p.id WHERE id=@id");
+            MySqlCommand cmd = Prepare("SELECT * FROM user u INNER JOIN person p ON u.person_id=p.id WHERE u.id=@id");
             cmd.Parameters.AddWithValue("@id", id);
             User u = new User(id);
             Query(cmd, rdr =>
@@ -586,6 +586,7 @@ namespace DigitalVoterList.Election
             catch (Exception ex)
             {
                 //TODO: Write some catch shit...!!!!
+                throw;
             }
         }
 
@@ -600,6 +601,7 @@ namespace DigitalVoterList.Election
             catch (Exception ex)
             {
                 //TODO: Write some catch shit...!!!!
+                throw;
             }
         }
 
@@ -623,6 +625,7 @@ namespace DigitalVoterList.Election
             catch (Exception ex)
             {
                 //TODO: Write some catch shit...!!!!
+                throw;
             }
             finally
             {

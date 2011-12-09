@@ -41,6 +41,9 @@ namespace ParamTests
             //Clean the database manually
             this.CleanUpAfterEachTest();
 
+            //Write to database
+            this.PrepareForEachTest();
+
             //Login with program
             DAOFactory.ConnectionString = "SERVER=localhost;" +
                                             "DATABASE=px3-test;" +
@@ -49,6 +52,9 @@ namespace ParamTests
 
             //VoterListApp.CurrentUser = DAOFactory.CurrentUserDAO.LoadUser("jdmo", "12345");
             dao = DAOFactory.CurrentUserDAO;
+
+            //Clean the database manually
+            this.CleanUpAfterEachTest();
         }
 
         [TestFixtureTearDown]
@@ -96,7 +102,7 @@ namespace ParamTests
         }
 
         [Test]
-        public void TestLoadPersonById()
+        public void TestLoadUserById()
         {
             Person p = dao.LoadUser(1);
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
