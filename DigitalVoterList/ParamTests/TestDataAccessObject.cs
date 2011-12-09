@@ -20,6 +20,9 @@ namespace ParamTests
         public void PrepareClass()
         {
             //VoterListApp.CurrentUser = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
+
+            DAOFactory.ConnectionString =
+
             dao = DAOFactory.CurrentUserDAO;
             conn = new MySqlConnection("SERVER=localhost;" +
                 "DATABASE=px3;" +
@@ -29,6 +32,7 @@ namespace ParamTests
                 "DATABASE=px3;" +
                 "UID=root;" +
                 "PASSWORD=abcd1234;");
+
             conn.Open();
             conn2.Open();
         }
