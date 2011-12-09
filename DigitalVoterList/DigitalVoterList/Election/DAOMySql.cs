@@ -350,11 +350,29 @@ namespace DigitalVoterList.Election
         public void Save(Person person)
         {
             throw new NotImplementedException();
+            Contract.Requires(person != null, "Input person must not be null!");
+            DoTransaction(() => PriSave(person));
+
         }
 
         private void PriSave(Person person)
         {
+            throw new NotImplementedException();
+            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(person != null, "Input person must not be null!");
+            Contract.Requires(person.DbId > 0, "DbId must be larger than zero to update");
+            Contract.Requires(ExistsWithId("person", person.DbId), "DbId must be present in database in order to update anything");
+            Contract.Requires(!(person is Citizen) || (((Citizen)person).VotingPlace == null || ExistsWithId("voting_venue", ((Citizen)person).VotingPlace.DbId)), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
+            Contract.Ensures(LoadPerson(person.DbId).Equals(person), "All changes must be saved");
+            MySqlCommand cmd = Prepare("UPDATE person SET name=@name, address=, cpr, eligible_to_vote, has_voted,place_of_birth,passport_number,voting_venue_id");
 
+        }
+
+        private void PriSaveNew(Person person)
+        {
+            throw new NotImplementedException();
+            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(person != null, "Input person must not be null!");
         }
 
         /// <summary>
