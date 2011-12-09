@@ -11,13 +11,16 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class Citizen : Person
     {
-        private short _eligibleToVote = 0;
-        private VotingVenue _votingPlace = null;
-
         public Citizen(int id, string cpr)
             : base(id)
         {
             Cpr = cpr;
+        }
+
+        public Citizen(int id, string cpr, bool hasVoted)
+            : this(id, cpr)
+        {
+            HasVoted = hasVoted;
         }
 
         private HashSet<VoterCard> _voterCards;
@@ -26,17 +29,7 @@ namespace DigitalVoterList.Election
 
         public bool HasVoted { get; private set; }
 
-        public bool EligibleToVote
-        {
-            get
-            {
-                if (_eligibleToVote == 0)
-                {
-                }
-                return true;
-                //TODO: MAKE!
-            }
-        }
+        public bool EligibleToVote { get; set; }
 
         public VotingVenue VotingPlace { get; set; }
 

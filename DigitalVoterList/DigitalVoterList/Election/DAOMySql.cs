@@ -64,8 +64,15 @@ namespace DigitalVoterList.Election
                 rdr.Read();
                 DoIfNotDbNull(rdr, "cpr", lbl =>
                 {
-                    var c = new Citizen(id, rdr.GetString(lbl));
-
+                    var c = new Citizen(id, rdr.GetString(lbl), rdr.GetInt32("has_voted") != 0);
+                    c.EligibleToVote = rdr.GetInt16("elegible_to_vote") == 1;
+                    DoIfNotDbNull(rdr, "voting_venue_id", label =>
+                        {
+                            c.VotingPlace = new VotingVenue(
+                                rdr.GetInt32(label),
+                                rdr.GetString("name"),
+                                rdr.GetString("address"));
+                        });
                     p = c;
                 });
                 if (p == null) p = new Person();
@@ -73,11 +80,6 @@ namespace DigitalVoterList.Election
                 DoIfNotDbNull(rdr, "address", lbl => { p.Address = rdr.GetString(lbl); });
                 DoIfNotDbNull(rdr, "place_of_birth", lbl => { p.PlaceOfBirth = rdr.GetString(lbl); });
                 DoIfNotDbNull(rdr, "passport_number", lbl => { p.PassportNumber = rdr.GetString(lbl); });
-                DoIfNotDbNull(rdr, "voting_venue_id", lbl =>
-                                                          {
-
-                                                          });
-                p.PassportNumber = rdr.GetString("passport_number");
             });
             return p;
         }
@@ -265,7 +267,7 @@ namespace DigitalVoterList.Election
         /// <returns>A voter card</returns>
         public VoterCard LoadVoterCard(int id)
         {
-            throw new NotImplementedException();
+
         }
 
         /// <summary>
@@ -325,6 +327,11 @@ namespace DigitalVoterList.Election
         public void Save(Person person)
         {
             throw new NotImplementedException();
+        }
+
+        private void PriSave(Person person)
+        {
+
         }
 
         /// <summary>
