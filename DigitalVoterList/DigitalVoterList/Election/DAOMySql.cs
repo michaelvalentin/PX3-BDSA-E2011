@@ -65,7 +65,7 @@ namespace DigitalVoterList.Election
                 DoIfNotDbNull(rdr, "cpr", lbl =>
                 {
                     var c = new Citizen(id, rdr.GetString(lbl), rdr.GetInt32("has_voted") != 0);
-                    c.EligibleToVote = rdr.GetInt16("elegible_to_vote") == 1;
+                    c.EligibleToVote = (rdr.GetInt32("eligible_to_vote") == 1);
                     DoIfNotDbNull(rdr, "voting_venue_id", label =>
                         {
                             c.VotingPlace = new VotingVenue(
@@ -290,7 +290,7 @@ namespace DigitalVoterList.Election
         /// <returns>A voter card</returns>
         public VoterCard LoadVoterCard(int id)
         {
-
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -545,9 +545,11 @@ namespace DigitalVoterList.Election
             }
             catch (Exception ex)
             {
+                throw;
                 try
                 {
                     _transaction.Rollback();
+                    //todo: And retry? We can't just rollback the function, we need to try again..
                 }
                 catch (MySqlException excep)
                 {

@@ -14,8 +14,8 @@ namespace ParamTests
     [TestFixture]
     public partial class TestDataAccessObject
     {
-        private IDataAccessObject dao;
-        private MySqlConnection conn;
+        private IDataAccessObject _dao;
+        private MySqlConnection _conn;
         private string pathToTestfiles = "..\\..\\data\\";
 
         #region testsetup
@@ -32,13 +32,13 @@ namespace ParamTests
 
 
             //Connect manually to the database
-            conn = new MySqlConnection(
+            this._conn = new MySqlConnection(
                 "SERVER=localhost;" +
                 "DATABASE=px3-test;" +
                 "UID=root;" +
                 "PASSWORD=abcd1234;");
 
-            conn.Open();
+            this._conn.Open();
 
             //Clean the database manually
             this.CleanUpAfterEachTest();
@@ -46,14 +46,14 @@ namespace ParamTests
             //Write to database
             this.PrepareForEachTest();
 
-            //Login with program
+            //Login
             DAOFactory.ConnectionString = "SERVER=localhost;" +
                                             "DATABASE=px3-test;" +
                                             "UID=root;" +
                                             "PASSWORD=abcd1234;";
 
-            //VoterListApp.CurrentUser = DAOFactory.CurrentUserDAO.LoadUser("jdmo", VoterListApp.CurrentUser.HashPassword("12345"));
-            dao = DAOFactory.CurrentUserDAO;
+            VoterListApp.CurrentUser = User.GetUser("jdmo", "12345");
+            _dao = DAOFactory.getDAO(VoterListApp.CurrentUser);
 
             //Clean the database manually
             this.CleanUpAfterEachTest();
@@ -63,20 +63,20 @@ namespace ParamTests
         public void EndTesting()
         {
             //Close manual connection
-            conn.Close();
+            this._conn.Close();
         }
 
         [SetUp]
         public void PrepareForEachTest()
         {
-            MySqlCommand insertData = new MySqlCommand(this.readTextFile("DataInsertion.txt"), conn);
+            MySqlCommand insertData = new MySqlCommand(this.readTextFile("DataInsertion.txt"), this._conn);
             object o = insertData.ExecuteScalar();
         }
 
         [TearDown]
         public void CleanUpAfterEachTest()
         {
-            MySqlCommand insertData = new MySqlCommand(this.readTextFile("DataDeletion.txt"), conn);
+            MySqlCommand insertData = new MySqlCommand(this.readTextFile("DataDeletion.txt"), this._conn);
             object o = insertData.ExecuteScalar();
         }
 
@@ -99,34 +99,34 @@ namespace ParamTests
         [Test]
         public void TestLoadPersonById()
         {
-            Person p = dao.LoadPerson(1);
+            Person p = this._dao.LoadPerson(1);
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
         }
 
         [Test]
         public void TestLoadUserById()
         {
-            Person p = dao.LoadUser(1);
+            Person p = this._dao.LoadUser(1);
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
         }
 
         [Test]
         public void TestLoadUserByUsername()
         {
-            Person p = dao.LoadUser("jdmo");
+            Person p = this._dao.LoadUser("jdmo");
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
         }
 
         [Test]
         public void TestValidateUser()
         {
-            Assert.That(dao.ValidateUser("jdmo", "someHash")); //todo: insert hash
+            Assert.That(this._dao.ValidateUser("jdmo", "someHash")); //todo: insert hash
         }
 
         [Test]
         public void TestGetPermissions()
         {
-            HashSet<SystemAction> permissions = dao.GetPermissions(VoterListApp.CurrentUser);
+            HashSet<SystemAction> permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
 
             Assert.That(permissions.Count == 22);
         }
@@ -134,7 +134,7 @@ namespace ParamTests
         [Test]
         public void TestLoadVoterCardById()
         {
-            VoterCard votercard = dao.LoadVoterCard(5);
+            VoterCard votercard = this._dao.LoadVoterCard(5);
 
             Assert.That(votercard.IdKey.Equals("1HN8O9M9"));
         }
@@ -142,7 +142,7 @@ namespace ParamTests
         [Test]
         public void TestLoadVoterCardByIdKey()
         {
-            VoterCard votercard = dao.LoadVoterCard("5HU9KQY4");
+            VoterCard votercard = this._dao.LoadVoterCard("5HU9KQY4");
 
             Assert.That(votercard.Id == 3);
         }
@@ -150,7 +150,7 @@ namespace ParamTests
         [Test]
         public void TestFindPersonByCpr()
         {
-            var person = dao.Find(new Person() { Cpr = "2405901253" });
+            var person = this._dao.Find(new Person() { Cpr = "2405901253" });
 
             Assert.That(person[0].Name.Equals("Jens Dahl Møllerhøj"));
         }
@@ -158,7 +158,7 @@ namespace ParamTests
         [Test]
         public void TestFindUserByName()
         {
-            var user = dao.Find(new User() { Name = "Jens Dahl Møllerhøj" });
+            var user = this._dao.Find(new User() { Name = "Jens Dahl Møllerhøj" });
         }
 
         //List<VoterCard> Find(VoterCard voterCard);
@@ -168,8 +168,8 @@ namespace ParamTests
         [Test]
         void TestSavePerson()
         {
-            dao.Save(new Person() { Name = "Helle Thorsen" });
-            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Helle Thorsen'", conn);
+            this._dao.Save(new Person() { Name = "Helle Thorsen" });
+            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Helle Thorsen'", this._conn);
             object o = selectData.ExecuteScalar();
             Assert.That(((int)o) == 1);
         }

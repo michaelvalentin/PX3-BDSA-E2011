@@ -52,7 +52,7 @@ namespace DigitalVoterList.Election
 
         public Person LoadPerson(int id)
         {
-            if (true || ActionPermitted(SystemAction.LoadPerson))
+            if (ActionPermitted(SystemAction.LoadPerson))
             {
                 return _dao.LoadPerson(id);
             }
