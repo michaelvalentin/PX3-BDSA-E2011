@@ -42,7 +42,7 @@ namespace DigitalVoterList.Election
             if (person is Citizen)
             {
                 var citizen = (Citizen)person;
-                citizen.EligibleToVote = CalculateEligibleToVote(rawPerson);
+                //citizen.EligibleToVote = CalculateEligibleToVote(rawPerson); //TODO: FIX!
                 citizen.SecurityQuestions = this.GenerateSecurityQuestions(rawPerson);
                 citizen.VotingPlace = _electionEvent.VotingVenueForCitizen(citizen);
                 return citizen;

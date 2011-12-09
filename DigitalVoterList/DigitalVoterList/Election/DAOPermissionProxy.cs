@@ -71,11 +71,6 @@ namespace DigitalVoterList.Election
             return _dao.LoadUser(username);
         }
 
-        public User LoadUser(string username, string password)
-        {
-            return _dao.LoadUser(username, password);
-        }
-
         public User LoadUser(int id)
         {
             if (ActionPermitted(SystemAction.LoadUser)) //TODO: Remove!

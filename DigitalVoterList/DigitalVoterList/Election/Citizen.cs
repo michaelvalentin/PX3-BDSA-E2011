@@ -30,7 +30,11 @@ namespace DigitalVoterList.Election
         {
             get
             {
-                if(_eligibleToVote == 0)
+                if (_eligibleToVote == 0)
+                {
+                }
+                return true;
+                //TODO: MAKE!
             }
         }
 

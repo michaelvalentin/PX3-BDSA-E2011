@@ -27,14 +27,6 @@ namespace DigitalVoterList.Election
         User LoadUser(string username);
 
         /// <summary>
-        /// What authenticated user exists with this username and password?
-        /// </summary>
-        /// <param name="username">The username to search for</param>
-        /// <param name="password">The password to validate with</param>
-        /// <returns>An authenticated user object, null if no user matched the details</returns>
-        User LoadUser(string username, string password);
-
-        /// <summary>
         /// What user has this id?
         /// </summary>
         /// <param name="id">The database id of the user to load</param>

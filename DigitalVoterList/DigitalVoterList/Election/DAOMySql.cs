@@ -64,20 +64,18 @@ namespace DigitalVoterList.Election
                 rdr.Read();
                 DoIfNotDbNull(rdr, "cpr", lbl =>
                 {
-                    var c = new Citizen(id,rdr.GetString(lbl));
-                    if(rdr.GetInt16("elegible_to_vote") == 1) c.SetEligibleToVote(;
-                    if(rdr.GetInt16("has_voted")==1) c.SetHasVoted();
+                    var c = new Citizen(id, rdr.GetString(lbl));
 
                     p = c;
                 });
-                if(p==null) p = new Person();
+                if (p == null) p = new Person();
                 DoIfNotDbNull(rdr, "name", lbl => { p.Name = rdr.GetString(lbl); });
                 DoIfNotDbNull(rdr, "address", lbl => { p.Address = rdr.GetString(lbl); });
                 DoIfNotDbNull(rdr, "place_of_birth", lbl => { p.PlaceOfBirth = rdr.GetString(lbl); });
                 DoIfNotDbNull(rdr, "passport_number", lbl => { p.PassportNumber = rdr.GetString(lbl); });
                 DoIfNotDbNull(rdr, "voting_venue_id", lbl =>
                                                           {
-                                                              p.
+
                                                           });
                 p.PassportNumber = rdr.GetString("passport_number");
             });
