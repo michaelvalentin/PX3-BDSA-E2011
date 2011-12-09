@@ -6,6 +6,7 @@ namespace ParamTests
 {
     using System.IO;
 
+    using DigitalVoterList;
     using DigitalVoterList.Election;
     using NUnit.Framework;
 
@@ -50,7 +51,7 @@ namespace ParamTests
                                             "UID=root;" +
                                             "PASSWORD=abcd1234;";
 
-            //VoterListApp.CurrentUser = DAOFactory.CurrentUserDAO.LoadUser("jdmo", "12345");
+            VoterListApp.CurrentUser = DAOFactory.CurrentUserDAO.LoadUser("jdmo", VoterListApp.CurrentUser.HashPassword("12345"));
             dao = DAOFactory.CurrentUserDAO;
 
             //Clean the database manually
