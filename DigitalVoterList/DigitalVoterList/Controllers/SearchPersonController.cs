@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DigitalVoterList.Views;
 
@@ -73,7 +74,8 @@ namespace DigitalVoterList.Controllers
             person.Cpr = _view.cprTextBox.Text;
             person.PassportNumber = _view.passportTextBox.Text;
 
-            return DAOFactory.CurrentUserDAO.Find(person);
+            //return DAOFactory.CurrentUserDAO.Find(person);
+            throw new NotImplementedException();
         }
 
         /// <summary>

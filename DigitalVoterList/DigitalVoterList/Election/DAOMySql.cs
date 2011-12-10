@@ -36,7 +36,10 @@ namespace DigitalVoterList.Election
         {
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(cpr != null);
-            Contract.Requires(Find(new Person() { Cpr = cpr }).Count == 1);
+            Contract.Requires(FindCitizens(new Dictionary<CitizenSearchParam, object>()
+                                               {
+                                                   {CitizenSearchParam.Cpr, cpr}
+                                               }).Count == 1);
             Contract.Requires(_transaction != null);
             Contract.Ensures(Contract.Result<Person>() != null);
             MySqlCommand command = Prepare("SELECT id FROM person WHERE cpr=@cpr");
@@ -188,13 +191,15 @@ namespace DigitalVoterList.Election
                                        "WHERE " +
                                        "    u.id=@id");
             cmd.Parameters.AddWithValue("@id", id);
-            User u = new User(id);
+            User u = null;
             Query(cmd, rdr =>
                            {
                                rdr.Read();
+                               string cpr = null;
+                               DoIfNotDbNull(rdr, "cpr", lbl => { cpr = rdr.GetString(lbl); });
+                               u = new User(id, cpr);
                                DoIfNotDbNull(rdr, "name", lbl => { u.Name = rdr.GetString(lbl); });
                                DoIfNotDbNull(rdr, "address", lbl => { u.Address = rdr.GetString(lbl); });
-                               DoIfNotDbNull(rdr, "cpr", lbl => { u.Cpr = rdr.GetString(lbl); });
                                DoIfNotDbNull(rdr, "place_of_birth", lbl => { u.PlaceOfBirth = rdr.GetString(lbl); });
                                DoIfNotDbNull(rdr, "passport_number", lbl => { u.PassportNumber = rdr.GetString(lbl); });
                                u.Username = rdr.GetString("user_name");
@@ -414,33 +419,49 @@ namespace DigitalVoterList.Election
 
         public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching)
         {
+            return (List<Citizen>)LoadWithTransaction(() => PriFindCitizens(data, matching));
+        }
+        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data)
+        {
+            return FindCitizens(data, SearchMatching.Similair);
+        }
+        private List<Citizen> PriFindCitizens(Dictionary<CitizenSearchParam, object> dictionary, SearchMatching exact)
+        {
             throw new NotImplementedException();
         }
 
         public List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching)
+        {
+            return (List<User>)LoadWithTransaction(() => PriFindUsers(data, matching));
+        }
+        public List<User> FindUsers(Dictionary<UserSearchParam, object> data)
+        {
+            return FindUsers(data, SearchMatching.Similair);
+        }
+
+        private List<User> PriFindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching)
         {
             throw new NotImplementedException();
         }
 
         public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching)
         {
+            return (List<VoterCard>)LoadWithTransaction(() => PriFindVoterCards(data, matching));
+        }
+
+        private List<VoterCard> PriFindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching)
+        {
             throw new NotImplementedException();
-        }
-
-        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data)
-        {
-            return FindCitizens(data, SearchMatching.Similair);
-        }
-
-        public List<User> FindUsers(Dictionary<UserSearchParam, object> data)
-        {
-            return FindUsers(data, SearchMatching.Similair);
         }
 
         public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data)
         {
             return FindVoterCards(data, SearchMatching.Similair);
         }
+
+
+
+
 
         /// <summary>
         /// Create this person with this data!
@@ -567,7 +588,7 @@ namespace DigitalVoterList.Election
             Contract.Ensures(LoadUser(Contract.Result<int>()).Equals(user), "All changes must be saved");
             int personId;
             MySqlCommand insertOrUpdatePerson;
-            if (user.Cpr != null && PriFind(new Person() { Cpr = user.Cpr }).Count == 1)
+            if (user.Cpr != null && PriFindCitizens(new Dictionary<CitizenSearchParam, object>() { }, SearchMatching.Exact).Count > 0)
             {
                 insertOrUpdatePerson =
                     Prepare("UPDATE " +
@@ -654,6 +675,7 @@ namespace DigitalVoterList.Election
             }
             return (int)ScalarQuery(insertUser);
         }
+
 
         private void PriSave(User user)
         {
