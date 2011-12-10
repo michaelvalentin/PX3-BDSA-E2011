@@ -55,7 +55,16 @@ namespace DigitalVoterList.Election
             Contract.Requires(ExistsWithId("person", id), "Person must exist in the database to be loaded.");
             Contract.Requires(HasValidCpr(id), "A citizen must have a valid CPR number");
             Contract.Ensures(Contract.Result<Person>() != null);
-            MySqlCommand command = Prepare("SELECT *, v.name venue_name, v.address venue_address FROM person p LEFT JOIN voting_venue v ON v.id=p.voting_venue_id WHERE p.id=@id");
+            MySqlCommand command = Prepare("SELECT " +
+                                           "    *, v.name venue_name, v.address venue_address " +
+                                           "FROM " +
+                                           "    person p " +
+                                           "    LEFT JOIN " +
+                                           "        voting_venue v " +
+                                           "    ON " +
+                                           "        v.id=p.voting_venue_id " +
+                                           "WHERE " +
+                                           "    p.id=@id");
             command.Parameters.AddWithValue("@id", id);
             Citizen c = null;
             Query(command, (MySqlDataReader rdr) =>
@@ -146,7 +155,14 @@ namespace DigitalVoterList.Election
             Contract.Requires(ExistsWithId("user", id), "User must exist in the database to be loaded.");
             Contract.Requires(id > 0, "The input id must be larger than zero.");
             Contract.Ensures(Contract.Result<User>() != null);
-            MySqlCommand cmd = Prepare("SELECT * FROM user u INNER JOIN person p ON u.person_id=p.id WHERE u.id=@id");
+            MySqlCommand cmd = Prepare("SELECT * FROM " +
+                                       "    user u " +
+                                       "    INNER JOIN " +
+                                       "        person p " +
+                                       "    ON " +
+                                       "        u.person_id=p.id " +
+                                       "WHERE " +
+                                       "    u.id=@id");
             cmd.Parameters.AddWithValue("@id", id);
             User u = new User(id);
             Query(cmd, rdr =>
@@ -183,7 +199,12 @@ namespace DigitalVoterList.Election
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(username != null, "The username must not be null!");
             Contract.Requires(passwordHash != null, "The password hash must not be null!");
-            MySqlCommand cmd = Prepare("SELECT id FROM user WHERE user_name=@username AND password_hash=@passwordHash");
+            MySqlCommand cmd = Prepare("SELECT id FROM " +
+                                       "    user " +
+                                       "WHERE " +
+                                       "    user_name=@username " +
+                                       "    AND " +
+                                       "    password_hash=@passwordHash");
             cmd.Parameters.AddWithValue("@username", username);
             cmd.Parameters.AddWithValue("@passwordHash", passwordHash);
             object result = ScalarQuery(cmd);
@@ -214,7 +235,14 @@ namespace DigitalVoterList.Election
             var output = new HashSet<SystemAction>();
             if (user.DbId < 1) return output; //The user CAN not exist in the database...
             MySqlCommand cmd =
-                Prepare("SELECT a.label FROM action a INNER JOIN permission p ON a.id = p.action_id WHERE p.user_id=@id");
+                Prepare("SELECT a.label FROM " +
+                        "   action a " +
+                        "   INNER JOIN " +
+                        "       permission p " +
+                        "       ON " +
+                        "       a.id = p.action_id " +
+                        "WHERE " +
+                        "   p.user_id=@id");
             cmd.Parameters.AddWithValue("@id", user.DbId);
             Query(cmd, rdr =>
                            {
@@ -249,7 +277,22 @@ namespace DigitalVoterList.Election
             var output = new HashSet<VotingVenue>();
             if (user.DbId < 1) return output; //The user CAN not exist in the database...
             MySqlCommand cmd =
-                Prepare("SELECT v.id, v.address, v.name FROM user u INNER JOIN workplace w ON u.id = w.user_id INNER JOIN voting_venue v ON v.id = w.voting_venue_id WHERE u.id=@id");
+                Prepare("SELECT " +
+                        "   v.id, " +
+                        "   v.address, " +
+                        "   v.name " +
+                        "FROM " +
+                        "   user u " +
+                        "   INNER JOIN " +
+                        "       workplace w " +
+                        "       ON " +
+                        "       u.id = w.user_id " +
+                        "   INNER JOIN " +
+                        "       voting_venue v " +
+                        "       ON " +
+                        "       v.id = w.voting_venue_id " +
+                        "WHERE " +
+                        "   u.id=@id");
             cmd.Parameters.AddWithValue("@id", user.DbId);
             Query(cmd, rdr =>
             {
@@ -333,7 +376,7 @@ namespace DigitalVoterList.Election
         {
             Contract.Requires(citizen != null, "Input person must not be null!");
             Contract.Requires(citizen.DbId >= 0, "DbId must be greater than or equal to zero");
-            Contract.Requires(!(citizen.DbId > 0) || ExistsWithId("person", citizen.DbId));
+            Contract.Requires(!(citizen.DbId > 0) || ExistsWithId("person", citizen.DbId), "If updating, the citizen to update must exist");
             Contract.Requires(Citizen.ValidCpr(citizen.Cpr));
             if (citizen.DbId > 0)
             {
@@ -355,7 +398,16 @@ namespace DigitalVoterList.Election
             Contract.Requires(citizen.Cpr != null && Citizen.ValidCpr(citizen.Cpr), "A citizen must be saved with a valid CPR number");
             Contract.Requires(citizen.VotingPlace == null || ExistsWithId("voting_venue", citizen.VotingPlace.DbId), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
             Contract.Ensures(LoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");
-            MySqlCommand cmd = Prepare("UPDATE person SET name=@name, address=@address, cpr=@cpr, eligible_to_vote=@eligibleToVote, place_of_birth=@placeOfBirth, passport_number=@passportNumber, voting_venue_id=@votingVenueId");
+            MySqlCommand cmd = Prepare("UPDATE " +
+                                       "    person " +
+                                       "SET " +
+                                       "    name=@name, " +
+                                       "    address=@address, " +
+                                       "    cpr=@cpr, " +
+                                       "    eligible_to_vote=@eligibleToVote, " +
+                                       "    place_of_birth=@placeOfBirth, " +
+                                       "    passport_number=@passportNumber, " +
+                                       "    voting_venue_id=@votingVenueId");
             var mapping = new Dictionary<string, string>()
                               {
                                   {"name",citizen.Name},
@@ -368,10 +420,7 @@ namespace DigitalVoterList.Election
                               };
             foreach (var kv in mapping)
             {
-                if (kv.Value != null)
-                {
-                    cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
-                }
+                cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
             Execute(cmd);
         }
@@ -385,7 +434,10 @@ namespace DigitalVoterList.Election
             Contract.Requires(citizen.Cpr != null && Citizen.ValidCpr(citizen.Cpr), "A citizen must be saved with a valid CPR number");
             Contract.Requires(citizen.VotingPlace == null || ExistsWithId("voting_venue", citizen.VotingPlace.DbId), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
             Contract.Ensures(LoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");
-            MySqlCommand cmd = Prepare("INSERT INTO person (name,address,cpr,eligible_to_vote,place_of_birth,passport_number,voting_venue_id) VALUES (@name, @address, @cpr, @eligibleToVote, @placeOfBirth, @passportNumber, @votingVenueId");
+            MySqlCommand cmd = Prepare("INSERT INTO " +
+                                       "    person (name,address,cpr,eligible_to_vote,place_of_birth,passport_number,voting_venue_id) " +
+                                       "VALUES " +
+                                       "    (@name, @address, @cpr, @eligibleToVote, @placeOfBirth, @passportNumber, @votingVenueId");
             var mapping = new Dictionary<string, string>()
                               {
                                   {"name",citizen.Name},
@@ -398,10 +450,7 @@ namespace DigitalVoterList.Election
                               };
             foreach (var kv in mapping)
             {
-                if (kv.Value != null)
-                {
-                    cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
-                }
+                cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
             Execute(cmd);
         }
@@ -413,7 +462,167 @@ namespace DigitalVoterList.Election
         /// <returns>Was the attempt successful?</returns>
         public void Save(User user)
         {
-            throw new NotImplementedException();
+            Contract.Requires(user != null, "Input person must not be null!");
+            Contract.Requires(user.DbId >= 0, "DbId must be greater than or equal to zero");
+            Contract.Requires(!(user.DbId > 0) || user.PersonDbId > 0, "When updating a user, PersonDbId must be greater than zero.");
+            Contract.Requires(user.Cpr == null || Citizen.ValidCpr(user.Cpr), "A user must have a valid CPR number or no CPR number");
+            Contract.Requires(!(user.DbId > 0) || ExistsWithId("user", user.DbId), "DbId > 0 => UserExists. Eg. if updating, the user to update must exist.");
+            Contract.Requires(!(user.DbId > 0) || ExistsWithId("person", user.PersonDbId), "DbId > 0 => userPersonExists. Eg. if updating, the users person to update must exist.");
+            Contract.Requires(user.Username != null);
+            Contract.Requires(user.Title != null);
+            Contract.Requires(user.UserSalt != null);
+            if (user.DbId > 0)
+            {
+                DoTransaction(() => PriSave(user));
+            }
+            else
+            {
+                DoTransaction(() => PriSaveNew(user));
+            }
+        }
+
+        private int PriSaveNew(User user)
+        {
+            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(user != null, "Input user must not be null!");
+            Contract.Requires(user.DbId == 0, "DbId must be zero when creating");
+            Contract.Requires(user.Username != null);
+            Contract.Requires(user.Title != null);
+            Contract.Requires(user.UserSalt != null);
+            Contract.Requires(user.Cpr == null || Citizen.ValidCpr(user.Cpr), "A user must have a valid CPR number or no CPR number");
+            Contract.Ensures(LoadUser(Contract.Result<int>()).Equals(user), "All changes must be saved");
+            int personId;
+            MySqlCommand insertOrUpdatePerson;
+            if (user.Cpr != null && PriFind(new Person() { Cpr = user.Cpr }).Count == 1)
+            {
+                insertOrUpdatePerson =
+                    Prepare("UPDATE " +
+                            "   person " +
+                            "SET " +
+                            "   name=@name, " +
+                            "   address=@address, " +
+                            "   place_of_birth=@placeOfBirth, " +
+                            "   passport_number=@passportNumber " +
+                            "WHERE " +
+                            "   cpr=@cpr" +
+                            "; " +
+                            "" +
+                            "SELECT " +
+                            "   id " +
+                            "FROM " +
+                            "   person " +
+                            "WHERE " +
+                            "   cpr=@cpr;");
+            }
+            else
+            {
+                insertOrUpdatePerson = Prepare("INSERT INTO " +
+                                               "    person (" +
+                                               "        name, " +
+                                               "        address, " +
+                                               "        place_of_birth," +
+                                               "        passport_number," +
+                                               "        cpr" +
+                                               "    )" +
+                                               "VALUES" +
+                                               "    (" +
+                                               "        @name," +
+                                               "        @address," +
+                                               "        @placeOfBirth," +
+                                               "        @passportNumber," +
+                                               "        @cpr" +
+                                               "    )" +
+                                               ";" +
+                                               "" +
+                                               "SELECT LAST_INSERT_ID();");
+            }
+            var personMapping = new Dictionary<string, string>()
+                                    {
+                                        {"name",user.Name},
+                                        {"address",user.Address},
+                                        {"placeOfBrith",user.PlaceOfBirth},
+                                        {"passportNumber",user.PassportNumber},
+                                        {"id",user.PersonDbId.ToString()}
+                                    };
+            foreach (var kv in personMapping)
+            {
+                insertOrUpdatePerson.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+            }
+            personId = (int)ScalarQuery(insertOrUpdatePerson);
+
+            MySqlCommand insertUser = Prepare(" INSERT INTO" +
+                                              "     user (" +
+                                              "         user_name," +
+                                              "         title," +
+                                              "         person_id," +
+                                              "         user_salt" +
+                                              "     )" +
+                                              "VALUES" +
+                                              "     (" +
+                                              "         @username," +
+                                              "         @title," +
+                                              "         @personId," +
+                                              "         @userSalt" +
+                                              "     )" +
+                                              ";" +
+                                              "" +
+                                              "SELECT LAST_INSERT_ID();");
+            var userMapping = new Dictionary<string, string>()
+            {
+                {"username",user.Username},
+                {"title",user.Title},
+                {"personId",personId.ToString()},
+                {"userSalt",user.UserSalt}
+            };
+            foreach (var kv in userMapping)
+            {
+                insertUser.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+            }
+            return (int)ScalarQuery(insertUser);
+        }
+
+        private void PriSave(User user)
+        {
+            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(user != null, "Input user must not be null!");
+            Contract.Requires(user.DbId > 0, "DbId must be larger than zero to update");
+            Contract.Requires(ExistsWithId("user", user.DbId), "DbId must be present in database in order to update anything");
+            Contract.Requires(user.Username != null);
+            Contract.Requires(user.Title != null);
+            Contract.Requires(user.UserSalt != null);
+            Contract.Requires(user.PersonDbId > 0, "An existing user must map to a person in the database");
+            Contract.Requires(ExistsWithId("person", user.PersonDbId), "The person for this user must exist in the database");
+            Contract.Requires(user.Cpr == null || Citizen.ValidCpr(user.Cpr), "A user must have a valid CPR number or no CPR number");
+            Contract.Ensures(LoadUser(user.DbId).Equals(user), "All changes must be saved");
+
+            MySqlCommand updatePerson = Prepare("UPDATE person SET name=@name, address=@address, place_of_birth=@placeOfBirth, passport_number=@passportNumber WHERE id=@id");
+            var personMapping = new Dictionary<string, string>()
+                                    {
+                                        {"name",user.Name},
+                                        {"address",user.Address},
+                                        {"placeOfBrith",user.PlaceOfBirth},
+                                        {"passportNumber",user.PassportNumber},
+                                        {"id",user.PersonDbId.ToString()}
+                                    };
+            foreach (var kv in personMapping)
+            {
+                updatePerson.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+            }
+            Execute(updatePerson);
+
+            MySqlCommand updateUser = Prepare("UPDATE user SET user_name=@username, title=@title, user_salt=@userSalt WHERE id=@id");
+            var userMapping = new Dictionary<string, string>()
+                              {
+                                  {"username",user.Username},
+                                  {"title",user.Title},
+                                  {"userSalt",user.UserSalt},
+                                  {"id",user.DbId.ToString()}
+                              };
+            foreach (var kv in userMapping)
+            {
+                updateUser.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+            }
+            Execute(updateUser);
         }
 
         /// <summary>
@@ -423,7 +632,17 @@ namespace DigitalVoterList.Election
         /// <returns>Was the attempt successful?</returns>
         public void Save(VoterCard voterCard)
         {
-            throw new NotImplementedException();
+            Contract.Requires(voterCard != null);
+            Contract.Requires(voterCard.Citizen != null);
+            Contract.Requires(ExistsWithId("person", voterCard.Citizen.DbId), "A voter card must belong to a person in the database");
+            Contract.Requires(voterCard.IdKey != null);
+            Contract.Requires(!(voterCard.Id == 0) || FindVoterCard(new Dictionary<VoterCardSearchParam, object>()
+                                                                        {
+                                                                            {VoterCardSearchParam.IdKey,voterCard.IdKey}
+                                                                        }).Count == 0, "Voter card id-key must be unique!");
+            Contract.Requires(voterCard.Id >= 0);
+            Contract.Requires(!(voterCard.Id > 0) || ExistsWithId("voter_card", voterCard.Id));
+
         }
 
         /// <summary>
