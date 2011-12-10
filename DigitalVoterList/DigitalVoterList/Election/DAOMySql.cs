@@ -327,34 +327,83 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// Create this person with this data!
         /// </summary>
-        /// <param name="person">The person to register</param>
+        /// <param name="citizen">The person to register</param>
         /// <returns>Was the attempt successful?</returns>
         public void Save(Citizen citizen)
         {
-            throw new NotImplementedException();
             Contract.Requires(citizen != null, "Input person must not be null!");
-            DoTransaction(() => PriSave(citizen));
+            Contract.Requires(citizen.DbId >= 0, "DbId must be greater than or equal to zero");
+            Contract.Requires(!(citizen.DbId > 0) || ExistsWithId("person", citizen.DbId));
+            Contract.Requires(Citizen.ValidCpr(citizen.Cpr));
+            if (citizen.DbId > 0)
+            {
+                DoTransaction(() => PriSave(citizen));
+            }
+            else
+            {
+                DoTransaction(() => PriSaveNew(citizen));
+            }
 
         }
 
         private void PriSave(Citizen citizen)
         {
-            throw new NotImplementedException();
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(citizen != null, "Input citizen must not be null!");
             Contract.Requires(citizen.DbId > 0, "DbId must be larger than zero to update");
             Contract.Requires(ExistsWithId("citizen", citizen.DbId), "DbId must be present in database in order to update anything");
+            Contract.Requires(citizen.Cpr != null && Citizen.ValidCpr(citizen.Cpr), "A citizen must be saved with a valid CPR number");
             Contract.Requires(citizen.VotingPlace == null || ExistsWithId("voting_venue", citizen.VotingPlace.DbId), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
             Contract.Ensures(LoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");
-            MySqlCommand cmd = Prepare("UPDATE person SET name=@name, address=, cpr, eligible_to_vote, has_voted,place_of_birth,passport_number,voting_venue_id");
-
+            MySqlCommand cmd = Prepare("UPDATE person SET name=@name, address=@address, cpr=@cpr, eligible_to_vote=@eligibleToVote, place_of_birth=@placeOfBirth, passport_number=@passportNumber, voting_venue_id=@votingVenueId");
+            var mapping = new Dictionary<string, string>()
+                              {
+                                  {"name",citizen.Name},
+                                  {"address",citizen.Address},
+                                  {"cpr",citizen.Cpr},
+                                  {"eligibleToVote",citizen.EligibleToVote ? "1" : "0"},
+                                  {"placeOfBirth",citizen.PlaceOfBirth},
+                                  {"passportNumber",citizen.PassportNumber},
+                                  {"votingVenueId",citizen.VotingPlace != null ? citizen.VotingPlace.DbId.ToString() : null} //Avoid null-pointer
+                              };
+            foreach (var kv in mapping)
+            {
+                if (kv.Value != null)
+                {
+                    cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+                }
+            }
+            Execute(cmd);
         }
 
-        private void PriSaveNew(Person person)
+        private void PriSaveNew(Citizen citizen)
         {
-            throw new NotImplementedException();
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
-            Contract.Requires(person != null, "Input person must not be null!");
+            Contract.Requires(citizen != null, "Input citizen must not be null!");
+            Contract.Requires(citizen.DbId == 0, "DbId must be equal to zero");
+            Contract.Requires(ExistsWithId("citizen", citizen.DbId), "DbId must be present in database in order to update anything");
+            Contract.Requires(citizen.Cpr != null && Citizen.ValidCpr(citizen.Cpr), "A citizen must be saved with a valid CPR number");
+            Contract.Requires(citizen.VotingPlace == null || ExistsWithId("voting_venue", citizen.VotingPlace.DbId), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
+            Contract.Ensures(LoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");
+            MySqlCommand cmd = Prepare("INSERT INTO person (name,address,cpr,eligible_to_vote,place_of_birth,passport_number,voting_venue_id) VALUES (@name, @address, @cpr, @eligibleToVote, @placeOfBirth, @passportNumber, @votingVenueId");
+            var mapping = new Dictionary<string, string>()
+                              {
+                                  {"name",citizen.Name},
+                                  {"address",citizen.Address},
+                                  {"cpr",citizen.Cpr},
+                                  {"eligibleToVote",citizen.EligibleToVote ? "1" : "0"},
+                                  {"placeOfBirth",citizen.PlaceOfBirth},
+                                  {"passportNumber",citizen.PassportNumber},
+                                  {"votingVenueId",citizen.VotingPlace != null ? citizen.VotingPlace.DbId.ToString() : null} //Avoid null-pointer
+                              };
+            foreach (var kv in mapping)
+            {
+                if (kv.Value != null)
+                {
+                    cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+                }
+            }
+            Execute(cmd);
         }
 
         /// <summary>
