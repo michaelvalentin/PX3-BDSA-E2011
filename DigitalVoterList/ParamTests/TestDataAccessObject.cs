@@ -135,6 +135,17 @@ namespace ParamTests
         }
 
         [Test]
+        public void TestPreparedStatements()
+        {
+            var p = new MySqlCommand("INSERT INTO person (name, address) VALUES (@name, @address)");
+            p.Connection = _conn;
+            p.Prepare();
+            p.Parameters.AddWithValue("@name", "Ronni Holm");
+            p.Parameters.AddWithValue("@address", null);
+            p.ExecuteScalar();
+        }
+
+        [Test]
         public void TestGetPermissions()
         {
             var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);

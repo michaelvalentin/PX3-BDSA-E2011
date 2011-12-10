@@ -63,7 +63,7 @@ namespace DigitalVoterList.Election
             {
                 rdr.Read();
                 c = new Citizen(id, rdr.GetString("cpr"), rdr.GetInt32("has_voted") != 0);
-                c.EligibleToVote = rdr.GetInt16("elegible_to_vote") == 1;
+                c.EligibleToVote = rdr.GetInt16("eligible_to_vote") == 1;
                 DoIfNotDbNull(rdr, "voting_venue_id", label =>
                 {
                     c.VotingPlace = new VotingVenue(
