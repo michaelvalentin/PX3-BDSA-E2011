@@ -8,6 +8,7 @@ namespace DigitalVoterList.Election
 {
     using System;
     using System.Collections.Generic;
+    using System.Text;
 
     public class DAOMySql : IDataAccessObject
     {
@@ -56,7 +57,7 @@ namespace DigitalVoterList.Election
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(ExistsWithId("person", id), "Person must exist in the database to be loaded.");
             Contract.Ensures(Contract.Result<Person>() != null);
-            MySqlCommand command = Prepare("SELECT * FROM person p LEFT JOIN voting_venue v ON v.id=p.voting_venue_id WHERE p.id=@id");
+            MySqlCommand command = Prepare("SELECT *, v.name venue_name, v.address venue_address FROM person p LEFT JOIN voting_venue v ON v.id=p.voting_venue_id WHERE p.id=@id");
             command.Parameters.AddWithValue("@id", id);
             Person p = null;
             Query(command, (MySqlDataReader rdr) =>
@@ -70,8 +71,8 @@ namespace DigitalVoterList.Election
                         {
                             c.VotingPlace = new VotingVenue(
                                 rdr.GetInt32(label),
-                                rdr.GetString("name"), //todo: This name is the name of the person, not the voting_venue 
-                                rdr.GetString("address")); //todo: This address is the address of the person
+                                rdr.GetString("venue_name"), //todo: This name is the name of the person, not the voting_venue 
+                                rdr.GetString("venue_address")); //todo: This address is the address of the person
                         });
                     p = c;
                 });
@@ -290,8 +291,68 @@ namespace DigitalVoterList.Election
         /// <returns>A voter card</returns>
         public VoterCard LoadVoterCard(int id)
         {
-            throw new NotImplementedException();
+            return (VoterCard)LoadWithTransaction(() => PriLoadVoterCard(id));
         }
+
+        private VoterCard PriLoadVoterCard(int id)
+        {
+            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(ExistsWithId("votercard", id), "Votercard must exist in the database to be loaded.");
+            Contract.Ensures(Contract.Result<VoterCard>() != null);
+            MySqlCommand command = Prepare("SELECT * FROM votercard v LEFT JOIN person p ON p.id=v.person_id WHERE v.id=@id");
+            command.Parameters.AddWithValue("@id", id);
+            VoterCard v = null;
+            Query(command, (MySqlDataReader rdr) =>
+            {
+                rdr.Read();
+                //v.Citizen = PriLoadPerson(rdr.GetInt32("person_id"));
+                v.ElectionEvent = Settings.Election;
+                v.Id = rdr.GetInt32("id");
+                v.IdKey = rdr.GetString("id_key");
+                v.Valid = (rdr.GetUInt32("valid") == 1);
+            });
+            return v;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        private MySqlCommand PrepareWithValues(string tableName, Dictionary<string, string> info)
+        {
+            Contract.Requires(tableName != null);
+            Contract.Requires(info != null);
+
+            var queryBuilder = new StringBuilder("SELECT * FROM " + tableName + " WHERE ");
+            var insertAnd = false;
+
+            foreach (KeyValuePair<String, String> entry in info)
+            {
+                if (string.IsNullOrEmpty(entry.Value)) continue;
+                if (insertAnd) queryBuilder.Append(" AND ");
+                queryBuilder.Append(entry.Key);
+                queryBuilder.Append(" = @'");
+                queryBuilder.Append(entry.Key);
+                queryBuilder.Append("'");
+                insertAnd = true;
+            }
+            queryBuilder.Append(";");
+
+            var cmd = this.Prepare(queryBuilder.ToString());
+
+            foreach (KeyValuePair<String, String> entry in info)
+            {
+                if (string.IsNullOrEmpty(entry.Value)) continue;
+                cmd.Parameters.AddWithValue("@'" + entry.Key, entry.Value);
+                insertAnd = true;
+            }
+
+            return cmd;
+        }
+
 
         /// <summary>
         /// What voter card has this id-key?

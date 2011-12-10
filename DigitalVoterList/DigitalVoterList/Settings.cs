@@ -7,7 +7,7 @@ namespace DigitalVoterList
     /// <summary>
     /// Settings for project
     /// </summary>
-    public static class pathToTestfilesSettings
+    public static class Settings
     {
         public static readonly string DbHost = "localhost";
         public static readonly string DbName = "PX3";
