@@ -898,13 +898,7 @@ namespace DigitalVoterList.Election
         {
             Contract.Requires(this.ExistsWithId("person", citizen.DbId));
             //Contract.Requires(LoadCitizen(citizen.DbId).Cpr == "");
-            DoTransaction(() => PriSetHasVoted(citizen, cprKey));
-        }
-
-
-        private void PriSetHasVoted(Citizen c, string cprKey)
-        {
-
+            DoTransaction(() => PriSetHasVoted(citizen));
         }
 
         /// <summary>
@@ -914,7 +908,14 @@ namespace DigitalVoterList.Election
         /// <returns>Was the attempt successful?</returns>
         public void SetHasVoted(Citizen citizen)
         {
-            throw new NotImplementedException();
+            DoTransaction(() => PriSetHasVoted(citizen));
+        }
+
+        private void PriSetHasVoted(Citizen c)
+        {
+            Contract.Requires(this.ExistsWithId("person", c.DbId));
+            var cmd = new MySqlCommand("UPDATE person SET hasVoted=1 WHERE id=@id");
+            this.Execute(cmd);
         }
 
         /// <summary>
@@ -1089,19 +1090,19 @@ namespace DigitalVoterList.Election
                 _transaction.Commit();
             }
             catch (Exception ex)
-			{
-				throw;
-				try
-				{
-					_transaction.Rollback();
-					//todo: And retry? We can't just rollback the function, we need to try again..
-				}
-				catch (MySqlException excep)
-				{
-					// TODO: Make a logging function and maybe a security alert...
-					throw;
-				}
-			}
+            {
+                throw;
+                try
+                {
+                    _transaction.Rollback();
+                    //todo: And retry? We can't just rollback the function, we need to try again..
+                }
+                catch (MySqlException excep)
+                {
+                    // TODO: Make a logging function and maybe a security alert...
+                    throw;
+                }
+            }
             _transaction = null;
         }
 

@@ -137,17 +137,6 @@ namespace ParamTests
         }
 
         [Test]
-        public void TestPreparedStatements()
-        {
-            var p = new MySqlCommand("INSERT INTO person (name, address) VALUES (@name, @address)");
-            p.Connection = _conn;
-            p.Prepare();
-            p.Parameters.AddWithValue("@name", "Ronni Holm");
-            p.Parameters.AddWithValue("@address", null);
-            p.ExecuteScalar();
-        }
-
-        [Test]
         public void TestGetPermissions()
         {
             var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
@@ -193,19 +182,28 @@ namespace ParamTests
         }
 
         [Test]
+        public void TestSetHasVoted()
+        {
+            var c = new Citizen(1, "2405901253");
+            c.SetHasVoted();
+        }
+
+        [Test]
         public void TestLoadVoterCardById()
         {
             VoterCard votercard = this._dao.LoadVoterCard(5);
-
             Assert.That(votercard.IdKey.Equals("1HN8O9M9"));
+            VoterCard votercard2 = this._dao.LoadVoterCard(1);
+            Assert.That(votercard2.IdKey.Equals("HR5F4D7"));
         }
 
         [Test]
         public void TestLoadVoterCardByIdKey()
         {
             VoterCard votercard = this._dao.LoadVoterCard("5HU9KQY4");
-
             Assert.That(votercard.Id == 3);
+            VoterCard votercard2 = this._dao.LoadVoterCard("HR5F4D7");
+            Assert.That(votercard2.Id == 1);
         }
 
         [Test]
@@ -218,7 +216,7 @@ namespace ParamTests
         //List<VoterCard> Find(VoterCard voterCard);
 
         [Test]
-        void TestSavePerson()
+        public void TestSavePerson()
         {
             /*this._dao.Save(new Person() { Name = "Helle Thorsen" });
             MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Helle Thorsen'", this._conn);

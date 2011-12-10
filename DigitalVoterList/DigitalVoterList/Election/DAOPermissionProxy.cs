@@ -210,7 +210,7 @@ namespace DigitalVoterList.Election
         {
             if (ActionPermitted(SystemAction.SetHasVotedManually))
             {
-                _dao.Save(citizen);
+                _dao.SetHasVoted(citizen);
             }
         }
 
