@@ -503,7 +503,9 @@ namespace DigitalVoterList.Election
                                        "    eligible_to_vote=@eligibleToVote, " +
                                        "    place_of_birth=@placeOfBirth, " +
                                        "    passport_number=@passportNumber, " +
-                                       "    voting_venue_id=@votingVenueId");
+                                       "    voting_venue_id=@votingVenueId " +
+                                       "WHERE " +
+                                       "id=@id");
             var mapping = new Dictionary<string, string>()
 							  {
 								  {"id",citizen.DbId.ToString()},
