@@ -47,7 +47,7 @@ namespace DigitalVoterList.Utilities
             //http://www.techrepublic.com/blog/howdoi/how-do-i-generate-barcodes-using-c/173
         }
 
-        private bool IsBarcodeReady(string data)
+        public static bool IsBarcodeReady(string data)
         {
             Regex barcode = new Regex("[0-9A-Z]");
             return barcode.IsMatch(data);
