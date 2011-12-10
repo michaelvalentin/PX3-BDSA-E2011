@@ -120,45 +120,58 @@ namespace DigitalVoterList.Election
             return null;
         }
 
-        public List<Citizen> Find(Person person)
+        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching)
         {
             if (ActionPermitted(SystemAction.FindPerson))
             {
-                return _dao.Find(person);
+                return _dao.FindCitizens(data, matching);
             }
             return null;
         }
 
-        public List<User> Find(User user)
+        public List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching)
         {
             if (ActionPermitted(SystemAction.FindUser))
             {
-                return _dao.Find(user);
+                return _dao.FindUsers(data, matching);
             }
             return null;
         }
 
-        public List<VoterCard> Find(VoterCard voterCard)
+        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching)
         {
             if (ActionPermitted(SystemAction.FindVoterCard))
             {
-                return _dao.Find(voterCard);
+                return _dao.FindVoterCards(data, matching);
             }
             return null;
         }
 
-        public List<Citizen> FindElegibleVoters()
+        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data)
         {
-            if (ActionPermitted(SystemAction.FindElegibleVoters))
+            if (ActionPermitted(SystemAction.FindPerson))
             {
-                return _dao.FindElegibleVoters();
+                return _dao.FindCitizens(data, SearchMatching.Similair);
             }
             return null;
         }
 
-        public IEnumerable<RawPerson> LoadRawPeople()
+        public List<User> FindUsers(Dictionary<UserSearchParam, object> data)
         {
-            throw new System.NotImplementedException();
+            if (ActionPermitted(SystemAction.FindUser))
+            {
+                return _dao.FindUsers(data, SearchMatching.Similair);
+            }
+            return null;
+        }
+
+        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data)
+        {
+            if (ActionPermitted(SystemAction.FindVoterCard))
+            {
+                return _dao.FindVoterCards(data, SearchMatching.Similair);
+            }
+            return null;
         }
 
         public void Save(Citizen citizen)
@@ -247,15 +260,6 @@ namespace DigitalVoterList.Election
             {
                 _dao.UpdatePeople(update);
             }
-        }
-
-        public VotingVenue FindVotingVenue(Citizen citizen)
-        {
-            if (ActionPermitted(SystemAction.FindVotingVenue))
-            {
-                return _dao.FindVotingVenue(citizen);
-            }
-            return null;
         }
     }
 }

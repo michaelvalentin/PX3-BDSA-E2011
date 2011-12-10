@@ -412,43 +412,34 @@ namespace DigitalVoterList.Election
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// What persons exists with data similiar to this person?
-        /// </summary>
-        /// <param name="person">The person to use</param>
-        /// <returns>A list of persons that are similair.</returns>
-        public List<Citizen> Find(Person person)
+        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// What users exists with data similiar to this user?
-        /// </summary>
-        /// <param name="user">The user to use</param>
-        /// <returns>A list of users that are similair</returns>
-        public List<User> Find(User user)
+        public List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// What votercards exists with data similiar to this votercard?
-        /// </summary>
-        /// <param name="voterCard">The voter card to use</param>
-        /// <returns>A list of voter cards with similair data</returns>
-        public List<VoterCard> Find(VoterCard voterCard)
+        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// May I have all eligible voters in the database?
-        /// </summary>
-        /// <returns>A list of eligible voters</returns>
-        public List<Citizen> FindElegibleVoters()
+        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data)
         {
-            throw new NotImplementedException();
+            return FindCitizens(data, SearchMatching.Similair);
+        }
+
+        public List<User> FindUsers(Dictionary<UserSearchParam, object> data)
+        {
+            return FindUsers(data, SearchMatching.Similair);
+        }
+
+        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data)
+        {
+            return FindVoterCards(data, SearchMatching.Similair);
         }
 
         /// <summary>
@@ -534,7 +525,7 @@ namespace DigitalVoterList.Election
             foreach (var kv in mapping)
             {
                 cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
-		     }
+            }
             Execute(cmd);
         }
 
@@ -719,24 +710,13 @@ namespace DigitalVoterList.Election
             Contract.Requires(voterCard.Citizen != null);
             Contract.Requires(ExistsWithId("person", voterCard.Citizen.DbId), "A voter card must belong to a person in the database");
             Contract.Requires(voterCard.IdKey != null);
-            Contract.Requires(!(voterCard.Id == 0) || FindVoterCard(new Dictionary<VoterCardSearchParam, object>()
+            Contract.Requires(!(voterCard.Id == 0) || FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
                                                                         {
                                                                             {VoterCardSearchParam.IdKey,voterCard.IdKey}
                                                                         }).Count == 0, "Voter card id-key must be unique!");
             Contract.Requires(voterCard.Id >= 0);
             Contract.Requires(!(voterCard.Id > 0) || ExistsWithId("voter_card", voterCard.Id));
 
-        }
-
-        /// <summary>
-        /// Mark that a voter has voted with standard validation!
-        /// </summary>
-        /// <param name="citizen">The citizen who should be marked as voted</param>
-        /// <param name="cprKey">The last four digits of the citizen's CPR-Number</param>
-        /// <returns>Was the attempt successful?</returns>
-        public void SetHasVoted(Citizen citizen, int cprKey)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -819,16 +799,6 @@ namespace DigitalVoterList.Election
         /// <param name="voterCard"></param>
         /// <param name="update">The update function</param>
         public void UpdatePeople(Func<Person, RawPerson, Person> update)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// What voting venue should this citizen use?
-        /// </summary>
-        /// <param name="citizen"></param>
-        /// <returns></returns>
-        public VotingVenue FindVotingVenue(Citizen citizen)
         {
             throw new NotImplementedException();
         }
