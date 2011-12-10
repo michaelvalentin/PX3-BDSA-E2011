@@ -217,22 +217,36 @@ namespace ParamTests
         [Test]
         public void TestFindCitizen()
         {
-            List<Citizen> result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>
-                                                         {
-                                                             {CitizenSearchParam.Name,"math"}
-                                                         }, SearchMatching.Exact);
-            /*Assert.That(result.Count == 1, "search with \"math\" did not find mathilde!");
+            List<Citizen> result;
             result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>
                                                          {
-                                                             {CitizenSearchParam.Name,"math"}
+                                                             {CitizenSearchParam.Name,"Math"}
+                                                         }, SearchMatching.Similair);
+            Assert.That(result.Count == 1, "search with \"math\" did not find mathilde!");
+            result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>
+                                                         {
+                                                             {CitizenSearchParam.Name,"Math"}
                                                          }, SearchMatching.Exact);
-            Assert.That(result.Count == 0, "Result where returned for exact search on \"math\"");*/
-            /*List<Citizen> result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>
+            Assert.That(result.Count == 0, "Result where returned for exact search on \"math\"");
+            result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>
                                                          {
                                                              {CitizenSearchParam.Cpr,"2405901253"}
                                                          }, SearchMatching.Exact);
             Assert.That(result.Count == 1, "Jens Dahl Møllerhøj could not be found via CPR");
-            Assert.That(result[0].Name.Equals("Jens Dahl Møllerhøj"), "Person with CPR 2405901253 was not Jens Dahl Møllerhøj");*/
+            Assert.That(result[0].Name.Equals("Jens Dahl Møllerhøj"), "Person with CPR 2405901253 was not Jens Dahl Møllerhøj");
+            result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>()
+                                           {
+                                               {CitizenSearchParam.EligibleToVote,true},
+                                               {CitizenSearchParam.HasVoted,false}
+                                           });
+            Assert.That(result.Count == 2);
+            result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>()
+                                           {
+                                               {CitizenSearchParam.Address,"nørre"},
+                                               {CitizenSearchParam.Name,"jens"}
+                                           });
+            Assert.That(result.Count == 1);
+            Assert.That(result[0].Name.Equals("Jens Dahl Møllerhøj"), "Person was not Jens Dahl Møllerhøj");
         }
 
         //void Save(User user);
