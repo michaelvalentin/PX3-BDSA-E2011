@@ -1,6 +1,8 @@
 ﻿
 namespace DigitalVoterList.Election
 {
+    using System;
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// A humanbeing with a name
@@ -58,9 +60,55 @@ namespace DigitalVoterList.Election
         /// </summary>
         public int DbId { get; private set; }
 
-        public new string ToString()
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <returns>
+        /// true if the specified object is equal to the current object; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The object to compare with the current object.</param>
+        public override bool Equals(object obj)
         {
-            return "PERSON( navn : " + Name + " , cpr : " + Cpr + " )";
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj.GetType() != typeof(Person))
+            {
+                return false;
+            }
+            return Equals((Person)obj);
+        }
+
+        public bool Equals(Person other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+            return Equals(other.Cpr, this.Cpr) && Equals(other.PassportNumber, this.PassportNumber) && Equals(other.Name, this.Name) && Equals(other.Address, this.Address) && Equals(other.PlaceOfBirth, this.PlaceOfBirth) && other.DbId == this.DbId;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int result = (this.Cpr != null ? this.Cpr.GetHashCode() : 0);
+                result = (result * 397) ^ (this.PassportNumber != null ? this.PassportNumber.GetHashCode() : 0);
+                result = (result * 397) ^ (this.Name != null ? this.Name.GetHashCode() : 0);
+                result = (result * 397) ^ (this.Address != null ? this.Address.GetHashCode() : 0);
+                result = (result * 397) ^ (this.PlaceOfBirth != null ? this.PlaceOfBirth.GetHashCode() : 0);
+                result = (result * 397) ^ this.DbId;
+                return result;
+            }
         }
     }
 }

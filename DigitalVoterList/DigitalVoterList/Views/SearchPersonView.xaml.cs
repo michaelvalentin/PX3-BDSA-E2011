@@ -13,11 +13,6 @@ using System.Windows.Shapes;
 
 namespace DigitalVoterList.Views
 {
-    using System.Diagnostics;
-
-    using DigitalVoterList.Controllers;
-    using DigitalVoterList.Election;
-
     /// <summary>
     /// Interaction logic for SearchPersonView.xaml
     /// </summary>

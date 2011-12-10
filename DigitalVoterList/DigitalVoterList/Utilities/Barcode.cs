@@ -19,6 +19,7 @@ namespace DigitalVoterList.Utilities
         /// <param name="data">The data to be represented</param>
         public Barcode(string data)
         {
+            Contract.Requires(!string.IsNullOrEmpty(data));
             Contract.Requires(data.Length <= 10);
             Contract.Requires(IsBarcodeReady(data));
             _data = data;
@@ -60,6 +61,5 @@ namespace DigitalVoterList.Utilities
             Contract.Invariant(_data.Length <= 10);
             Contract.Invariant(IsBarcodeReady(_data));
         }
-
     }
 }

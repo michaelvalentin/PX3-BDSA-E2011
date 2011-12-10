@@ -7,10 +7,14 @@
 using System.Windows;
 using DigitalVoterList.Election;
 using DigitalVoterList.Views;
+using System.Linq.Expressions;
 
 namespace DigitalVoterList.Controllers
 {
     using System;
+    using System.Linq;
+    using System.Windows.Controls;
+    using System.Windows.Input;
 
     /// <summary>
     /// TODO: Update summary.
@@ -18,6 +22,7 @@ namespace DigitalVoterList.Controllers
     public class NormalVoterRegistrationController : VoterRegistrationController
     {
         private VoterRegistrationView _view;
+        private int cprTries;
 
         public NormalVoterRegistrationController(VoterRegistrationView view)
             : base(view)
@@ -27,41 +32,16 @@ namespace DigitalVoterList.Controllers
             _view.VoterIdentification.VoterCprBirthday.Text = "XXXXXX";
 
             _view.SearchVoterButton.Visibility = Visibility.Hidden;
-
+            cprTries = 0;
+            
+            _view.VoterValidation.Children.Clear();
             _view.VoterValidation.Children.Add(new SecurityQuesitonView());
             _view.Height = 314;
-        }
 
-        protected override void LoadVoterValidation(Citizen c)
-        {
-            _view.VoterValidation.Children.Clear();
-            SecurityQuesitonView questionView = new SecurityQuesitonView();
-            _view.VoterValidation.Children.Add(questionView);
-            if (c != null)
-            {
-                new RandomQuestionController(questionView, c);
-            }
-        }
-
-        protected override void CheckCpr(object sender, EventArgs e)
-        {
-            //TODO: Write??
-        }
-
-        protected override void RegisterVoter(object sender, EventArgs e)
-        {
-            //TODO: Make sure we meet pre-conditions..
-            try
-            {
-                DAOFactory.CurrentUserDAO.SetHasVoted(Citizen, _view.VoterIdentification.VoterCprDigits.Password);
-                //_view.StatusImage.Source = new BitmapImage(new Uri(@"pack://application:,,,/DigitalVoterList;component/Resources/Icons/success.png"));
-            }
-            catch (Exception ex)
-            {
-                //throw ex;
-                //_view.StatusImage.Source = new BitmapImage(new Uri(@"pack://application:,,,/DigitalVoterList;component/Resources/Icons/error.png"));
-                _view.StatusText.Text = ex.Message;
-            }
+            
+            _view.VoterIdentification.VoterCprDigits.PasswordChanged += CheckCpr;
+            _view.RegisterVoterButton.Click += RegisterVoter;
+            _view.VoterIdentification.PreviewKeyDown += HideImages;
         }
     }
 }

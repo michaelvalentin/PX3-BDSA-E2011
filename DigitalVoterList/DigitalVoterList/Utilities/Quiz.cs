@@ -1,6 +1,6 @@
 ﻿namespace DigitalVoterList.Utilities
 {
-
+    using System.Diagnostics.Contracts;
     /// <summary>
     /// A brief assessment used as an authenticator
     /// </summary>
@@ -26,5 +26,12 @@
         /// The answer to the question
         /// </summary>
         public string Answer { get; private set; }
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(!string.IsNullOrEmpty(Answer));
+            Contract.Invariant(!string.IsNullOrEmpty(Question));
+        }
     }
 }
