@@ -37,9 +37,9 @@ namespace DigitalVoterList.Election
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(cpr != null);
             Contract.Requires(FindCitizens(new Dictionary<CitizenSearchParam, object>()
-                                               {
-                                                   {CitizenSearchParam.Cpr, cpr}
-                                               }).Count == 1);
+											   {
+												   {CitizenSearchParam.Cpr, cpr}
+											   }).Count == 1);
             Contract.Requires(_transaction != null);
             Contract.Ensures(Contract.Result<Person>() != null);
             MySqlCommand command = Prepare("SELECT id FROM person WHERE cpr=@cpr");
@@ -505,16 +505,16 @@ namespace DigitalVoterList.Election
                                        "    passport_number=@passportNumber, " +
                                        "    voting_venue_id=@votingVenueId");
             var mapping = new Dictionary<string, string>()
-                              {
-                                  {"id",citizen.DbId.ToString()},
-                                  {"name",citizen.Name},
-                                  {"address",citizen.Address},
-                                  {"cpr",citizen.Cpr},
-                                  {"eligibleToVote",citizen.EligibleToVote ? "1" : "0"},
-                                  {"placeOfBirth",citizen.PlaceOfBirth},
-                                  {"passportNumber",citizen.PassportNumber},
-                                  {"votingVenueId",citizen.VotingPlace!=null? citizen.VotingPlace.DbId.ToString() : null} //Avoid null-pointer
-                              };
+							  {
+								  {"id",citizen.DbId.ToString()},
+								  {"name",citizen.Name},
+								  {"address",citizen.Address},
+								  {"cpr",citizen.Cpr},
+								  {"eligibleToVote",citizen.EligibleToVote ? "1" : "0"},
+								  {"placeOfBirth",citizen.PlaceOfBirth},
+								  {"passportNumber",citizen.PassportNumber},
+								  {"votingVenueId",citizen.VotingPlace!=null? citizen.VotingPlace.DbId.ToString() : null} //Avoid null-pointer
+							  };
 
             foreach (var kv in mapping)
             {
@@ -528,21 +528,20 @@ namespace DigitalVoterList.Election
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(citizen != null, "Input citizen must not be null!");
             Contract.Requires(citizen.DbId == 0, "DbId must be equal to zero");
-            Contract.Requires(ExistsWithId("citizen", citizen.DbId), "DbId must be present in database in order to update anything");
             Contract.Requires(citizen.Cpr != null && Citizen.ValidCpr(citizen.Cpr), "A citizen must be saved with a valid CPR number");
             Contract.Requires(citizen.VotingPlace == null || ExistsWithId("voting_venue", citizen.VotingPlace.DbId), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
             Contract.Ensures(LoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");
             MySqlCommand cmd = Prepare("INSERT INTO person (name,address,cpr,eligible_to_vote,place_of_birth,passport_number,voting_venue_id) VALUES (@name, @address, @cpr, @eligibleToVote, @placeOfBirth, @passportNumber, @votingVenueId)");
             var mapping = new Dictionary<string, string>()
-                              {
-                                  {"name",citizen.Name},
-                                  {"address",citizen.Address},
-                                  {"cpr",citizen.Cpr},
-                                  {"eligibleToVote",citizen.EligibleToVote ? "1" : "0"},
-                                  {"placeOfBirth",citizen.PlaceOfBirth},
-                                  {"passportNumber",citizen.PassportNumber},
-                                  {"votingVenueId",citizen.VotingPlace != null ? citizen.VotingPlace.DbId.ToString() : null} //Avoid null-pointer
-                              };
+							  {
+								  {"name",citizen.Name},
+								  {"address",citizen.Address},
+								  {"cpr",citizen.Cpr},
+								  {"eligibleToVote",citizen.EligibleToVote ? "1" : "0"},
+								  {"placeOfBirth",citizen.PlaceOfBirth},
+								  {"passportNumber",citizen.PassportNumber},
+								  {"votingVenueId",citizen.VotingPlace != null ? citizen.VotingPlace.DbId.ToString() : null} //Avoid null-pointer
+							  };
             foreach (var kv in mapping)
             {
                 cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
@@ -632,13 +631,13 @@ namespace DigitalVoterList.Election
                                                "SELECT LAST_INSERT_ID();");
             }
             var personMapping = new Dictionary<string, string>()
-                                    {
-                                        {"name",user.Name},
-                                        {"address",user.Address},
-                                        {"placeOfBrith",user.PlaceOfBirth},
-                                        {"passportNumber",user.PassportNumber},
-                                        {"id",user.PersonDbId.ToString()}
-                                    };
+									{
+										{"name",user.Name},
+										{"address",user.Address},
+										{"placeOfBrith",user.PlaceOfBirth},
+										{"passportNumber",user.PassportNumber},
+										{"id",user.PersonDbId.ToString()}
+									};
             foreach (var kv in personMapping)
             {
                 insertOrUpdatePerson.Parameters.AddWithValue("@" + kv.Key, kv.Value);
@@ -663,12 +662,12 @@ namespace DigitalVoterList.Election
                                               "" +
                                               "SELECT LAST_INSERT_ID();");
             var userMapping = new Dictionary<string, string>()
-            {
-                {"username",user.Username},
-                {"title",user.Title},
-                {"personId",personId.ToString()},
-                {"userSalt",user.UserSalt}
-            };
+			{
+				{"username",user.Username},
+				{"title",user.Title},
+				{"personId",personId.ToString()},
+				{"userSalt",user.UserSalt}
+			};
             foreach (var kv in userMapping)
             {
                 insertUser.Parameters.AddWithValue("@" + kv.Key, kv.Value);
@@ -693,13 +692,13 @@ namespace DigitalVoterList.Election
 
             MySqlCommand updatePerson = Prepare("UPDATE person SET name=@name, address=@address, place_of_birth=@placeOfBirth, passport_number=@passportNumber WHERE id=@id");
             var personMapping = new Dictionary<string, string>()
-                                    {
-                                        {"name",user.Name},
-                                        {"address",user.Address},
-                                        {"placeOfBrith",user.PlaceOfBirth},
-                                        {"passportNumber",user.PassportNumber},
-                                        {"id",user.PersonDbId.ToString()}
-                                    };
+									{
+										{"name",user.Name},
+										{"address",user.Address},
+										{"placeOfBrith",user.PlaceOfBirth},
+										{"passportNumber",user.PassportNumber},
+										{"id",user.PersonDbId.ToString()}
+									};
             foreach (var kv in personMapping)
             {
                 updatePerson.Parameters.AddWithValue("@" + kv.Key, kv.Value);
@@ -708,12 +707,12 @@ namespace DigitalVoterList.Election
 
             MySqlCommand updateUser = Prepare("UPDATE user SET user_name=@username, title=@title, user_salt=@userSalt WHERE id=@id");
             var userMapping = new Dictionary<string, string>()
-                              {
-                                  {"username",user.Username},
-                                  {"title",user.Title},
-                                  {"userSalt",user.UserSalt},
-                                  {"id",user.DbId.ToString()}
-                              };
+							  {
+								  {"username",user.Username},
+								  {"title",user.Title},
+								  {"userSalt",user.UserSalt},
+								  {"id",user.DbId.ToString()}
+							  };
             foreach (var kv in userMapping)
             {
                 updateUser.Parameters.AddWithValue("@" + kv.Key, kv.Value);
@@ -733,9 +732,9 @@ namespace DigitalVoterList.Election
             Contract.Requires(ExistsWithId("person", voterCard.Citizen.DbId), "A voter card must belong to a person in the database");
             Contract.Requires(voterCard.IdKey != null);
             Contract.Requires(!(voterCard.Id == 0) || FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
-                                                                        {
-                                                                            {VoterCardSearchParam.IdKey,voterCard.IdKey}
-                                                                        }).Count == 0, "Voter card id-key must be unique!");
+																		{
+																			{VoterCardSearchParam.IdKey,voterCard.IdKey}
+																		}).Count == 0, "Voter card id-key must be unique!");
             Contract.Requires(voterCard.Id >= 0);
             Contract.Requires(!(voterCard.Id > 0) || ExistsWithId("voter_card", voterCard.Id));
 
@@ -748,6 +747,14 @@ namespace DigitalVoterList.Election
         /// <param name="cprKey">The last four digits of the citizen's CPR-Number</param>
         /// <returns>Was the attempt successful?</returns>
         public void SetHasVoted(Citizen citizen, string cprKey)
+        {
+            Contract.Requires(this.ExistsWithId("person", citizen.DbId));
+            //Contract.Requires(LoadCitizen(citizen.DbId).Cpr == "");
+            DoTransaction(() => PriSetHasVoted(citizen, cprKey));
+        }
+
+
+        private void PriSetHasVoted(Citizen c, string cprKey)
         {
 
         }
@@ -818,16 +825,58 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// Update all persons in the dataset with this update
         /// </summary>
-        /// <param name="voterCard"></param>
-        /// <param name="update">The update function</param>
-        public void UpdatePeople(Func<Person, RawPerson, Person> update)
+        /// <param name="updateFunc"></param>
+        public void UpdatePeople(Func<Person, RawPerson, Person> updateFunc)
         {
-            DoTransaction(() => this.PriUpdatePeople(update));
+            var connection = new MySqlConnection(this._connectionString);
+            connection.Open();
+            const string Query = "SELECT * FROM raw_person_data";
+            var loadRowPeople = new MySqlCommand(Query, connection);
+            MySqlDataReader rdr = null;
+
+            try
+            {
+                rdr = loadRowPeople.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    RawPerson rawPerson = new RawPerson();
+                    DoIfNotDbNull(rdr, "name", lbl => rawPerson.Name = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "CPR", lbl => rawPerson.CPR = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "address", lbl => rawPerson.Address = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "birthplace", lbl => rawPerson.Birthplace = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "passport_number", lbl => rawPerson.PassportNumber = rdr.GetString(lbl));
+
+                    if (rawPerson.CPR != null)
+                    {
+                        List<Citizen> listOfCitizens =
+                            FindCitizens(
+                                new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, rawPerson.CPR } });
+
+                        Citizen c = (listOfCitizens.Count > 0) ? listOfCitizens[0] : new Citizen(0, rawPerson.CPR);
+                        c = (Citizen)updateFunc(c, rawPerson);
+                        PriSave(c);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+            }
+            finally
+            {
+                if (rdr != null) rdr.Close();
+                connection.Close();
+            }
+
+            //Update people that are not in the raw data
+            DoTransaction(() => this.MarkPeopleNotInRawDataUneligibleToVote());
         }
 
-        private void PriUpdatePeople(Func<Person, RawPerson, Person> update)
+        private void MarkPeopleNotInRawDataUneligibleToVote()
         {
-            DoTransaction(() => );
+            MySqlCommand cmd = new MySqlCommand("UPDATE person SET eligible_to_vote=0 WHERE cpr NOT IN (SELECT cpr FROM raw_person_data);");
+            this.Execute(cmd);
         }
 
         #endregion
