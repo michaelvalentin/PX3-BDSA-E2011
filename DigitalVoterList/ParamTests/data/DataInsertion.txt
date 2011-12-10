@@ -1,0 +1,83 @@
+INSERT INTO `action` (`id`, `label`) VALUES
+(1, 'AllVotingPlaces'),
+(2, 'CreateUser'),
+(3, 'CreatePerson'),
+(4, 'CreateVoterCard'),
+(5, 'LoadPerson'),
+(6, 'LoadUser'),
+(7, 'LoadVoterCard'),
+(8, 'ScanVoterCard'),
+(9, 'FindPerson'),
+(10, 'FindUser'),
+(11, 'FindVoterCard'),
+(12, 'FindElegibleVoters'),
+(13, 'SavePerson'),
+(14, 'SaveUser'),
+(15, 'SaveVoterCard'),
+(16, 'SetHasVoted'),
+(17, 'SetHasVotedManually'),
+(18, 'ChangeOwnPassword'),
+(19, 'ChangeOthersPassword'),
+(20, 'MarkUserInvalid'),
+(21, 'RestoreUser'),
+(22, 'MarkVoterCardInvalid');
+
+INSERT INTO `user` (`id`, `user_name`, `title`, `person_id`, `password_hash`, `user_salt`) VALUES
+(1, 'jdmo', 'Sys Tester', 1, '89D2F4EDD669E164DE3463B83F0F41F0', 'lkaFDA62lio+3');
+
+INSERT INTO `permission` (`action_id`, `user_id`) VALUES
+(1, 1),
+(2, 1),
+(3, 1),
+(4, 1),
+(5, 1),
+(6, 1),
+(7, 1),
+(8, 1),
+(9, 1),
+(10, 1),
+(11, 1),
+(12, 1),
+(13, 1),
+(14, 1),
+(15, 1),
+(16, 1),
+(17, 1),
+(18, 1),
+(19, 1),
+(20, 1),
+(21, 1),
+(22, 1);
+
+INSERT INTO `voting_venue` (`id`, `address`, `name`) VALUES
+(1, 'Dyssegårdsvej 34', 'Dyssegårdskolens aula'),
+(2, 'Lærkevej 2', 'Gotenfods Gymnasiums gymnastiksal'),
+(7, 'Bakkedals vej 23', 'Aurehøj Gymnasiums fællessal');
+
+INSERT INTO `person` (`id`, `name`, `address`, `cpr`, `eligible_to_vote`, `has_voted`, `place_of_birth`, `passport_number`, `voting_venue_id`) VALUES
+(1, 'Jens Dahl Møllerhøj', 'Nørre Alle 75, 471', '2405901253', 1, 0, 'Gentofte Hospital', '5684895471', 7),
+(2, 'Christopher Nørgård Dall', NULL, '2032304012', 0, 0, 'Samsø Sygehus', '663780088', 2),
+(3, 'Mathilde Roed Birk', NULL, '5097508703', 1, 0, NULL, NULL, 1),
+(4, 'Ronni Holm', NULL, '5066110416', 1, 1, 'Randers Sygehus', '376095272', 1);
+
+INSERT INTO `quiz` (`id`, `question`, `answer`, `person_id`) VALUES
+(1, '"Hvad er din fødselsdag?"', '"24-05-1990"', 1),
+(2, '"Hvad er din mors navn?"', '"Mette Møllerhøj"', 1),
+(3, '"Hvad er du uddannet som?"', '"Smed"', 2),
+(4, '"Hvad er din arbejdsplads?"', '"Mærsk A/S"', 3),
+(5, '"Hvad er dit telefonnummer?"', '"74562350"', 4),
+(6, '"Hvor er du født?"', '"Hvidovre hospital"', 4),
+(7, '"Hvad hedder din far?"', '"Hans Olesen"', 4);
+
+INSERT INTO `voter_card` (`id`, `person_id`, `valid`, `id_key`) VALUES
+(1, 1, 1, 'HR5F4D7'),
+(2, 2, 0, 'UIO8ONH7'),
+(3, 2, 1, '5HU9KQY4'),
+(4, 3, 1, '68JGU9NG'),
+(5, 4, 1, '1HN8O9M9');
+
+INSERT INTO `workplace` (`user_id`, `voting_venue_id`) VALUES
+(1, 1);
+
+INSERT INTO `raw_person_data` (`cpr`, `name`, `mother_cpr`, `father_cpr`, `address`, `address_previous`, `gender`, `birthday`, `deathdate`, `dead`, `birthplace`, `age`, `driver_id`, `military_served`, `workplace`, `education`, `telephone`, `passport_number`, `city`, `zipcode`, `nationality`, `disempowered`) VALUES
+('2405901253', 'Jens Dahl Møllerhøj', '2658948536', '8456712531', 'Nørre Alle 75, 471', 'Hagens Alle 17', 'male', '0000-00-00', '0000-00-00', 0, 'Gentofte Hospital', 21, NULL, 1, NULL, 'Softwareudvikling', '28156001', '1943587458', NULL, 2100, 'DNK', '0');
