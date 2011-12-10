@@ -195,6 +195,13 @@ namespace ParamTests
             Assert.That(votercard.Id == 3);
         }
 
+        [Test]
+        public void TestUpdatePeople()
+        {
+            var dt = new DataTransformer();
+            dt.TransformData();
+        }
+
         /*[Test]
         public void TestFindPersonByCpr()
         {

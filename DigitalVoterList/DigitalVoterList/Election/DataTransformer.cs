@@ -16,12 +16,8 @@ namespace DigitalVoterList.Election
     /// </summary>
     public class DataTransformer
     {
-        private ElectionEvent _electionEvent; //todo: Can we refer to the current electionEvent somehow?
-
-        public void TransformData(ElectionEvent electionEvent)
+        public void TransformData()
         {
-            _electionEvent = electionEvent;
-
             DAOFactory.CurrentUserDAO.UpdatePeople(new Func<Person, RawPerson, Person>(UpdatePerson));
         }
 
@@ -44,7 +40,7 @@ namespace DigitalVoterList.Election
                 var citizen = (Citizen)person;
                 //citizen.EligibleToVote = CalculateEligibleToVote(rawPerson); //TODO: FIX!
                 citizen.SecurityQuestions = this.GenerateSecurityQuestions(rawPerson);
-                citizen.VotingPlace = _electionEvent.VotingVenueForCitizen(citizen);
+                citizen.VotingPlace = Settings.Election.VotingVenueForCitizen(citizen);
                 return citizen;
             }
             return person;
