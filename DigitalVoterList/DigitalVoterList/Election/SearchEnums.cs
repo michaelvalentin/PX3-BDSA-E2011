@@ -24,4 +24,9 @@ namespace DigitalVoterList.Election
     {
         IdKey, CitizenId, Valid
     }
+
+    public enum SearchMatching
+    {
+        Similair, Exact
+    }
 }
