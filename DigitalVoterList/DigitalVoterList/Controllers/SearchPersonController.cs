@@ -58,20 +58,47 @@ namespace DigitalVoterList.Controllers
         }
 
         /// <summary>
+<<<<<<< HEAD
+=======
+        /// Search for a person with the information inserted in the textblocks and insert
+        /// every person as an item in the listbox
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="e">The event</param>
+        private void SearchEvent(object sender, RoutedEventArgs e)
+        {
+            if (e is KeyEventArgs && ((KeyEventArgs)e).Key != Key.Enter) return;
+            if (Search().Count > 0)
+            {
+                ListView(Search());
+            }
+            else
+            {
+                _view.statusTextBlock.Text = "No persons found with that information";
+            }
+        }
+
+        /// <summary>
+>>>>>>> d4e1171e71cc807ca9b52c2292fcced1fdf47bd7
         /// Find person with the information inserted in the textblocks
         /// </summary>
         /// <returns>A list of persons found from the inserted information</returns>
-        private List<Person> Search()
+        private List<Citizen> Search()
         {
+<<<<<<< HEAD
             /*
+=======
+
+>>>>>>> d4e1171e71cc807ca9b52c2292fcced1fdf47bd7
             _searchPerson.Clear();
-            
+
             Person person = new Person();
             person.Name = _view.nameTextBox.Text;
             person.Address = _view.addressTextBox.Text;
             person.Cpr = _view.cprTextBox.Text;
             person.PassportNumber = _view.passportTextBox.Text;
 
+<<<<<<< HEAD
             return DAOFactory.CurrentUserDAO.Find(person);
             */
             List<Person> persons = new List<Person>();
@@ -86,6 +113,10 @@ namespace DigitalVoterList.Controllers
                 persons.Add(p);
             }
             return persons;
+=======
+            //return DAOFactory.CurrentUserDAO.Find(person);
+            throw new NotImplementedException();
+>>>>>>> d4e1171e71cc807ca9b52c2292fcced1fdf47bd7
         }
 
         /// <summary>

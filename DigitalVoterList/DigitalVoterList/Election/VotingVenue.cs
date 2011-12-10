@@ -28,11 +28,11 @@ namespace DigitalVoterList.Election
 
         public int DbId { get; private set; }
 
-        public static bool operator ==(VotingVenue a, VotingVenue b)
+        public static bool operator ==(VotingVenue a, VotingVenue b) //todo: do this nicer
         {
-            if (a == null && b == null) return true;
-            if (a == null || b == null) return false;
-            return a.DbId == b.DbId;
+            var c = a ?? new VotingVenue(0, null, null);
+            var d = b ?? new VotingVenue(0, null, null);
+            return c.DbId == d.DbId;
         }
 
         public static bool operator !=(VotingVenue a, VotingVenue b)

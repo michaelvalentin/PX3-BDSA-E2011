@@ -59,7 +59,8 @@ namespace DigitalVoterList.Election
         /// <returns></returns>
         public VotingVenue VotingVenueForCitizen(Citizen citizen)
         {
-            return DAOFactory.CurrentUserDAO.FindVotingVenue(citizen);
+            //return DAOFactory.CurrentUserDAO.FindVotingVenue(citizen);
+            throw new NotImplementedException();
         }
 
         /// <summary>

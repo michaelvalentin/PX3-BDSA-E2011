@@ -75,12 +75,21 @@ namespace DigitalVoterList.Election
         }
 
         private bool ValidCpr(string cpr)
+
+        [ContractInvariantMethod]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(ValidCpr(Cpr));
+        }
+
+        public static bool ValidCpr(string cpr)
         {
             string tempCpr = cpr;
             if (tempCpr.Length == 10)
             {
-                int day = Int32.Parse(tempCpr.Substring(0, 1));
-                int month = Int32.Parse(tempCpr.Substring(2, 3));
+                int day = Int32.Parse(tempCpr.Substring(0, 2));
+                int month = Int32.Parse(tempCpr.Substring(2, 2));
                 if (!(day > 0 && day <= 31)) return false;
                 if (!(month > 0 && month <= 12)) return false;
 

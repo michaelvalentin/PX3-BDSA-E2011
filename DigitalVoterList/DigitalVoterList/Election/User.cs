@@ -17,6 +17,8 @@ namespace DigitalVoterList.Election
         private HashSet<VotingVenue> _workplaces;
         private DateTime? _lastSuccessfullValidationTime;
 
+        public string Cpr { get; private set; }
+
         /// <summary>
         /// What user has this login?
         /// </summary>
@@ -37,9 +39,11 @@ namespace DigitalVoterList.Election
         /// The users at the election venue and people adminitrating the electing, who have different priviledges.
         /// </summary>
         /// <param name="id">The database id of the user</param>
-        public User(int id)
+        public User(int id, string cpr)
             : base(id)
         {
+            Cpr = cpr;
+            DbId = id;
             _permissions = new HashSet<SystemAction>();
             _workplaces = new HashSet<VotingVenue>();
             _lastSuccessfullValidationTime = null;
@@ -49,7 +53,7 @@ namespace DigitalVoterList.Election
         /// The users at the election venue and people adminitrating the electing, who have different priviledges.
         /// </summary>
         public User()
-            : this(0)
+            : this(0, null)
         {
         }
 
@@ -110,7 +114,12 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// The user's id in the database
         /// </summary>
-        public int DBId { get; private set; }
+        public int DbId { get; private set; }
+
+        public int PersonDbId
+        {
+            get { return base.DbId; }
+        }
 
         /// <summary>
         /// The user's jobtitle
@@ -216,7 +225,7 @@ namespace DigitalVoterList.Election
             return Equals(obj as User);
         }
 
-        private string HashPassword(string password)
+        public string HashPassword(string password) //todo: public or private?
         {
             string salted = UserSalt + password + "AX7530G7FR";
             MD5 md5 = System.Security.Cryptography.MD5.Create();
@@ -264,6 +273,11 @@ namespace DigitalVoterList.Election
                 result = (result * 397) ^ this.DBId;
                 return result;
             }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(Cpr == null || Citizen.ValidCpr(Cpr));
         }
     }
 }

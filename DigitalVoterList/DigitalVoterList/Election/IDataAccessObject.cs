@@ -13,11 +13,18 @@ namespace DigitalVoterList.Election
     public interface IDataAccessObject
     {
         /// <summary>
-        /// What person has this id?
+        /// What Citizen has this id?
         /// </summary>
         /// <param name="id">The database id of the person to load</param>
         /// <returns>The Person object loaded from the database</returns>
-        Person LoadPerson(int id);
+        Citizen LoadCitizen(int id);
+
+        /// <summary>
+        /// What Citizen has this cpr?
+        /// </summary>
+        /// <param name="cpr">The CPR to search for</param>
+        /// <returns>A citizen that matches the given CPR</returns>
+        Citizen LoadCitizen(string cpr);
 
         /// <summary>
         /// What user has this username?
@@ -70,38 +77,56 @@ namespace DigitalVoterList.Election
         VoterCard LoadVoterCard(string idKey);
 
         /// <summary>
-        /// What persons exists with data similiar to this person?
+        /// What persons exists with data similiar to this data?
         /// </summary>
-        /// <param name="person">The person to use</param>
-        /// <returns>A list of persons that are similair.</returns>
-        List<Person> Find(Person person);
+        /// <param name="data">The data to search with</param>
+        /// <param name="matching">What type of search matching to use</param>
+        /// <returns>A list of ctiizens that have the specified data.</returns>
+        List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching);
 
         /// <summary>
-        /// What users exists with data similiar to this user?
+        /// What users exists with data similiar to this data?
         /// </summary>
-        /// <param name="user">The user to use</param>
-        /// <returns>A list of users that are similair</returns>
-        List<User> Find(User user);
+        /// <param name="data">The data to search with</param>
+        /// <param name="matching">What type of search matching to use</param>
+        /// <returns>A list of users that have the specified data</returns>
+        List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching);
 
         /// <summary>
-        /// What votercards exists with data similiar to this votercard?
+        /// What votercards exists with data similiar to this data?
         /// </summary>
-        /// <param name="voterCard">The voter card to use</param>
-        /// <returns>A list of voter cards with similair data</returns>
-        List<VoterCard> Find(VoterCard voterCard);
+        /// <param name="data">The data to search with</param>
+        /// <param name="matching">What type of search matching to use</param>
+        /// <returns>A list of voter cards that have the specified data</returns>
+        List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching);
 
         /// <summary>
-        /// May I have all eligible voters in the database?
+        /// What persons exists with data similiar to this data?
         /// </summary>
-        /// <returns>A list of eligible voters</returns>
-        List<Citizen> FindElegibleVoters();
+        /// <param name="data">The data to search with</param>
+        /// <returns>A list of ctizens that have data similair to the specified data.</returns>
+        List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data);
+
+        /// <summary>
+        /// What users exists with data similiar to this data?
+        /// </summary>
+        /// <param name="data">The data to search with</param>
+        /// <returns>A list of users that have data similair to the specified data</returns>
+        List<User> FindUsers(Dictionary<UserSearchParam, object> data);
+
+        /// <summary>
+        /// What votercards exists with data similiar to this data?
+        /// </summary>
+        /// <param name="data">The data to search with</param>
+        /// <returns>A list of voter cards that have data similair to the specified data</returns>
+        List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data);
 
         /// <summary>
         /// Create this person with this data!
         /// </summary>
-        /// <param name="person">The person to register</param>
+        /// <param name="citizen">The person to register</param>
         /// <returns>Was the attempt successful?</returns>
-        void Save(Person person);
+        void Save(Citizen citizen);
 
         /// <summary>
         /// Create this user with this data!
@@ -176,12 +201,5 @@ namespace DigitalVoterList.Election
         /// <param name="voterCard"></param>
         /// <param name="update">The update function</param>
         void UpdatePeople(Func<Person, RawPerson, Person> update);
-
-        /// <summary>
-        /// What voting venue should this citizen use?
-        /// </summary>
-        /// <param name="citizen"></param>
-        /// <returns></returns>
-        VotingVenue FindVotingVenue(Citizen citizen);
     }
 }

@@ -22,6 +22,8 @@ namespace DigitalVoterList.Election
 
         private bool ActionPermitted(SystemAction a, string msg = "You don't have permission to perform this SystemAction.")
         {
+            return true;
+
             Contract.Ensures(
                 (!_user.HasPermission(a) && Contract.Result<bool>() == false)
                 || (_user.HasPermission(a) && Contract.Result<bool>() == true));
@@ -39,17 +41,8 @@ namespace DigitalVoterList.Election
 
         private bool ActionPermittedForThisUser(User user, SystemAction a, string msg = "You don't have permission to perform this SystemAction.")
         {
-            Contract.Ensures(
-                (!_user.HasPermission(a) && Contract.Result<bool>() == false)
-                || (_user.HasPermission(a) && Contract.Result<bool>() == false));
-
-            if (!user.Equals(_user) || !_user.HasPermission(a))
-            {
-                throw new PermissionException(a, _user, msg);
-                return false;
-            }
-
-            return true;
+            if (user.Equals(_user)) return this.ActionPermitted(a, msg);
+            return false;
         }
 
         private bool WorksHere(VotingVenue v, string msg = "You can't perform this action, as you don't work in the right voting venue")
@@ -57,11 +50,20 @@ namespace DigitalVoterList.Election
             return _user.Workplaces.Contains(v) || ActionPermitted(SystemAction.AllVotingPlaces);
         }
 
-        public Person LoadPerson(int id)
+        public Citizen LoadCitizen(int id)
         {
-            if (true || ActionPermitted(SystemAction.LoadPerson))
+            if (ActionPermitted(SystemAction.LoadPerson))
             {
-                return _dao.LoadPerson(id);
+                return _dao.LoadCitizen(id);
+            }
+            return null;
+        }
+
+        public Citizen LoadCitizen(string cpr)
+        {
+            if (ActionPermitted(SystemAction.LoadPerson))
+            {
+                return _dao.LoadCitizen(cpr);
             }
             return null;
         }
@@ -73,7 +75,7 @@ namespace DigitalVoterList.Election
 
         public User LoadUser(int id)
         {
-            if (ActionPermitted(SystemAction.LoadUser)) //TODO: Remove!
+            if (ActionPermitted(SystemAction.LoadUser))
             {
                 return _dao.LoadUser(id);
             }
@@ -118,52 +120,65 @@ namespace DigitalVoterList.Election
             return null;
         }
 
-        public List<Person> Find(Person person)
+        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching)
         {
             if (ActionPermitted(SystemAction.FindPerson))
             {
-                return _dao.Find(person);
+                return _dao.FindCitizens(data, matching);
             }
             return null;
         }
 
-        public List<User> Find(User user)
+        public List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching)
         {
             if (ActionPermitted(SystemAction.FindUser))
             {
-                return _dao.Find(user);
+                return _dao.FindUsers(data, matching);
             }
             return null;
         }
 
-        public List<VoterCard> Find(VoterCard voterCard)
+        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching)
         {
             if (ActionPermitted(SystemAction.FindVoterCard))
             {
-                return _dao.Find(voterCard);
+                return _dao.FindVoterCards(data, matching);
             }
             return null;
         }
 
-        public List<Citizen> FindElegibleVoters()
+        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data)
         {
-            if (ActionPermitted(SystemAction.FindElegibleVoters))
+            if (ActionPermitted(SystemAction.FindPerson))
             {
-                return _dao.FindElegibleVoters();
+                return _dao.FindCitizens(data, SearchMatching.Similair);
             }
             return null;
         }
 
-        public IEnumerable<RawPerson> LoadRawPeople()
+        public List<User> FindUsers(Dictionary<UserSearchParam, object> data)
         {
-            throw new System.NotImplementedException();
+            if (ActionPermitted(SystemAction.FindUser))
+            {
+                return _dao.FindUsers(data, SearchMatching.Similair);
+            }
+            return null;
         }
 
-        public void Save(Person person)
+        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data)
+        {
+            if (ActionPermitted(SystemAction.FindVoterCard))
+            {
+                return _dao.FindVoterCards(data, SearchMatching.Similair);
+            }
+            return null;
+        }
+
+        public void Save(Citizen citizen)
         {
             if (ActionPermitted(SystemAction.SavePerson))
             {
-                _dao.Save(person);
+                _dao.Save(citizen);
             }
         }
 
@@ -245,15 +260,6 @@ namespace DigitalVoterList.Election
             {
                 _dao.UpdatePeople(update);
             }
-        }
-
-        public VotingVenue FindVotingVenue(Citizen citizen)
-        {
-            if (ActionPermitted(SystemAction.FindVotingVenue))
-            {
-                return _dao.FindVotingVenue(citizen);
-            }
-            return null;
         }
     }
 }
