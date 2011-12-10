@@ -46,6 +46,11 @@ namespace ParamTests
             VoterListApp.CurrentUser = User.GetUser("jdmo", "12345");
             _dao = DAOFactory.getDAO(VoterListApp.CurrentUser);
 
+            /*var u = new User(2, "0101019871");
+            u.HashPassword("asdf");
+            _dao.ValidateUser("slave", "tester");*/
+
+
             //Clean the database manually
             this.CleanUpAfterEachTest();
         }
@@ -110,11 +115,11 @@ namespace ParamTests
         [Test]
         public void TestLoadUserById()
         {
-            /*Person p = this._dao.LoadUser(1);
-            Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
+            var u = this._dao.LoadUser(1);
+            Assert.That(u.Name.Equals("Jens Dahl Møllerhøj"));
 
-            Person p2 = this._dao.LoadUser(4);
-            Assert.That(p2.Name.Equals("Ronni Holm"));*/
+            var u2 = this._dao.LoadUser(3);
+            Assert.That(u2.Name.Equals("Mathilde Roed Birk"));
         }
 
         [Test]
@@ -122,6 +127,9 @@ namespace ParamTests
         {
             Person p = this._dao.LoadUser("jdmo");
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
+
+            Person p2 = this._dao.LoadUser("elec");
+            Assert.That(p2.Name.Equals("Mathilde Roed Birk"));
         }
 
         [Test]
@@ -148,6 +156,12 @@ namespace ParamTests
         {
             var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
             Assert.That(permissions.Count == 22);
+
+            var permissions2 = this._dao.GetPermissions(User.GetUser("slave", "asdf"));
+            Assert.That(permissions2.Count == 0);
+
+            var permissions3 = this._dao.GetPermissions(User.GetUser("elec", "hemmelighed"));
+            Assert.That(permissions3.Count == 3);
         }
 
         [Test]
@@ -177,6 +191,9 @@ namespace ParamTests
         {
             var workplaces = this._dao.GetWorkplaces(VoterListApp.CurrentUser);
             Assert.That(workplaces.Count == 1);
+
+            var workplaces2 = this._dao.GetWorkplaces(User.GetUser("slave", "asdf"));
+            Assert.That(workplaces2.Count == 2);
         }
 
         [Test]

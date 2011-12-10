@@ -134,7 +134,6 @@ namespace DigitalVoterList.Election
         {
             get
             {
-                Contract.Requires(_permissions != null);
                 if (!Validated)
                 {
                     return new HashSet<SystemAction>();
@@ -157,7 +156,6 @@ namespace DigitalVoterList.Election
         {
             get
             {
-                Contract.Requires(_permissions != null);
                 if (!Validated)
                 {
                     return new HashSet<VotingVenue>();

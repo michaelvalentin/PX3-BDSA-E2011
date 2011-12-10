@@ -8,7 +8,6 @@ namespace DigitalVoterList.Election
 {
     using System;
     using System.Collections.Generic;
-    using System.Text;
 
     public class DAOMySql : IDataAccessObject
     {
@@ -35,13 +34,10 @@ namespace DigitalVoterList.Election
         private Citizen PriLoadCitizen(string cpr)
         {
             //TODO: should this use findCitizens?
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(cpr != null);
-            Contract.Requires(FindCitizens(new Dictionary<CitizenSearchParam, object>()
-											   {
-												   {CitizenSearchParam.Cpr, cpr}
-											   }).Count == 1);
-            Contract.Requires(_transaction != null);
+            //Contract.Requires(FindCitizens(new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, cpr } }).Count == 1); //todo: uncomment this when find is done
+            Contract.Requires(this.Transacting());
             Contract.Ensures(Contract.Result<Person>() != null);
             MySqlCommand command = Prepare("SELECT id FROM person WHERE cpr=@cpr");
             command.Parameters.AddWithValue("@cpr", cpr);
@@ -56,7 +52,7 @@ namespace DigitalVoterList.Election
 
         private Citizen PriLoadCitizen(int id)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(ExistsWithId("person", id), "Person must exist in the database to be loaded.");
             Contract.Requires(HasValidCpr(id), "A citizen must have a valid CPR number");
             Contract.Ensures(Contract.Result<Person>() != null);
@@ -93,9 +89,9 @@ namespace DigitalVoterList.Election
         }
 
         //Does this id exist in this database table?
-        private bool ExistsWithId(string tableName, int id)
+        public bool ExistsWithId(string tableName, int id)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(tableName != null);
             Contract.Requires(id > 0);
             MySqlCommand cmd = Prepare("SELECT id FROM @tableName WHERE id=@id");
@@ -107,7 +103,7 @@ namespace DigitalVoterList.Election
 
         private bool HasValidCpr(int citizenId)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(citizenId > 0, "A valid database id must be greater than zero.");
             MySqlCommand cmd = Prepare("SELECT cpr FROM person WHERE id=@id");
             cmd.Parameters.AddWithValue("@id", citizenId);
@@ -130,7 +126,7 @@ namespace DigitalVoterList.Election
 
         private User PriLoadUser(string username)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(username != null, "Input username must not be null!");
             MySqlCommand cmd = Prepare("SELECT id FROM user WHERE user_name=@username");
             cmd.Parameters.AddWithValue("@username", username);
@@ -177,7 +173,7 @@ namespace DigitalVoterList.Election
 
         private User PriLoadUser(int id)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(ExistsWithId("user", id), "User must exist in the database to be loaded.");
             Contract.Requires(id > 0, "The input id must be larger than zero.");
             Contract.Ensures(Contract.Result<User>() != null);
@@ -224,10 +220,10 @@ namespace DigitalVoterList.Election
 
         private bool PriValidateUser(string username, string passwordHash)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(username != null, "The username must not be null!");
             Contract.Requires(passwordHash != null, "The password hash must not be null!");
-            MySqlCommand cmd = Prepare("SELECT id FROM " +
+            MySqlCommand cmd = Prepare("SELECT COUNT(*) FROM " +
                                        "    user " +
                                        "WHERE " +
                                        "    user_name=@username " +
@@ -235,9 +231,7 @@ namespace DigitalVoterList.Election
                                        "    password_hash=@passwordHash");
             cmd.Parameters.AddWithValue("@username", username);
             cmd.Parameters.AddWithValue("@passwordHash", passwordHash);
-            object result = ScalarQuery(cmd);
-            if (result == null) return false;
-            int output = Convert.ToInt32(result);
+            int output = Convert.ToInt32(ScalarQuery(cmd));
             return output == 1;
         }
 
@@ -257,7 +251,7 @@ namespace DigitalVoterList.Election
 
         private HashSet<SystemAction> PriGetPermissions(User user)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(user != null, "The input user must not be null!");
             Contract.Ensures(Contract.Result<HashSet<SystemAction>>() != null);
             var output = new HashSet<SystemAction>();
@@ -299,7 +293,7 @@ namespace DigitalVoterList.Election
 
         private HashSet<VotingVenue> PriGetWorkplaces(User user)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(user != null, "The input user must not be null!");
             Contract.Ensures(Contract.Result<HashSet<VotingVenue>>() != null);
             var output = new HashSet<VotingVenue>();
@@ -348,7 +342,7 @@ namespace DigitalVoterList.Election
 
         private VoterCard PriLoadVoterCard(int id)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(ExistsWithId("votercard", id), "Votercard must exist in the database to be loaded.");
             Contract.Ensures(Contract.Result<VoterCard>() != null);
             MySqlCommand command = Prepare("SELECT * FROM voter_card v LEFT JOIN person p ON p.id=v.person_id WHERE v.id=@id");
@@ -498,7 +492,7 @@ namespace DigitalVoterList.Election
 
         private void PriSave(Citizen citizen)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(citizen != null, "Input citizen must not be null!");
             Contract.Requires(citizen.DbId > 0, "DbId must be larger than zero to update");
             Contract.Requires(ExistsWithId("citizen", citizen.DbId), "DbId must be present in database in order to update anything");
@@ -538,7 +532,7 @@ namespace DigitalVoterList.Election
 
         private void PriSaveNew(Citizen citizen)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(citizen != null, "Input citizen must not be null!");
             Contract.Requires(citizen.DbId == 0, "DbId must be equal to zero");
             Contract.Requires(citizen.Cpr != null && Citizen.ValidCpr(citizen.Cpr), "A citizen must be saved with a valid CPR number");
@@ -590,7 +584,7 @@ namespace DigitalVoterList.Election
 
         private int PriSaveNew(User user)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(user != null, "Input user must not be null!");
             Contract.Requires(user.DbId == 0, "DbId must be zero when creating");
             Contract.Requires(user.Username != null);
@@ -691,7 +685,7 @@ namespace DigitalVoterList.Election
 
         private void PriSave(User user)
         {
-            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(user != null, "Input user must not be null!");
             Contract.Requires(user.DbId > 0, "DbId must be larger than zero to update");
             Contract.Requires(ExistsWithId("user", user.DbId), "DbId must be present in database in order to update anything");
@@ -744,15 +738,12 @@ namespace DigitalVoterList.Election
             Contract.Requires(voterCard.Citizen != null);
             Contract.Requires(ExistsWithId("person", voterCard.Citizen.DbId), "A voter card must belong to a person in the database");
             Contract.Requires(voterCard.IdKey != null);
-            Contract.Requires(voterCard.Id != 0 || FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
+            /*Contract.Requires(voterCard.Id != 0 || FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
                                                                         {
                                                                             {VoterCardSearchParam.IdKey,voterCard.IdKey}
-                                                                        }).Count == 0, "Voter card id-key must be unique!");
+                                                                        }).Count == 0, "Voter card id-key must be unique!");*/
+            //Uncomment when votercard find is done
             Contract.Requires(voterCard.Id >= 0, "VoterCard id must be greater");
-            Contract.Requires(!(voterCard.Id == 0) || FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
-																		{
-																			{VoterCardSearchParam.IdKey,voterCard.IdKey}
-																		}).Count == 0, "Voter card id-key must be unique!");
             Contract.Requires(voterCard.Id >= 0);
             Contract.Requires(!(voterCard.Id > 0) || ExistsWithId("voter_card", voterCard.Id));
             if (voterCard.Id == 0)
@@ -767,7 +758,7 @@ namespace DigitalVoterList.Election
 
         private int PriSaveNew(VoterCard voterCard)
         {
-            Contract.Requires(_transaction != null, "Must be called within a transaction");
+            Contract.Requires(this.Transacting(), "Must be called within a transaction");
             Contract.Requires(voterCard != null);
             Contract.Requires(voterCard.Id == 0);
             Contract.Requires(voterCard.Citizen != null);
@@ -808,7 +799,7 @@ namespace DigitalVoterList.Election
 
         private void PriSave(VoterCard voterCard)
         {
-            Contract.Requires(_transaction != null, "Must be called within a transaction");
+            Contract.Requires(this.Transacting(), "Must be called within a transaction");
             Contract.Requires(voterCard != null);
             Contract.Requires(voterCard.Id > 0);
             Contract.Requires(voterCard.Citizen != null);
@@ -1052,6 +1043,15 @@ namespace DigitalVoterList.Election
         }
 
         /// <summary>
+        /// Is the transaction in use
+        /// </summary>
+        /// <returns></returns>
+        public bool Transacting()
+        {
+            return (_transaction != null);
+        }
+
+        /// <summary>
         /// Do this in a transaction, and handle all transaction and connection issues that might occur
         /// </summary>
         /// <param name="act">What to do...</param>
@@ -1087,7 +1087,7 @@ namespace DigitalVoterList.Election
             }
             MySqlCommand cmd = new MySqlCommand(query);
             cmd.Connection = Connection;
-            if (_transaction != null) cmd.Transaction = _transaction;
+            if (this.Transacting()) cmd.Transaction = _transaction;
             cmd.Prepare();
             _preparedStatements.Add(query, cmd);
             return cmd;
