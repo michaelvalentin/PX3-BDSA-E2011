@@ -4,173 +4,254 @@ using MySql.Data.MySqlClient;
 
 namespace ParamTests
 {
+    using System.IO;
 
+    using DigitalVoterList;
     using DigitalVoterList.Election;
     using NUnit.Framework;
-
 
     [TestFixture]
     public partial class TestDataAccessObject
     {
-        private IDataAccessObject dao;
-        private MySqlConnection conn;
-        private MySqlConnection conn2;
+        private IDataAccessObject _dao;
+        private MySqlConnection _conn;
+        private string pathToTestfiles = "..\\..\\data\\";
+
+        #region testsetup
 
         [TestFixtureSetUp]
-        public void PrepareClass()
+        public void PrepareTesting()
         {
-            //VoterListApp.CurrentUser = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
+            /*
+             * Generate control user
+             * var u = new User(1);
+            u.UserSalt = "lkaFDA62lio+3";
+            u.HashPassword("12345");*/
 
-            DAOFactory.ConnectionString =
 
-            dao = DAOFactory.CurrentUserDAO;
-            conn = new MySqlConnection("SERVER=localhost;" +
-                "DATABASE=px3;" +
+
+            //Connect manually to the database
+            this._conn = new MySqlConnection(
+                "SERVER=localhost;" +
+                "DATABASE=px3-test;" +
                 "UID=root;" +
                 "PASSWORD=abcd1234;");
-            conn2 = new MySqlConnection("SERVER=localhost;" +
-                "DATABASE=px3;" +
-                "UID=root;" +
-                "PASSWORD=abcd1234;");
 
-            conn.Open();
-            conn2.Open();
+            this._conn.Open();
+
+            //Clean the database manually
+            this.CleanUpAfterEachTest();
+
+            //Write to database
+            this.PrepareForEachTest();
+
+            //Login
+            DAOFactory.ConnectionString = "SERVER=localhost;" +
+                                            "DATABASE=px3-test;" +
+                                            "UID=root;" +
+                                            "PASSWORD=abcd1234;";
+
+            VoterListApp.CurrentUser = User.GetUser("jdmo", "12345");
+            _dao = DAOFactory.getDAO(VoterListApp.CurrentUser);
+
+            //Clean the database manually
+            this.CleanUpAfterEachTest();
         }
 
         [TestFixtureTearDown]
         public void EndTesting()
         {
-            conn.Close();
+            //Close manual connection
+            this._conn.Close();
         }
 
         [SetUp]
-        public void PrepareForTest()
+        public void PrepareForEachTest()
         {
-
+            MySqlCommand insertData = new MySqlCommand(this.readTextFile("DataInsertion.txt"), this._conn);
+            object o = insertData.ExecuteScalar();
         }
 
         [TearDown]
-        public void CleanUpAfterTest()
+        public void CleanUpAfterEachTest()
         {
+            MySqlCommand insertData = new MySqlCommand(this.readTextFile("DataDeletion.txt"), this._conn);
+            object o = insertData.ExecuteScalar();
+        }
 
+        #endregion
+
+        #region helpermethods
+        private string readTextFile(string file)
+        {
+            var textReader = new StreamReader(pathToTestfiles + file, System.Text.Encoding.UTF8);
+            var text = textReader.ReadToEnd();
+            textReader.Close();
+            text = text.Replace(Environment.NewLine, "");
+            return text;
+        }
+
+        #endregion
+
+        #region tests
+
+        [Test]
+        public void TestLoadCitizenById()
+        {
+            Person p = this._dao.LoadCitizen(1);
+            Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
+
+            Person p2 = this._dao.LoadCitizen(3);
+            Assert.That(p2.Name.Equals("Mathilde Roed Birk")); // This doesn't work because the loadpersons function loads votingvenue wrong.
         }
 
         [Test]
-        public void TestLoadPersonById()
+        public void TestLoadCitizenByCpr()
         {
-            MySqlCommand insertPerson = new MySqlCommand("INSERT INTO person (name) VALUES ('Hans Peter'); SELECT LAST_INSERT_ID();", conn);
-            object o = insertPerson.ExecuteScalar();
-            int id = Convert.ToInt32(o);
-            Person p = dao.LoadPerson(id);
-            Assert.That(p.Name.Equals("Hans Peter"));
-            MySqlCommand deletePerson = new MySqlCommand("DELETE FROM person WHERE id = " + id, conn);
-            deletePerson.ExecuteNonQuery();
+            Person p = this._dao.LoadCitizen("2405901253");
+            Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
         }
 
         [Test]
-        public void ReproduceCommitProblem()
+        public void TestLoadUserById()
         {
-            MySqlTransaction trans = conn.BeginTransaction();
-            MySqlCommand loadPersons = new MySqlCommand("SELECT * FROM person", conn, trans);
-            MySqlDataReader rdr = loadPersons.ExecuteReader();
-            rdr.Read();
-            int i = rdr.GetInt32("id");
-            rdr.Close();
-            loadPersons = new MySqlCommand("SELECT * FROM person", conn, trans);
-            rdr = loadPersons.ExecuteReader();
-            rdr.Read();
-            i = rdr.GetInt32("id");
-            rdr.Close();
-            loadPersons = new MySqlCommand("SELECT * FROM person", conn, trans);
-            rdr = loadPersons.ExecuteReader();
-            rdr.Read();
-            i = rdr.GetInt32("id");
-            rdr.Close();
-            trans.Commit();
+            Person p = this._dao.LoadUser(1);
+            Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
+
+            Person p2 = this._dao.LoadUser(4);
+            Assert.That(p2.Name.Equals("Ronni Holm"));
+        }
+
+        [Test]
+        public void TestLoadUserByUsername()
+        {
+            Person p = this._dao.LoadUser("jdmo");
+            Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
+        }
+
+        [Test]
+        public void TestValidateUser()
+        {
+            Assert.That(this._dao.ValidateUser("jdmo", VoterListApp.CurrentUser.HashPassword("12345")));
+            Assert.That(!this._dao.ValidateUser("jdmo2", VoterListApp.CurrentUser.HashPassword("12345")));
+            Assert.That(!this._dao.ValidateUser("jdmo", VoterListApp.CurrentUser.HashPassword("1235")));
+        }
+
+        [Test]
+        public void TestPreparedStatements()
+        {
+            var p = new MySqlCommand("INSERT INTO person (name, address) VALUES (@name, @address)");
+            p.Connection = _conn;
+            p.Prepare();
+            p.Parameters.AddWithValue("@name", "Ronni Holm");
+            p.Parameters.AddWithValue("@address", null);
+            p.ExecuteScalar();
+        }
+
+        [Test]
+        public void TestGetPermissions()
+        {
+            var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
+            Assert.That(permissions.Count == 22);
+        }
+
+        [Test]
+        public void TestSaveCitizen()
+        {
+            //Replace jens with morten
+            var c = new Citizen(1, "8954215201");
+            c.Name = "Morten Hyllekilde";
+            this._dao.Save(c);
+
+            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Morten Hyllekilde'", this._conn);
+            var i = selectData.ExecuteScalar();
+            Assert.That(i.ToString() == "1");
+
+            //Replace make new citizen
+            var d = new Citizen(0, "5487412946");
+            d.Name = "Secret Ninja";
+            this._dao.Save(d);
+
+            MySqlCommand selectData2 = new MySqlCommand("SELECT COUNT(*) FROM person", this._conn);
+            var i2 = selectData2.ExecuteScalar();
+            Assert.That(i2.ToString() == "5");
+        }
+
+        [Test]
+        public void TestGetWorkplaces()
+        {
+            var workplaces = this._dao.GetWorkplaces(VoterListApp.CurrentUser);
+            Assert.That(workplaces.Count == 1);
+        }
+
+        [Test]
+        public void TestLoadVoterCardById()
+        {
+            VoterCard votercard = this._dao.LoadVoterCard(5);
+
+            Assert.That(votercard.IdKey.Equals("1HN8O9M9"));
+        }
+
+        [Test]
+        public void TestLoadVoterCardByIdKey()
+        {
+            VoterCard votercard = this._dao.LoadVoterCard("5HU9KQY4");
+
+            Assert.That(votercard.Id == 3);
         }
 
         /*[Test]
-        public void TestConcurrency()
+        public void TestFindPersonByCpr()
         {
-            new MySqlCommand("START TRANSACTION; SET autocommit=0; SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;", conn).ExecuteNonQuery();
-            new MySqlCommand("START TRANSACTION; SET autocommit=0; SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;", conn2).ExecuteNonQuery();
-            string value = (string)new MySqlCommand("SELECT name FROM person WHERE name LIKE '%Jonas%'", conn2).ExecuteScalar();
-            int i = new MySqlCommand("UPDATE person SET name = 'Jonas Schmidt' WHERE name LIKE '%Jonas%'", conn).ExecuteNonQuery();
-            string value2 = (string)new MySqlCommand("SELECT name FROM person WHERE name LIKE '%Jonas%'", conn2).ExecuteScalar();
-            new MySqlCommand("COMMIT;", conn).ExecuteNonQuery();
-            int j = new MySqlCommand("UPDATE person SET name = 'Jonas Jensen2' WHERE name LIKE '%Jonas%'", conn2).ExecuteNonQuery();
-            new MySqlCommand("COMMIT;", conn2).ExecuteNonQuery();
-        }*/
+            var person = this._dao.Find(new Person() { Cpr = "2405901253" });
 
-        /*private HashSet<int> _personIds;
-
-        [TestInitialize()]
-        public void Prepare()
-        {
-            _personIds = new HashSet<int> { 1, 2, 3, 6 };
-            VoterListApp.CurrentUser = DAOFactory.CurrentUserDAO.LoadUser("mier", "12345");
+            Assert.That(person[0].Name.Equals("Jens Dahl Møllerhøj"));
         }
 
-
-        [TestMethod]
-        public void TestMethod1()
+        [Test]
+        public void TestFindUserByName()
         {
-            var x = _personIds;
-            var p = x.Contains(1);
+            var user = this._dao.Find(new User() { Name = "Jens Dahl Møllerhøj" });
         }
 
-        [TestMethod]
-        public void TestLoadUser()
+        //List<VoterCard> Find(VoterCard voterCard);
+
+        //List<Citizen> FindElegibleVoters();
+
+        [Test]
+        void TestSavePerson()
         {
-            var u = DAOMySql.GetDao(VoterListApp.CurrentUser).LoadUser(3);
-            Contract.Ensures(u.Name == "Michael");
+            this._dao.Save(new Person() { Name = "Helle Thorsen" });
+            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Helle Thorsen'", this._conn);
+            object o = selectData.ExecuteScalar();
+            Assert.That(((int)o) == 1);
         }
 
-        [TestMethod]
-        public void TestLoadPerson()
-        {
-            var u = DAOMySql.GetDao(VoterListApp.CurrentUser).LoadPerson(3);
-            Contract.Ensures(u.Name == "Frederik Paulsen");
-        }
+         * */
+        //void Save(User user);
+
+        //void Save(VoterCard voterCard);
+
+        //void SetHasVoted(Citizen citizen, string cprKey);
+
+        //void SetHasVoted(Citizen citizen);
 
 
-        [TestMethod]
-        public void TestFindPerson()
-        {
-            var p = DAOMySql.GetDao(VoterListApp.CurrentUser).Find(new Person(1));
-            Contract.Ensures(p[0].Name == "Hans Hansen");
-        }
+        /*void ChangePassword(User user, string newPasswordHash, string oldPasswordHash);
 
-        [TestMethod]
-        public void TestSavePerson()
-        {
-            var person = new Person();
-            person.Name = "Jens Dahl Møllerhøj";
-            person.Address = "Nørre Alle 75";
+        void ChangePassword(User user, string newPasswordHash);
 
-            DAOMySql.GetDao(VoterListApp.CurrentUser).Save(person);
-            Contract.Ensures(DAOMySql.GetDao(VoterListApp.CurrentUser).Find(person).Equals(person));
-        }
+        void MarkUserInvalid(User user);
 
-        //[PexAssumeNotNull]
+        void RestoreUser(User user);
 
-        [TestMethod]
-        [PexMethod]
-        public void TestDataTransformation()
-        {
-            var t = new DataTransformer();
-            var e = new ElectionEvent(DateTime.Today, "Test event");
-            t.TransformData(e);
-        }
+        void MarkVoterCardInvalid(VoterCard voterCard);
 
+        void UpdatePeople(Func<Person, RawPerson, Person> update);
 
+        VotingVenue FindVotingVenue(Citizen citizen); */
 
+        #endregion
 
-
-        [PexMethod]
-        public void ParameterizedTest(string data)
-        {
-            //Asserts
-        }*/
     }
 }

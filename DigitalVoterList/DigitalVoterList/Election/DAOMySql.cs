@@ -8,6 +8,7 @@ namespace DigitalVoterList.Election
 {
     using System;
     using System.Collections.Generic;
+    using System.Text;
 
     public class DAOMySql : IDataAccessObject
     {
@@ -71,7 +72,7 @@ namespace DigitalVoterList.Election
             {
                 rdr.Read();
                 c = new Citizen(id, rdr.GetString("cpr"), rdr.GetInt32("has_voted") != 0);
-                c.EligibleToVote = rdr.GetInt16("elegible_to_vote") == 1;
+                c.EligibleToVote = rdr.GetInt16("eligible_to_vote") == 1;
                 DoIfNotDbNull(rdr, "voting_venue_id", label =>
                 {
                     c.VotingPlace = new VotingVenue(
@@ -133,6 +134,29 @@ namespace DigitalVoterList.Election
             if (maybeId == null) return null;
             int id = (int)maybeId;
             return PriLoadUser(id);
+        }
+
+        /// <summary>
+        /// What authenticated user exists with this username and password?
+        /// </summary>
+        /// <param name="username">The username to search for</param>
+        /// <param name="password">The passwordHash to validate with</param>
+        /// <returns>An authenticated user object, null if no user matched the details</returns>
+        public User LoadUser(string username, string passwordHash)
+        {
+            Contract.Requires(username != null, "The input username must not be null!");
+            Contract.Requires(passwordHash != null, "The input password must not be null!");
+            User u = null;
+            DoTransaction(() =>
+                              {
+                                  bool valid = PriValidateUser(username, passwordHash);
+                                  if (valid)
+                                  {
+                                      u = PriLoadUser(username);
+                                  }
+                              });
+            if (u != null) u.FetchPermissions(username, passwordHash);
+            return u;
         }
 
         /// <summary>
@@ -315,8 +339,68 @@ namespace DigitalVoterList.Election
         /// <returns>A voter card</returns>
         public VoterCard LoadVoterCard(int id)
         {
-            throw new NotImplementedException();
+            return (VoterCard)LoadWithTransaction(() => PriLoadVoterCard(id));
         }
+
+        private VoterCard PriLoadVoterCard(int id)
+        {
+            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(ExistsWithId("votercard", id), "Votercard must exist in the database to be loaded.");
+            Contract.Ensures(Contract.Result<VoterCard>() != null);
+            MySqlCommand command = Prepare("SELECT * FROM votercard v LEFT JOIN person p ON p.id=v.person_id WHERE v.id=@id");
+            command.Parameters.AddWithValue("@id", id);
+            VoterCard v = null;
+            Query(command, (MySqlDataReader rdr) =>
+            {
+                rdr.Read();
+                //v.Citizen = PriLoadPerson(rdr.GetInt32("person_id"));
+                v.ElectionEvent = Settings.Election;
+                v.Id = rdr.GetInt32("id");
+                v.IdKey = rdr.GetString("id_key");
+                v.Valid = (rdr.GetUInt32("valid") == 1);
+            });
+            return v;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        private MySqlCommand PrepareWithValues(string tableName, Dictionary<string, string> info)
+        {
+            Contract.Requires(tableName != null);
+            Contract.Requires(info != null);
+
+            var queryBuilder = new StringBuilder("SELECT * FROM " + tableName + " WHERE ");
+            var insertAnd = false;
+
+            foreach (KeyValuePair<String, String> entry in info)
+            {
+                if (string.IsNullOrEmpty(entry.Value)) continue;
+                if (insertAnd) queryBuilder.Append(" AND ");
+                queryBuilder.Append(entry.Key);
+                queryBuilder.Append(" = @'");
+                queryBuilder.Append(entry.Key);
+                queryBuilder.Append("'");
+                insertAnd = true;
+            }
+            queryBuilder.Append(";");
+
+            var cmd = this.Prepare(queryBuilder.ToString());
+
+            foreach (KeyValuePair<String, String> entry in info)
+            {
+                if (string.IsNullOrEmpty(entry.Value)) continue;
+                cmd.Parameters.AddWithValue("@'" + entry.Key, entry.Value);
+                insertAnd = true;
+            }
+
+            return cmd;
+        }
+
 
         /// <summary>
         /// What voter card has this id-key?
@@ -410,14 +494,16 @@ namespace DigitalVoterList.Election
                                        "    voting_venue_id=@votingVenueId");
             var mapping = new Dictionary<string, string>()
                               {
+                                  {"id",citizen.DbId.ToString()},
                                   {"name",citizen.Name},
                                   {"address",citizen.Address},
                                   {"cpr",citizen.Cpr},
                                   {"eligibleToVote",citizen.EligibleToVote ? "1" : "0"},
                                   {"placeOfBirth",citizen.PlaceOfBirth},
                                   {"passportNumber",citizen.PassportNumber},
-                                  {"votingVenueId",citizen.VotingPlace != null ? citizen.VotingPlace.DbId.ToString() : null} //Avoid null-pointer
+                                  {"votingVenueId",citizen.VotingPlace!=null? citizen.VotingPlace.DbId.ToString() : null} //Avoid null-pointer
                               };
+
             foreach (var kv in mapping)
             {
                 cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
@@ -451,7 +537,7 @@ namespace DigitalVoterList.Election
             foreach (var kv in mapping)
             {
                 cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
-            }
+		     }
             Execute(cmd);
         }
 
@@ -813,9 +899,11 @@ namespace DigitalVoterList.Election
             }
             catch (Exception ex)
             {
+                throw;
                 try
                 {
                     _transaction.Rollback();
+                    //todo: And retry? We can't just rollback the function, we need to try again..
                 }
                 catch (MySqlException excep)
                 {
@@ -856,7 +944,9 @@ namespace DigitalVoterList.Election
         {
             if (_preparedStatements.ContainsKey(query))
             {
-                return _preparedStatements[query];
+                var ps = _preparedStatements[query];
+                ps.Parameters.Clear(); //todo: I think we need this
+                return ps;
             }
             MySqlCommand cmd = new MySqlCommand(query);
             cmd.Connection = Connection;
@@ -875,6 +965,7 @@ namespace DigitalVoterList.Election
             catch (Exception ex)
             {
                 //TODO: Write some catch shit...!!!!
+                throw;
             }
         }
 
@@ -889,6 +980,7 @@ namespace DigitalVoterList.Election
             catch (Exception ex)
             {
                 //TODO: Write some catch shit...!!!!
+                throw;
             }
         }
 
@@ -912,6 +1004,7 @@ namespace DigitalVoterList.Election
             catch (Exception ex)
             {
                 //TODO: Write some catch shit...!!!!
+                throw;
             }
             finally
             {

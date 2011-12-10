@@ -210,7 +210,7 @@ namespace DigitalVoterList.Election
             return "USER( username : " + Username + " , title : " + Title + " )";
         }
 
-        private string HashPassword(string password)
+        public string HashPassword(string password) //todo: public or private?
         {
             string salted = UserSalt + password + "AX7530G7FR";
             MD5 md5 = System.Security.Cryptography.MD5.Create();
