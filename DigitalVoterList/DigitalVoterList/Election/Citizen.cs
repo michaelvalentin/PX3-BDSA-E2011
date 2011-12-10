@@ -60,7 +60,7 @@ namespace DigitalVoterList.Election
             Contract.Invariant(ValidCpr(Cpr));
         }
 
-        private bool ValidCpr(string cpr)
+        public static bool ValidCpr(string cpr)
         {
             string tempCpr = cpr;
             if (tempCpr.Length == 10)

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
@@ -52,7 +50,7 @@ namespace DigitalVoterList.Controllers
             if (e is KeyEventArgs && ((KeyEventArgs)e).Key != Key.Enter) return;
             if (Search().Count > 0)
             {
-               ListView(Search()); 
+                ListView(Search());
             }
             else
             {
@@ -64,11 +62,11 @@ namespace DigitalVoterList.Controllers
         /// Find person with the information inserted in the textblocks
         /// </summary>
         /// <returns>A list of persons found from the inserted information</returns>
-        private List<Person> Search()
+        private List<Citizen> Search()
         {
-            
+
             _searchPerson.Clear();
-            
+
             Person person = new Person();
             person.Name = _view.nameTextBox.Text;
             person.Address = _view.addressTextBox.Text;
