@@ -22,14 +22,6 @@ namespace ParamTests
         [TestFixtureSetUp]
         public void PrepareTesting()
         {
-            /*
-             * Generate control user
-             * var u = new User(1);
-            u.UserSalt = "lkaFDA62lio+3";
-            u.HashPassword("12345");*/
-
-
-
             //Connect manually to the database
             this._conn = new MySqlConnection(
                 "SERVER=localhost;" +
@@ -102,7 +94,7 @@ namespace ParamTests
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
 
             Person p2 = this._dao.LoadCitizen(3);
-            Assert.That(p2.Name.Equals("Mathilde Roed Birk")); // This doesn't work because the loadpersons function loads votingvenue wrong.
+            Assert.That(p2.Name.Equals("Mathilde Roed Birk"));
         }
 
         [Test]
@@ -110,6 +102,9 @@ namespace ParamTests
         {
             Person p = this._dao.LoadCitizen("2405901253");
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
+
+            Person p2 = this._dao.LoadCitizen("5097508703");
+            Assert.That(p2.Name.Equals("Mathilde Roed Birk"));
         }
 
         [Test]

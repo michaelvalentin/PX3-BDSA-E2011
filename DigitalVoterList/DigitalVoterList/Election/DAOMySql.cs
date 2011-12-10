@@ -749,7 +749,7 @@ namespace DigitalVoterList.Election
         /// <returns>Was the attempt successful?</returns>
         public void SetHasVoted(Citizen citizen, string cprKey)
         {
-            throw new NotImplementedException();
+
         }
 
         /// <summary>
@@ -822,7 +822,12 @@ namespace DigitalVoterList.Election
         /// <param name="update">The update function</param>
         public void UpdatePeople(Func<Person, RawPerson, Person> update)
         {
-            throw new NotImplementedException();
+            DoTransaction(() => this.PriUpdatePeople(update));
+        }
+
+        private void PriUpdatePeople(Func<Person, RawPerson, Person> update)
+        {
+            DoTransaction(() => );
         }
 
         #endregion
