@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
 namespace ParamTests
@@ -45,11 +46,6 @@ namespace ParamTests
 
             VoterListApp.CurrentUser = User.GetUser("jdmo", "12345");
             _dao = DAOFactory.getDAO(VoterListApp.CurrentUser);
-
-            /*var u = new User(2, "0101019871");
-            u.HashPassword("asdf");
-            _dao.ValidateUser("slave", "tester");*/
-
 
             //Clean the database manually
             this.CleanUpAfterEachTest();
@@ -219,34 +215,38 @@ namespace ParamTests
             dt.TransformData();
         }
 
-        /*[Test]
-        public void TestFindPersonByCpr()
-        {
-            var person = this._dao.Find(new Person() { Cpr = "2405901253" });
-
-            Assert.That(person[0].Name.Equals("Jens Dahl Møllerhøj"));
-        }
-
-        [Test]
-        public void TestFindUserByName()
-        {
-            var user = this._dao.Find(new User() { Name = "Jens Dahl Møllerhøj" });
-        }
-
         //List<VoterCard> Find(VoterCard voterCard);
-
-        //List<Citizen> FindElegibleVoters();
 
         [Test]
         void TestSavePerson()
         {
-            this._dao.Save(new Person() { Name = "Helle Thorsen" });
+            /*this._dao.Save(new Person() { Name = "Helle Thorsen" });
             MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Helle Thorsen'", this._conn);
             object o = selectData.ExecuteScalar();
-            Assert.That(((int)o) == 1);
+            Assert.That(((int)o) == 1);*/
         }
 
-         * */
+        [Test]
+        public void TestFindCitizen()
+        {
+            List<Citizen> result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>
+                                                         {
+                                                             {CitizenSearchParam.Name,"math"}
+                                                         }, SearchMatching.Exact);
+            /*Assert.That(result.Count == 1, "search with \"math\" did not find mathilde!");
+            result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>
+                                                         {
+                                                             {CitizenSearchParam.Name,"math"}
+                                                         }, SearchMatching.Exact);
+            Assert.That(result.Count == 0, "Result where returned for exact search on \"math\"");*/
+            /*List<Citizen> result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>
+                                                         {
+                                                             {CitizenSearchParam.Cpr,"2405901253"}
+                                                         }, SearchMatching.Exact);
+            Assert.That(result.Count == 1, "Jens Dahl Møllerhøj could not be found via CPR");
+            Assert.That(result[0].Name.Equals("Jens Dahl Møllerhøj"), "Person with CPR 2405901253 was not Jens Dahl Møllerhøj");*/
+        }
+
         //void Save(User user);
 
         [Test]

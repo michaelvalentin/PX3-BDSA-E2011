@@ -1,6 +1,7 @@
 ﻿
 
 using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using MySql.Data.MySqlClient;
 
@@ -8,6 +9,7 @@ namespace DigitalVoterList.Election
 {
     using System;
     using System.Collections.Generic;
+    using System.Text;
 
     public class DAOMySql : IDataAccessObject
     {
@@ -364,46 +366,50 @@ namespace DigitalVoterList.Election
 
 
         /// <summary>
-        /// 
+        /// May i have a search query with this data mapping?
         /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="data"></param>
+        /// <param name="tableName">The table to search in</param>
+        /// <param name="data">The data mapping to use KEY:column name VALUE:search value</param>
+        /// <param name="matching">The search matching type to use</param>
         /// <returns></returns>
-        private MySqlCommand PrepareWithValues(string tableName, Dictionary<string, string> data, SearchMatching matching)
+        private MySqlCommand PrepareSearchQuery(string tableName, Dictionary<string, string> data, SearchMatching matching)
         {
             Contract.Requires(tableName != null);
             Contract.Requires(data != null);
-            throw new NotImplementedException();
-            /*var queryBuilder = new StringBuilder("SELECT * FROM " + tableName + " WHERE ");
+            var queryBuilder = new StringBuilder("SELECT * FROM " + tableName + " WHERE ");
             var first = true;
 
-            foreach (var entry in data)
+            foreach (var kv in data)
             {
-                if (string.IsNullOrEmpty(entry.Value)) continue;
-                if (first) queryBuilder.Append(" AND ");
-                queryBuilder.Append(entry.Key);
-                switch(matching)
+                if (string.IsNullOrEmpty(kv.Value)) continue;
+                if (!first) queryBuilder.Append(" AND ");
+                queryBuilder.Append(kv.Key);
+                switch (matching)
                 {
+                    case SearchMatching.Similair:
+                        queryBuilder.Append(" LIKE '%@");
+                        queryBuilder.Append(kv.Key);
+                        queryBuilder.Append("%' ");
+                        break;
                     case SearchMatching.Exact:
-                        queryBuilder.Append(" = ")
+                        queryBuilder.Append(" = @");
+                        queryBuilder.Append(kv.Key);
+                        break;
+                    default:
+                        throw new ArgumentException("SearchMatching type is not supported.");
+                        break;
                 }
-                queryBuilder.Append(" LIKE  '%@'");
-                queryBuilder.Append(entry.Key);
-                queryBuilder.Append("%'");
                 first = false;
             }
             queryBuilder.Append(";");
 
             var cmd = this.Prepare(queryBuilder.ToString());
 
-            foreach (KeyValuePair<String, String> entry in data)
+            foreach (var kv in data)
             {
-                if (string.IsNullOrEmpty(entry.Value)) continue;
-                cmd.Parameters.AddWithValue("@'" + entry.Key, entry.Value);
-                insertAnd = true;
+                cmd.Parameters.AddWithValue("@'" + kv.Key, kv.Value);
             }
-
-            return cmd;*/
+            return cmd;
         }
 
 
@@ -430,9 +436,67 @@ namespace DigitalVoterList.Election
         {
             return FindCitizens(data, SearchMatching.Similair);
         }
-        private List<Citizen> PriFindCitizens(Dictionary<CitizenSearchParam, object> dictionary, SearchMatching exact)
+        private List<Citizen> PriFindCitizens(Dictionary<CitizenSearchParam, object> searchData, SearchMatching matching)
         {
-            throw new NotImplementedException();
+            var searchParams = new Dictionary<string, string>()
+								   {
+									   {"address",null},
+									   {"cpr",null},
+									   {"eligible_to_vote",null},
+									   {"has_voted",null},
+									   {"voting_venue_id",null},
+									   {"name",null}
+								   };
+            foreach (var kv in searchData)
+            {
+                switch (kv.Key)
+                {
+                    case CitizenSearchParam.Address:
+                        searchParams["address"] = kv.Value.ToString();
+                        break;
+                    case CitizenSearchParam.Cpr:
+                        searchParams["cpr"] = kv.Value.ToString();
+                        break;
+                    case CitizenSearchParam.EligibleToVote:
+                        Debug.Assert(kv.Value is bool, "Eligible to vote should be a boolean value");
+                        searchParams["eligible_to_vote"] = (bool)kv.Value ? "1" : "0";
+                        break;
+                    case CitizenSearchParam.HasVoted:
+                        Debug.Assert(kv.Value is bool, "Has voted should be a boolean value");
+                        searchParams["has_voted"] = (bool)kv.Value ? "1" : "0";
+                        break;
+                    case CitizenSearchParam.Name:
+                        searchParams["name"] = kv.Value.ToString();
+                        break;
+                    case CitizenSearchParam.VotingPlace:
+                        Debug.Assert(kv.Value is VotingVenue);
+                        searchParams["voting_venue_id"] = ((VotingVenue)kv.Value).DbId.ToString();
+                        break;
+                    default:
+                        throw new ArgumentException("Unexpected CitizenSearchParam not implemented.");
+                        break;
+                }
+            }
+            MySqlCommand findCitizens = PrepareSearchQuery("person", searchParams, matching);
+            List<int> resultIds = new List<int>();
+            Query(findCitizens, (rdr) =>
+                                   {
+                                       while (rdr.Read())
+                                       {
+                                           string cpr = "";
+                                           DoIfNotDbNull(rdr, "cpr", lbl => { cpr = rdr.GetString(lbl); });
+                                           if (Citizen.ValidCpr(cpr))
+                                           {
+                                               resultIds.Add(rdr.GetInt32("id"));
+                                           }
+                                       }
+                                   });
+            List<Citizen> result = new List<Citizen>();
+            foreach (int id in resultIds)
+            {
+                result.Add(PriLoadCitizen(id));
+            }
+            return result;
         }
 
         public List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching)
@@ -738,11 +802,10 @@ namespace DigitalVoterList.Election
             Contract.Requires(voterCard.Citizen != null);
             Contract.Requires(ExistsWithId("person", voterCard.Citizen.DbId), "A voter card must belong to a person in the database");
             Contract.Requires(voterCard.IdKey != null);
-            /*Contract.Requires(voterCard.Id != 0 || FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
-                                                                        {
-                                                                            {VoterCardSearchParam.IdKey,voterCard.IdKey}
-                                                                        }).Count == 0, "Voter card id-key must be unique!");*/
-            //Uncomment when votercard find is done
+            Contract.Requires(voterCard.Id != 0 || FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
+																		{
+																			{VoterCardSearchParam.IdKey,voterCard.IdKey}
+																		}).Count == 0, "Voter card id-key must be unique!");
             Contract.Requires(voterCard.Id >= 0, "VoterCard id must be greater");
             Contract.Requires(voterCard.Id >= 0);
             Contract.Requires(!(voterCard.Id > 0) || ExistsWithId("voter_card", voterCard.Id));
@@ -765,9 +828,9 @@ namespace DigitalVoterList.Election
             Contract.Requires(ExistsWithId("person", voterCard.Citizen.DbId), "A voter card must belong to a person in the database");
             Contract.Requires(voterCard.IdKey != null);
             Contract.Requires(FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
-                                                                        {
-                                                                            {VoterCardSearchParam.IdKey,voterCard.IdKey}
-                                                                        }).Count == 0, "Voter card id-key must be unique!");
+																		{
+																			{VoterCardSearchParam.IdKey,voterCard.IdKey}
+																		}).Count == 0, "Voter card id-key must be unique!");
             Contract.Requires(!(voterCard.Id > 0) || ExistsWithId("voter_card", voterCard.Id));
             MySqlCommand saveVoterCard = Prepare("INSERT INTO " +
                                                  "  voter_card (" +
@@ -785,11 +848,11 @@ namespace DigitalVoterList.Election
                                                  "" +
                                                  "SELECT LAST_INSERT_ID();");
             var voterCardMapping = new Dictionary<string, string>()
-                                                             {
-                                                                 {"personId",voterCard.Citizen.DbId.ToString()},
-                                                                 {"valid",voterCard.Valid ? "1" : "0"},
-                                                                 {"idKey",voterCard.IdKey}
-                                                             };
+															 {
+																 {"personId",voterCard.Citizen.DbId.ToString()},
+																 {"valid",voterCard.Valid ? "1" : "0"},
+																 {"idKey",voterCard.IdKey}
+															 };
             foreach (var kv in voterCardMapping)
             {
                 saveVoterCard.Parameters.AddWithValue("@" + kv.Key, kv.Value);
@@ -813,11 +876,11 @@ namespace DigitalVoterList.Election
                                                    "    valid=@valid," +
                                                    "    id_key=@idKey");
             var voterCardMapping = new Dictionary<string, string>()
-                                                    {
-                                                        {"personId",voterCard.Citizen.DbId.ToString()},
-                                                        {"valid",voterCard.Valid ? "1" : "0"},
-                                                        {"idKey",voterCard.IdKey}
-                                                    };
+													{
+														{"personId",voterCard.Citizen.DbId.ToString()},
+														{"valid",voterCard.Valid ? "1" : "0"},
+														{"idKey",voterCard.IdKey}
+													};
             foreach (var kv in voterCardMapping)
             {
                 updateVoterCard.Parameters.AddWithValue("@" + kv.Key, kv.Value);
@@ -1026,19 +1089,19 @@ namespace DigitalVoterList.Election
                 _transaction.Commit();
             }
             catch (Exception ex)
-            {
-                throw;
-                try
-                {
-                    _transaction.Rollback();
-                    //todo: And retry? We can't just rollback the function, we need to try again..
-                }
-                catch (MySqlException excep)
-                {
-                    // TODO: Make a logging function and maybe a security alert...
-                    throw;
-                }
-            }
+			{
+				throw;
+				try
+				{
+					_transaction.Rollback();
+					//todo: And retry? We can't just rollback the function, we need to try again..
+				}
+				catch (MySqlException excep)
+				{
+					// TODO: Make a logging function and maybe a security alert...
+					throw;
+				}
+			}
             _transaction = null;
         }
 
@@ -1079,6 +1142,7 @@ namespace DigitalVoterList.Election
         /// <returns></returns>
         private MySqlCommand Prepare(string query)
         {
+            Debug.WriteLine("PREP STATEMENT: " + query);
             if (_preparedStatements.ContainsKey(query))
             {
                 var ps = _preparedStatements[query];
