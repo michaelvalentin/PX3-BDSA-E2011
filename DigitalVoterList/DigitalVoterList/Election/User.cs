@@ -43,6 +43,7 @@ namespace DigitalVoterList.Election
             : base(id)
         {
             Cpr = cpr;
+            DbId = id;
             _permissions = new HashSet<SystemAction>();
             _workplaces = new HashSet<VotingVenue>();
             _lastSuccessfullValidationTime = null;

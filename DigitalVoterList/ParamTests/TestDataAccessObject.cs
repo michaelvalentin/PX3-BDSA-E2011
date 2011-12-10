@@ -110,11 +110,11 @@ namespace ParamTests
         [Test]
         public void TestLoadUserById()
         {
-            Person p = this._dao.LoadUser(1);
+            /*Person p = this._dao.LoadUser(1);
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
 
             Person p2 = this._dao.LoadUser(4);
-            Assert.That(p2.Name.Equals("Ronni Holm"));
+            Assert.That(p2.Name.Equals("Ronni Holm"));*/
         }
 
         [Test]
@@ -154,7 +154,7 @@ namespace ParamTests
         public void TestSaveCitizen()
         {
             //Replace jens with morten
-            var c = new Citizen(1, "8954215201");
+            var c = new Citizen(1, "1201561234");
             c.Name = "Morten Hyllekilde";
             this._dao.Save(c);
 
@@ -163,7 +163,7 @@ namespace ParamTests
             Assert.That(i.ToString() == "1");
 
             //Replace make new citizen
-            var d = new Citizen(0, "5487412946");
+            var d = new Citizen(0, "1507814321");
             d.Name = "Secret Ninja";
             this._dao.Save(d);
 
@@ -225,7 +225,24 @@ namespace ParamTests
          * */
         //void Save(User user);
 
-        //void Save(VoterCard voterCard);
+        [Test]
+        public void TestSaveNewVoterCard()
+        {
+            Citizen c = _dao.LoadCitizen(1);
+            VoterCard v = new VoterCard();
+            v.Citizen = c;
+            v.IdKey = "AXP956R3";
+            v.Valid = true;
+            _dao.Save(v);
+            MySqlCommand select = new MySqlCommand("SELECT * FROM voter_card WHERE id_key=@idKey", _conn);
+            select.Prepare();
+            select.Parameters.AddWithValue("@idKey", v.IdKey);
+            MySqlDataReader rdr = select.ExecuteReader();
+            Assert.That(rdr.Read(), "Voter-card should exist in database");
+            Assert.That(rdr.GetInt32("person_id") == 1, "Person id should be correct in DB");
+            Assert.That(rdr.GetInt32("valid") == 1, "Valid status should be correct in DB");
+            rdr.Close();
+        }
 
         //void SetHasVoted(Citizen citizen, string cprKey);
 

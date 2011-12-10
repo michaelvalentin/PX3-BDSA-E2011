@@ -44,7 +44,7 @@ namespace DigitalVoterList.Election
             Contract.Ensures(Contract.Result<Person>() != null);
             MySqlCommand command = Prepare("SELECT id FROM person WHERE cpr=@cpr");
             command.Parameters.AddWithValue("@cpr", cpr);
-            int id = (int)ScalarQuery(command);
+            int id = Convert.ToInt32(ScalarQuery(command));
             return PriLoadCitizen(id);
         }
 
@@ -135,7 +135,7 @@ namespace DigitalVoterList.Election
             cmd.Parameters.AddWithValue("@username", username);
             object maybeId = ScalarQuery(cmd);
             if (maybeId == null) return null;
-            int id = (int)maybeId;
+            int id = Convert.ToInt32(maybeId);
             return PriLoadUser(id);
         }
 
@@ -171,9 +171,7 @@ namespace DigitalVoterList.Election
         {
             Contract.Requires(id > 0, "The input id must be larger than zero.");
             Contract.Requires(ExistsWithId("user", id));
-            User u = null;
-            DoTransaction(() => { u = PriLoadUser(id); });
-            return u;
+            return (User)LoadWithTransaction(() => PriLoadUser(id));
         }
 
         private User PriLoadUser(int id)
@@ -238,7 +236,7 @@ namespace DigitalVoterList.Election
             cmd.Parameters.AddWithValue("@passwordHash", passwordHash);
             object result = ScalarQuery(cmd);
             if (result == null) return false;
-            int output = (int)result;
+            int output = Convert.ToInt32(result);
             return output == 1;
         }
 
@@ -352,18 +350,20 @@ namespace DigitalVoterList.Election
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(ExistsWithId("votercard", id), "Votercard must exist in the database to be loaded.");
             Contract.Ensures(Contract.Result<VoterCard>() != null);
-            MySqlCommand command = Prepare("SELECT * FROM votercard v LEFT JOIN person p ON p.id=v.person_id WHERE v.id=@id");
+            MySqlCommand command = Prepare("SELECT * FROM voter_card v LEFT JOIN person p ON p.id=v.person_id WHERE v.id=@id");
             command.Parameters.AddWithValue("@id", id);
-            VoterCard v = null;
+            VoterCard v = new VoterCard();
+            int citizenId = 0;
             Query(command, (MySqlDataReader rdr) =>
             {
                 rdr.Read();
-                //v.Citizen = PriLoadPerson(rdr.GetInt32("person_id"));
+                citizenId = rdr.GetInt32("person_id");
                 v.ElectionEvent = Settings.Election;
                 v.Id = rdr.GetInt32("id");
                 v.IdKey = rdr.GetString("id_key");
                 v.Valid = (rdr.GetUInt32("valid") == 1);
             });
+            v.Citizen = PriLoadCitizen(citizenId);
             return v;
         }
 
@@ -419,7 +419,12 @@ namespace DigitalVoterList.Election
         /// <returns>A voter card</returns>
         public VoterCard LoadVoterCard(string idKey)
         {
-            throw new NotImplementedException();
+            MySqlCommand findCardId = Prepare("SELECT id FROM voter_card WHERE id_key=@idKey");
+            findCardId.Parameters.AddWithValue("@idKey", idKey);
+            object result = ScalarQuery(findCardId);
+            if (result == null) return null;
+            int cardId = Convert.ToInt32(ScalarQuery(findCardId));
+            return PriLoadVoterCard(cardId);
         }
 
         public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching)
@@ -508,7 +513,9 @@ namespace DigitalVoterList.Election
                                        "    eligible_to_vote=@eligibleToVote, " +
                                        "    place_of_birth=@placeOfBirth, " +
                                        "    passport_number=@passportNumber, " +
-                                       "    voting_venue_id=@votingVenueId");
+                                       "    voting_venue_id=@votingVenueId " +
+                                       "WHERE " +
+                                       "    id=@id");
             var mapping = new Dictionary<string, string>()
                               {
                                   {"id",citizen.DbId.ToString()},
@@ -648,7 +655,7 @@ namespace DigitalVoterList.Election
             {
                 insertOrUpdatePerson.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
-            personId = (int)ScalarQuery(insertOrUpdatePerson);
+            personId = Convert.ToInt32(ScalarQuery(insertOrUpdatePerson));
 
             MySqlCommand insertUser = Prepare(" INSERT INTO" +
                                               "     user (" +
@@ -678,7 +685,7 @@ namespace DigitalVoterList.Election
             {
                 insertUser.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
-            return (int)ScalarQuery(insertUser);
+            return Convert.ToInt32(ScalarQuery(insertUser));
         }
 
 
@@ -791,7 +798,7 @@ namespace DigitalVoterList.Election
             {
                 saveVoterCard.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
-            return (int)ScalarQuery(saveVoterCard);
+            return Convert.ToInt32(ScalarQuery(saveVoterCard));
         }
 
         private void PriSave(VoterCard voterCard)
@@ -908,7 +915,8 @@ namespace DigitalVoterList.Election
 
         private void PriUpdatePeople(Func<Person, RawPerson, Person> update)
         {
-            DoTransaction(() => );
+            throw new NotImplementedException();
+            //DoTransaction(() => );
         }
 
         #endregion
