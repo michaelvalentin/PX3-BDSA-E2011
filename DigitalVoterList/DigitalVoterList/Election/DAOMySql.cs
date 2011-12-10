@@ -439,22 +439,29 @@ namespace DigitalVoterList.Election
             Contract.Requires(citizen.Cpr != null && Citizen.ValidCpr(citizen.Cpr), "A citizen must be saved with a valid CPR number");
             Contract.Requires(citizen.VotingPlace == null || ExistsWithId("voting_venue", citizen.VotingPlace.DbId), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
             Contract.Ensures(LoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");
-            MySqlCommand cmd = Prepare("UPDATE person SET name=@name, address=@address, cpr=@cpr, eligible_to_vote=@eligibleToVote, place_of_birth=@placeOfBirth, passport_number=@passportNumber, voting_venue_id=@votingVenueId");
+            MySqlCommand cmd = Prepare("UPDATE person SET name=@name, address=@address, cpr=@cpr, eligible_to_vote=@eligibleToVote, place_of_birth=@placeOfBirth, passport_number=@passportNumber, voting_venue_id=@votingVenueId WHERE id=@id");
+
             var mapping = new Dictionary<string, string>()
                               {
+                                  {"id",citizen.DbId.ToString()},
                                   {"name",citizen.Name},
                                   {"address",citizen.Address},
                                   {"cpr",citizen.Cpr},
                                   {"eligibleToVote",citizen.EligibleToVote ? "1" : "0"},
                                   {"placeOfBirth",citizen.PlaceOfBirth},
                                   {"passportNumber",citizen.PassportNumber},
-                                  {"votingVenueId",citizen.VotingPlace != null ? citizen.VotingPlace.DbId.ToString() : null} //Avoid null-pointer
+                                  {"votingVenueId",citizen.VotingPlace!=null? citizen.VotingPlace.DbId.ToString() : null} //Avoid null-pointer
                               };
+
             foreach (var kv in mapping)
             {
-                if (kv.Value != null)
+                if (!String.IsNullOrEmpty(kv.Value))
                 {
                     cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@" + kv.Key, null);
                 }
             }
             Execute(cmd);
@@ -482,9 +489,13 @@ namespace DigitalVoterList.Election
                               };
             foreach (var kv in mapping)
             {
-                if (kv.Value != null)
+                if (!String.IsNullOrEmpty(kv.Value))
                 {
                     cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@" + kv.Key, null);
                 }
             }
             Execute(cmd);

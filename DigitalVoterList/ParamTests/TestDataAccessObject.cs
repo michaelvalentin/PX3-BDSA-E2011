@@ -117,6 +117,9 @@ namespace ParamTests
         {
             Person p = this._dao.LoadUser(1);
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
+
+            Person p2 = this._dao.LoadUser(4);
+            Assert.That(p2.Name.Equals("Ronni Holm"));
         }
 
         [Test]
@@ -149,15 +152,35 @@ namespace ParamTests
         public void TestGetPermissions()
         {
             var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
-
             Assert.That(permissions.Count == 22);
+        }
+
+        [Test]
+        public void TestSaveCitizen()
+        {
+            //Replace jens with morten
+            var c = new Citizen(1, "8954215201");
+            c.Name = "Morten Hyllekilde";
+            this._dao.Save(c);
+
+            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Morten Hyllekilde'", this._conn);
+            var i = selectData.ExecuteScalar();
+            Assert.That(i.ToString() == "1");
+
+            //Replace make new citizen
+            var d = new Citizen(0, "5487412946");
+            d.Name = "Secret Ninja";
+            this._dao.Save(d);
+
+            MySqlCommand selectData2 = new MySqlCommand("SELECT COUNT(*) FROM person", this._conn);
+            var i2 = selectData2.ExecuteScalar();
+            Assert.That(i2.ToString() == "5");
         }
 
         [Test]
         public void TestGetWorkplaces()
         {
             var workplaces = this._dao.GetWorkplaces(VoterListApp.CurrentUser);
-
             Assert.That(workplaces.Count == 1);
         }
 
