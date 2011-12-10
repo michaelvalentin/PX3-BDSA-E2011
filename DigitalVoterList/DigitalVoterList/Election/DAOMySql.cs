@@ -26,15 +26,13 @@ namespace DigitalVoterList.Election
 
         #region Implementation of IDataAccessObject
 
-        public Person LoadPerson(string cpr)
+        public Citizen LoadCitizen(string cpr)
         {
             Contract.Requires(cpr != null);
-            Person p = null;
-            return (Person)LoadWithTransaction(() => PriLoadPerson(cpr));
-            return p;
+            return (Citizen)LoadWithTransaction(() => PriLoadCitizen(cpr));
         }
 
-        private Person PriLoadPerson(string cpr)
+        private Citizen PriLoadCitizen(string cpr)
         {
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(cpr != null);
@@ -44,45 +42,41 @@ namespace DigitalVoterList.Election
             MySqlCommand command = Prepare("SELECT id FROM person WHERE cpr=@cpr");
             command.Parameters.AddWithValue("@cpr", cpr);
             int id = (int)ScalarQuery(command);
-            return PriLoadPerson(id);
+            return PriLoadCitizen(id);
         }
 
-        public Person LoadPerson(int id)
+        public Citizen LoadCitizen(int id)
         {
-            return (Person)LoadWithTransaction(() => PriLoadPerson(id));
+            return (Citizen)LoadWithTransaction(() => PriLoadCitizen(id));
         }
 
-        private Person PriLoadPerson(int id)
+        private Citizen PriLoadCitizen(int id)
         {
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(ExistsWithId("person", id), "Person must exist in the database to be loaded.");
+            Contract.Requires(HasValidCpr(id), "A citizen must have a valid CPR number");
             Contract.Ensures(Contract.Result<Person>() != null);
             MySqlCommand command = Prepare("SELECT *, v.name venue_name, v.address venue_address FROM person p LEFT JOIN voting_venue v ON v.id=p.voting_venue_id WHERE p.id=@id");
             command.Parameters.AddWithValue("@id", id);
-            Person p = null;
+            Citizen c = null;
             Query(command, (MySqlDataReader rdr) =>
             {
                 rdr.Read();
-                DoIfNotDbNull(rdr, "cpr", lbl =>
+                c = new Citizen(id, rdr.GetString("cpr"), rdr.GetInt32("has_voted") != 0);
+                c.EligibleToVote = rdr.GetInt16("elegible_to_vote") == 1;
+                DoIfNotDbNull(rdr, "voting_venue_id", label =>
                 {
-                    var c = new Citizen(id, rdr.GetString(lbl), rdr.GetInt32("has_voted") != 0);
-                    c.EligibleToVote = (rdr.GetInt32("eligible_to_vote") == 1);
-                    DoIfNotDbNull(rdr, "voting_venue_id", label =>
-                        {
-                            c.VotingPlace = new VotingVenue(
-                                rdr.GetInt32(label),
-                                rdr.GetString("venue_name"), //todo: This name is the name of the person, not the voting_venue 
-                                rdr.GetString("venue_address")); //todo: This address is the address of the person
-                        });
-                    p = c;
+                    c.VotingPlace = new VotingVenue(
+                        rdr.GetInt32(label),
+                        rdr.GetString("venue_name"),
+                        rdr.GetString("venue_address"));
                 });
-                if (p == null) p = new Person();
-                DoIfNotDbNull(rdr, "name", lbl => { p.Name = rdr.GetString(lbl); });
-                DoIfNotDbNull(rdr, "address", lbl => { p.Address = rdr.GetString(lbl); });
-                DoIfNotDbNull(rdr, "place_of_birth", lbl => { p.PlaceOfBirth = rdr.GetString(lbl); });
-                DoIfNotDbNull(rdr, "passport_number", lbl => { p.PassportNumber = rdr.GetString(lbl); });
+                DoIfNotDbNull(rdr, "name", lbl => { c.Name = rdr.GetString(lbl); });
+                DoIfNotDbNull(rdr, "address", lbl => { c.Address = rdr.GetString(lbl); });
+                DoIfNotDbNull(rdr, "place_of_birth", lbl => { c.PlaceOfBirth = rdr.GetString(lbl); });
+                DoIfNotDbNull(rdr, "passport_number", lbl => { c.PassportNumber = rdr.GetString(lbl); });
             });
-            return p;
+            return c;
         }
 
         //Does this id exist in this database table?
@@ -96,6 +90,17 @@ namespace DigitalVoterList.Election
             cmd.Parameters.AddWithValue("@id", id);
             object found = ScalarQuery(cmd);
             return found != null;
+        }
+
+        private bool HasValidCpr(int citizenId)
+        {
+            Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
+            Contract.Requires(citizenId > 0, "A valid database id must be greater than zero.");
+            MySqlCommand cmd = Prepare("SELECT cpr FROM person WHERE id=@id");
+            cmd.Parameters.AddWithValue("@id", citizenId);
+            object result = ScalarQuery(cmd);
+            string cpr = (string)(result ?? "");
+            return Citizen.ValidCpr(cpr);
         }
 
         /// <summary>
@@ -369,7 +374,7 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="person">The person to use</param>
         /// <returns>A list of persons that are similair.</returns>
-        public List<Person> Find(Person person)
+        public List<Citizen> Find(Person person)
         {
             throw new NotImplementedException();
         }
@@ -408,23 +413,23 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="person">The person to register</param>
         /// <returns>Was the attempt successful?</returns>
-        public void Save(Person person)
+        public void Save(Citizen citizen)
         {
             throw new NotImplementedException();
-            Contract.Requires(person != null, "Input person must not be null!");
-            DoTransaction(() => PriSave(person));
+            Contract.Requires(citizen != null, "Input person must not be null!");
+            DoTransaction(() => PriSave(citizen));
 
         }
 
-        private void PriSave(Person person)
+        private void PriSave(Citizen citizen)
         {
             throw new NotImplementedException();
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
-            Contract.Requires(person != null, "Input person must not be null!");
-            Contract.Requires(person.DbId > 0, "DbId must be larger than zero to update");
-            Contract.Requires(ExistsWithId("person", person.DbId), "DbId must be present in database in order to update anything");
-            Contract.Requires(!(person is Citizen) || (((Citizen)person).VotingPlace == null || ExistsWithId("voting_venue", ((Citizen)person).VotingPlace.DbId)), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
-            Contract.Ensures(LoadPerson(person.DbId).Equals(person), "All changes must be saved");
+            Contract.Requires(citizen != null, "Input citizen must not be null!");
+            Contract.Requires(citizen.DbId > 0, "DbId must be larger than zero to update");
+            Contract.Requires(ExistsWithId("citizen", citizen.DbId), "DbId must be present in database in order to update anything");
+            Contract.Requires(citizen.VotingPlace == null || ExistsWithId("voting_venue", citizen.VotingPlace.DbId), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
+            Contract.Ensures(LoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");
             MySqlCommand cmd = Prepare("UPDATE person SET name=@name, address=, cpr, eligible_to_vote, has_voted,place_of_birth,passport_number,voting_venue_id");
 
         }

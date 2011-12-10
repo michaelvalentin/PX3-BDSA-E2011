@@ -13,11 +13,18 @@ namespace DigitalVoterList.Election
     public interface IDataAccessObject
     {
         /// <summary>
-        /// What person has this id?
+        /// What Citizen has this id?
         /// </summary>
         /// <param name="id">The database id of the person to load</param>
         /// <returns>The Person object loaded from the database</returns>
-        Person LoadPerson(int id);
+        Citizen LoadCitizen(int id);
+
+        /// <summary>
+        /// What Citizen has this cpr?
+        /// </summary>
+        /// <param name="cpr">The CPR to search for</param>
+        /// <returns>A citizen that matches the given CPR</returns>
+        Citizen LoadCitizen(string cpr);
 
         Person LoadPerson(string cpr);
 
@@ -76,7 +83,7 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="person">The person to use</param>
         /// <returns>A list of persons that are similair.</returns>
-        List<Person> Find(Person person);
+        List<Citizen> Find(Person person);
 
         /// <summary>
         /// What users exists with data similiar to this user?
@@ -101,9 +108,9 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// Create this person with this data!
         /// </summary>
-        /// <param name="person">The person to register</param>
+        /// <param name="citizen">The person to register</param>
         /// <returns>Was the attempt successful?</returns>
-        void Save(Person person);
+        void Save(Citizen citizen);
 
         /// <summary>
         /// Create this user with this data!

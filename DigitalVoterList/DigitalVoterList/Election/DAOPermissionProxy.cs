@@ -50,11 +50,20 @@ namespace DigitalVoterList.Election
             return _user.Workplaces.Contains(v) || ActionPermitted(SystemAction.AllVotingPlaces);
         }
 
-        public Person LoadPerson(int id)
+        public Citizen LoadCitizen(int id)
         {
             if (ActionPermitted(SystemAction.LoadPerson))
             {
-                return _dao.LoadPerson(id);
+                return _dao.LoadCitizen(id);
+            }
+            return null;
+        }
+
+        public Citizen LoadCitizen(string cpr)
+        {
+            if (ActionPermitted(SystemAction.LoadPerson))
+            {
+                return _dao.LoadCitizen(cpr);
             }
             return null;
         }
@@ -120,7 +129,7 @@ namespace DigitalVoterList.Election
             return null;
         }
 
-        public List<Person> Find(Person person)
+        public List<Citizen> Find(Person person)
         {
             if (ActionPermitted(SystemAction.FindPerson))
             {
@@ -161,11 +170,11 @@ namespace DigitalVoterList.Election
             throw new System.NotImplementedException();
         }
 
-        public void Save(Person person)
+        public void Save(Citizen citizen)
         {
             if (ActionPermitted(SystemAction.SavePerson))
             {
-                _dao.Save(person);
+                _dao.Save(citizen);
             }
         }
 
