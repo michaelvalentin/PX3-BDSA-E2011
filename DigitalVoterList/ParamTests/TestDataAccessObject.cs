@@ -112,9 +112,6 @@ namespace ParamTests
         {
             Person p = this._dao.LoadUser(1);
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
-
-            Person p2 = this._dao.LoadUser(4);
-            Assert.That(p2.Name.Equals("Ronni Holm"));
         }
 
         [Test]

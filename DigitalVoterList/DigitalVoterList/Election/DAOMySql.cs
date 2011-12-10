@@ -990,7 +990,7 @@ namespace DigitalVoterList.Election
             if (_preparedStatements.ContainsKey(query))
             {
                 var ps = _preparedStatements[query];
-                ps.Parameters.Clear(); //todo: I think we need this
+                ps.Parameters.Clear();
                 return ps;
             }
             MySqlCommand cmd = new MySqlCommand(query);
