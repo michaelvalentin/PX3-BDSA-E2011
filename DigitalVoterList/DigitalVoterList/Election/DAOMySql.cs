@@ -378,27 +378,28 @@ namespace DigitalVoterList.Election
             Contract.Requires(data != null);
             var queryBuilder = new StringBuilder("SELECT * FROM " + tableName + " WHERE ");
             var first = true;
+            var wildcards = false;
 
             foreach (var kv in data)
             {
-                if (string.IsNullOrEmpty(kv.Value)) continue;
+                if (string.IsNullOrWhiteSpace(kv.Value)) continue;
                 if (!first) queryBuilder.Append(" AND ");
                 queryBuilder.Append(kv.Key);
                 switch (matching)
                 {
                     case SearchMatching.Similair:
-                        queryBuilder.Append(" LIKE '%@");
-                        queryBuilder.Append(kv.Key);
-                        queryBuilder.Append("%' ");
+                        queryBuilder.Append(" LIKE ");
+                        wildcards = true;
                         break;
                     case SearchMatching.Exact:
-                        queryBuilder.Append(" = @");
-                        queryBuilder.Append(kv.Key);
+                        queryBuilder.Append(" = ");
                         break;
                     default:
                         throw new ArgumentException("SearchMatching type is not supported.");
                         break;
                 }
+                queryBuilder.Append("@");
+                queryBuilder.Append(kv.Key);
                 first = false;
             }
             queryBuilder.Append(";");
@@ -407,7 +408,12 @@ namespace DigitalVoterList.Election
 
             foreach (var kv in data)
             {
-                cmd.Parameters.AddWithValue("@'" + kv.Key, kv.Value);
+                if (!string.IsNullOrWhiteSpace(kv.Value))
+                {
+                    string value = kv.Value;
+                    if (wildcards) value = "%" + value + "%";
+                    cmd.Parameters.AddWithValue("@" + kv.Key, value);
+                }
             }
             return cmd;
         }

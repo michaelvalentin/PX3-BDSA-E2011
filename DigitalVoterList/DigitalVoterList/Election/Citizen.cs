@@ -65,8 +65,8 @@ namespace DigitalVoterList.Election
             string tempCpr = cpr;
             if (tempCpr.Length == 10)
             {
-                int day = Int32.Parse(tempCpr.Substring(0, 1));
-                int month = Int32.Parse(tempCpr.Substring(2, 3));
+                int day = Int32.Parse(tempCpr.Substring(0, 2));
+                int month = Int32.Parse(tempCpr.Substring(2, 2));
                 if (!(day > 0 && day <= 31)) return false;
                 if (!(month > 0 && month <= 12)) return false;
 
