@@ -26,8 +26,6 @@ namespace DigitalVoterList.Election
         /// <returns>A citizen that matches the given CPR</returns>
         Citizen LoadCitizen(string cpr);
 
-        Person LoadPerson(string cpr);
-
         /// <summary>
         /// What user has this username?
         /// </summary>

@@ -96,19 +96,19 @@ namespace ParamTests
         #region tests
 
         [Test]
-        public void TestLoadPersonById()
+        public void TestLoadCitizenById()
         {
-            Person p = this._dao.LoadPerson(1);
+            Person p = this._dao.LoadCitizen(1);
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
 
-            Person p2 = this._dao.LoadPerson(3);
+            Person p2 = this._dao.LoadCitizen(3);
             Assert.That(p2.Name.Equals("Mathilde Roed Birk")); // This doesn't work because the loadpersons function loads votingvenue wrong.
         }
 
         [Test]
-        public void TestLoadPersonByCpr()
+        public void TestLoadCitizenByCpr()
         {
-            Person p = this._dao.LoadPerson("2405901253");
+            Person p = this._dao.LoadCitizen("2405901253");
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
         }
 
