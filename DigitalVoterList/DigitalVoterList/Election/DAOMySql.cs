@@ -34,6 +34,7 @@ namespace DigitalVoterList.Election
 
         private Citizen PriLoadCitizen(string cpr)
         {
+            //TODO: should this use findCitizens?
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(cpr != null);
             Contract.Requires(FindCitizens(new Dictionary<CitizenSearchParam, object>()
@@ -44,7 +45,7 @@ namespace DigitalVoterList.Election
             Contract.Ensures(Contract.Result<Person>() != null);
             MySqlCommand command = Prepare("SELECT id FROM person WHERE cpr=@cpr");
             command.Parameters.AddWithValue("@cpr", cpr);
-            int id = (int)ScalarQuery(command);
+            int id = Convert.ToInt32(ScalarQuery(command));
             return PriLoadCitizen(id);
         }
 
@@ -135,7 +136,7 @@ namespace DigitalVoterList.Election
             cmd.Parameters.AddWithValue("@username", username);
             object maybeId = ScalarQuery(cmd);
             if (maybeId == null) return null;
-            int id = (int)maybeId;
+            int id = Convert.ToInt32(maybeId);
             return PriLoadUser(id);
         }
 
@@ -171,9 +172,7 @@ namespace DigitalVoterList.Election
         {
             Contract.Requires(id > 0, "The input id must be larger than zero.");
             Contract.Requires(ExistsWithId("user", id));
-            User u = null;
-            DoTransaction(() => { u = PriLoadUser(id); });
-            return u;
+            return (User)LoadWithTransaction(() => PriLoadUser(id));
         }
 
         private User PriLoadUser(int id)
@@ -238,7 +237,7 @@ namespace DigitalVoterList.Election
             cmd.Parameters.AddWithValue("@passwordHash", passwordHash);
             object result = ScalarQuery(cmd);
             if (result == null) return false;
-            int output = (int)result;
+            int output = Convert.ToInt32(result);
             return output == 1;
         }
 
@@ -352,18 +351,20 @@ namespace DigitalVoterList.Election
             Contract.Requires(_transaction != null, "This method must be performed in a transaction.");
             Contract.Requires(ExistsWithId("votercard", id), "Votercard must exist in the database to be loaded.");
             Contract.Ensures(Contract.Result<VoterCard>() != null);
-            MySqlCommand command = Prepare("SELECT * FROM votercard v LEFT JOIN person p ON p.id=v.person_id WHERE v.id=@id");
+            MySqlCommand command = Prepare("SELECT * FROM voter_card v LEFT JOIN person p ON p.id=v.person_id WHERE v.id=@id");
             command.Parameters.AddWithValue("@id", id);
-            VoterCard v = null;
+            VoterCard v = new VoterCard();
+            int citizenId = 0;
             Query(command, (MySqlDataReader rdr) =>
             {
                 rdr.Read();
-                //v.Citizen = PriLoadPerson(rdr.GetInt32("person_id"));
+                citizenId = rdr.GetInt32("person_id");
                 v.ElectionEvent = Settings.Election;
                 v.Id = rdr.GetInt32("id");
                 v.IdKey = rdr.GetString("id_key");
                 v.Valid = (rdr.GetUInt32("valid") == 1);
             });
+            v.Citizen = PriLoadCitizen(citizenId);
             return v;
         }
 
@@ -372,38 +373,43 @@ namespace DigitalVoterList.Election
         /// 
         /// </summary>
         /// <param name="tableName"></param>
-        /// <param name="info"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
-        private MySqlCommand PrepareWithValues(string tableName, Dictionary<string, string> info)
+        private MySqlCommand PrepareWithValues(string tableName, Dictionary<string, string> data, SearchMatching matching)
         {
             Contract.Requires(tableName != null);
-            Contract.Requires(info != null);
+            Contract.Requires(data != null);
+            throw new NotImplementedException();
+            /*var queryBuilder = new StringBuilder("SELECT * FROM " + tableName + " WHERE ");
+            var first = true;
 
-            var queryBuilder = new StringBuilder("SELECT * FROM " + tableName + " WHERE ");
-            var insertAnd = false;
-
-            foreach (KeyValuePair<String, String> entry in info)
+            foreach (var entry in data)
             {
                 if (string.IsNullOrEmpty(entry.Value)) continue;
-                if (insertAnd) queryBuilder.Append(" AND ");
+                if (first) queryBuilder.Append(" AND ");
                 queryBuilder.Append(entry.Key);
-                queryBuilder.Append(" = @'");
+                switch(matching)
+                {
+                    case SearchMatching.Exact:
+                        queryBuilder.Append(" = ")
+                }
+                queryBuilder.Append(" LIKE  '%@'");
                 queryBuilder.Append(entry.Key);
-                queryBuilder.Append("'");
-                insertAnd = true;
+                queryBuilder.Append("%'");
+                first = false;
             }
             queryBuilder.Append(";");
 
             var cmd = this.Prepare(queryBuilder.ToString());
 
-            foreach (KeyValuePair<String, String> entry in info)
+            foreach (KeyValuePair<String, String> entry in data)
             {
                 if (string.IsNullOrEmpty(entry.Value)) continue;
                 cmd.Parameters.AddWithValue("@'" + entry.Key, entry.Value);
                 insertAnd = true;
             }
 
-            return cmd;
+            return cmd;*/
         }
 
 
@@ -414,7 +420,12 @@ namespace DigitalVoterList.Election
         /// <returns>A voter card</returns>
         public VoterCard LoadVoterCard(string idKey)
         {
-            throw new NotImplementedException();
+            MySqlCommand findCardId = Prepare("SELECT id FROM voter_card WHERE id_key=@idKey");
+            findCardId.Parameters.AddWithValue("@idKey", idKey);
+            object result = ScalarQuery(findCardId);
+            if (result == null) return null;
+            int cardId = Convert.ToInt32(ScalarQuery(findCardId));
+            return PriLoadVoterCard(cardId);
         }
 
         public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching)
@@ -505,7 +516,7 @@ namespace DigitalVoterList.Election
                                        "    passport_number=@passportNumber, " +
                                        "    voting_venue_id=@votingVenueId " +
                                        "WHERE " +
-                                       "id=@id");
+                                       "    id=@id");
             var mapping = new Dictionary<string, string>()
 							  {
 								  {"id",citizen.DbId.ToString()},
@@ -644,7 +655,7 @@ namespace DigitalVoterList.Election
             {
                 insertOrUpdatePerson.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
-            personId = (int)ScalarQuery(insertOrUpdatePerson);
+            personId = Convert.ToInt32(ScalarQuery(insertOrUpdatePerson));
 
             MySqlCommand insertUser = Prepare(" INSERT INTO" +
                                               "     user (" +
@@ -674,7 +685,7 @@ namespace DigitalVoterList.Election
             {
                 insertUser.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
-            return (int)ScalarQuery(insertUser);
+            return Convert.ToInt32(ScalarQuery(insertUser));
         }
 
 
@@ -733,13 +744,94 @@ namespace DigitalVoterList.Election
             Contract.Requires(voterCard.Citizen != null);
             Contract.Requires(ExistsWithId("person", voterCard.Citizen.DbId), "A voter card must belong to a person in the database");
             Contract.Requires(voterCard.IdKey != null);
+            Contract.Requires(voterCard.Id != 0 || FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
+                                                                        {
+                                                                            {VoterCardSearchParam.IdKey,voterCard.IdKey}
+                                                                        }).Count == 0, "Voter card id-key must be unique!");
+            Contract.Requires(voterCard.Id >= 0, "VoterCard id must be greater");
             Contract.Requires(!(voterCard.Id == 0) || FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
 																		{
 																			{VoterCardSearchParam.IdKey,voterCard.IdKey}
 																		}).Count == 0, "Voter card id-key must be unique!");
             Contract.Requires(voterCard.Id >= 0);
             Contract.Requires(!(voterCard.Id > 0) || ExistsWithId("voter_card", voterCard.Id));
+            if (voterCard.Id == 0)
+            {
+                DoTransaction(() => PriSaveNew(voterCard));
+            }
+            else
+            {
+                DoTransaction(() => PriSave(voterCard));
+            }
+        }
 
+        private int PriSaveNew(VoterCard voterCard)
+        {
+            Contract.Requires(_transaction != null, "Must be called within a transaction");
+            Contract.Requires(voterCard != null);
+            Contract.Requires(voterCard.Id == 0);
+            Contract.Requires(voterCard.Citizen != null);
+            Contract.Requires(ExistsWithId("person", voterCard.Citizen.DbId), "A voter card must belong to a person in the database");
+            Contract.Requires(voterCard.IdKey != null);
+            Contract.Requires(FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
+                                                                        {
+                                                                            {VoterCardSearchParam.IdKey,voterCard.IdKey}
+                                                                        }).Count == 0, "Voter card id-key must be unique!");
+            Contract.Requires(!(voterCard.Id > 0) || ExistsWithId("voter_card", voterCard.Id));
+            MySqlCommand saveVoterCard = Prepare("INSERT INTO " +
+                                                 "  voter_card (" +
+                                                 "      person_id, " +
+                                                 "      valid, " +
+                                                 "      id_key" +
+                                                 "  )" +
+                                                 "VALUES" +
+                                                 "  (" +
+                                                 "      @personId," +
+                                                 "      @valid," +
+                                                 "      @idKey" +
+                                                 "  )" +
+                                                 ";" +
+                                                 "" +
+                                                 "SELECT LAST_INSERT_ID();");
+            var voterCardMapping = new Dictionary<string, string>()
+                                                             {
+                                                                 {"personId",voterCard.Citizen.DbId.ToString()},
+                                                                 {"valid",voterCard.Valid ? "1" : "0"},
+                                                                 {"idKey",voterCard.IdKey}
+                                                             };
+            foreach (var kv in voterCardMapping)
+            {
+                saveVoterCard.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+            }
+            return Convert.ToInt32(ScalarQuery(saveVoterCard));
+        }
+
+        private void PriSave(VoterCard voterCard)
+        {
+            Contract.Requires(_transaction != null, "Must be called within a transaction");
+            Contract.Requires(voterCard != null);
+            Contract.Requires(voterCard.Id > 0);
+            Contract.Requires(voterCard.Citizen != null);
+            Contract.Requires(ExistsWithId("person", voterCard.Citizen.DbId), "A voter card must belong to a person in the database");
+            Contract.Requires(voterCard.IdKey != null);
+            Contract.Requires(ExistsWithId("voter_card", voterCard.Id));
+            MySqlCommand updateVoterCard = Prepare("UPDATE" +
+                                                   "    voter_card" +
+                                                   "SET" +
+                                                   "    person_id=@personId," +
+                                                   "    valid=@valid," +
+                                                   "    id_key=@idKey");
+            var voterCardMapping = new Dictionary<string, string>()
+                                                    {
+                                                        {"personId",voterCard.Citizen.DbId.ToString()},
+                                                        {"valid",voterCard.Valid ? "1" : "0"},
+                                                        {"idKey",voterCard.IdKey}
+                                                    };
+            foreach (var kv in voterCardMapping)
+            {
+                updateVoterCard.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+            }
+            Execute(updateVoterCard);
         }
 
         /// <summary>
