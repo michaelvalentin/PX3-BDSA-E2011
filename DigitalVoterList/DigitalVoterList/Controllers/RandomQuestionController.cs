@@ -7,14 +7,16 @@ using DigitalVoterList.Views;
 namespace DigitalVoterList.Controllers
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     /// <summary>
     /// A controller for asking random security questions for a given citizen
     /// </summary>
     public class RandomQuestionController
     {
+        public event EventHandler<EventArgs> QuestionRequest;
         private Quiz[] _questions;
-        private HashSet<Quiz> _used;
+        private int _usedCount;
         private SecurityQuesitonView _view;
 
         public RandomQuestionController(SecurityQuesitonView view, Citizen voter)
@@ -22,9 +24,10 @@ namespace DigitalVoterList.Controllers
             _view = view;
             _questions = new Quiz[voter.SecurityQuestions.Count];
             voter.SecurityQuestions.CopyTo(_questions);
-            _used = new HashSet<Quiz>();
+            _usedCount = 0;
             RequestQuestion(null, null);
-            _view.QuestionRequest += RequestQuestion;
+            QuestionRequest += RequestQuestion;
+            _view._newQuestionBtn.Click += NewQuestionBtnEvent;
         }
 
         public void RequestQuestion(object caller, EventArgs e)
@@ -36,20 +39,45 @@ namespace DigitalVoterList.Controllers
                 return;
             }
             Random r = new Random();
-            Quiz q = _questions[r.Next(0, _questions.Length - 1)];
-            if (_questions.Length <= _used.Count)
+            int rValue = r.Next(0, _questions.Length);
+            Quiz q = _questions[rValue];
+            if (_questions.Length - 1 >= _usedCount)
             {
-                _view.StatusText.Text = "This question has already been showed.";
-                _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(220, 0, 0));
+                while (_questions[rValue] == null)
+                {
+                    rValue = r.Next(0, _questions.Length);
+                }
+                SetQuestion(_questions[rValue]);
+                _usedCount++;
+                _questions[rValue] = null;
             }
             else
             {
-                while (_used.Contains(q))
-                {
-                    q = _questions[r.Next(0, _questions.Length - 1)];
-                }
+                _view.StatusText.Text = "No more questions for this person";
+                _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(220, 0, 0));
             }
-            _view.SetQuestion(q);
+        }
+
+        private void FireQuestionRequest(EventArgs e)
+        {
+            if (QuestionRequest != null) QuestionRequest(this, e);
+        }
+
+        private void NewQuestionBtnEvent(object sender, System.Windows.RoutedEventArgs e)
+        {
+            FireQuestionRequest(e);
+        }
+
+        public void SetQuestion(Quiz q)
+        {
+            _view.Question.Text = q.Question;
+            _view.Answer.Text = q.Answer;
+        }
+
+        public void Reset()
+        {
+            _view.Question.Text = "";
+            _view.Answer.Text = "";
         }
     }
 }

@@ -7,7 +7,7 @@
              d:DesignHeight="150" d:DesignWidth="960">
     <Grid>
         <Label Content="Question" Height="24" HorizontalAlignment="Left" Name="_questionLabel" VerticalAlignment="Top" Width="105" FontSize="16" FontWeight="Bold" Padding="0" />
-        <Button Content="New Question" Height="41" HorizontalAlignment="Left" Margin="1,97,0,0" Name="_newQuestionBtn" VerticalAlignment="Top" Width="105" Click="_newQuestionBtn_Click" />
+        <Button Content="New Question" Height="41" HorizontalAlignment="Left" Margin="1,97,0,0" Name="_newQuestionBtn" VerticalAlignment="Top" Width="105" />
         <TextBlock  Height="41" HorizontalAlignment="Left" Margin="122,102,0,0" Name="StatusText" Text="" VerticalAlignment="Top" Width="335" FontSize="12" TextWrapping="Wrap" />
         <Border BorderBrush="Silver" BorderThickness="1" Height="Auto" HorizontalAlignment="Left" Margin="0,29,0,0" Name="_questionBorder" VerticalAlignment="Top" Width="Auto">
             <TextBlock Height="60" Name="Question" Text="" Width="456" Foreground="#FFBE0000" TextWrapping="Wrap" />

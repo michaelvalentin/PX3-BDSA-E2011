@@ -4,16 +4,18 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DigitalVoterList.Election;
 using DigitalVoterList.Views;
+using System.Windows;
+using DigitalVoterList.Utilities;
 
 namespace DigitalVoterList.Controllers
 {
-    using System.Windows;
 
     /// <summary>
     /// A controller for handling the registration of voters
     /// </summary>
     public abstract class VoterRegistrationController : ContentController
     {
+
         private VoterRegistrationView _view;
         private Citizen _citizen;
         public Citizen Citizen
@@ -139,7 +141,7 @@ namespace DigitalVoterList.Controllers
             LoadVoterData();
         }
 
-        protected void LoadVoterData()
+        private void LoadVoterData()
         {
             if (Citizen == null)
             {
