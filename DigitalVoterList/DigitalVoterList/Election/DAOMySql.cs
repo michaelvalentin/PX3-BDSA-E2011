@@ -39,7 +39,7 @@ namespace DigitalVoterList.Election
             //TODO: should this use findCitizens?
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(cpr != null);
-            //Contract.Requires(FindCitizens(new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, cpr } }).Count == 1); //todo: uncomment this when find is done
+            Contract.Requires(FindCitizens(new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, cpr } }).Count == 1, "Person must exist in the database");
             Contract.Requires(this.Transacting());
             Contract.Ensures(Contract.Result<Person>() != null);
             MySqlCommand command = Prepare("SELECT id FROM person WHERE cpr=@cpr");

@@ -61,8 +61,8 @@ namespace DigitalVoterList.Controllers
             _view.VoterValidation.Children.Add(validationView);
             if (c != null)
             {
-                ManuVoterValidationController mvc = new ManuVoterValidationController(validationView, c);
-
+                var validationController = new ManuVoterValidationController(validationView, c);
+                validationController.Show();
             }
         }
     }

@@ -105,7 +105,7 @@ namespace ParamTests
             Person p = this._dao.LoadCitizen("2405901253");
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
 
-            Person p2 = this._dao.LoadCitizen("5097508703");
+            Person p2 = this._dao.LoadCitizen("1212534321");
             Assert.That(p2.Name.Equals("Mathilde Roed Birk"));
         }
 
@@ -193,13 +193,13 @@ namespace ParamTests
                                                           {
                                                               {VoterCardSearchParam.Valid,true}
                                                           }, SearchMatching.Exact).Count;
-            Assert.That(validVoterCards == 4, "Couldn't find all 4 valid voter cards");
+            Assert.That(validVoterCards == 3, "Couldn't find all 3 valid voter cards");
             int withLetterHinKeyAndValid = _dao.FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
                                                            {
                                                                {VoterCardSearchParam.Valid,true},
                                                                {VoterCardSearchParam.IdKey,"H"}
                                                            }, SearchMatching.Similair).Count;
-            Assert.That(withLetterHinKeyAndValid == 3, "Couldn't find the 3 valid voter cards with letter H in idKey");
+            Assert.That(withLetterHinKeyAndValid == 2, "Couldn't find the 2 valid voter cards with letter H in idKey");
         }
 
         [Test]
