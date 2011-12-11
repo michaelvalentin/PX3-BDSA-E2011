@@ -111,11 +111,11 @@ namespace ParamTests
         [Test]
         public void TestLoadUserById()
         {
-            Person p = this._dao.LoadUser(1);
-            Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
+            var u = this._dao.LoadUser(1);
+            Assert.That(u.Name.Equals("Jens Dahl Møllerhøj"));
 
-            Person p2 = this._dao.LoadUser(4);
-            Assert.That(p2.Name.Equals("Ronni Holm"));
+            var u2 = this._dao.LoadUser(3);
+            Assert.That(u2.Name.Equals("Mathilde Roed Birk"));
         }
 
         [Test]
@@ -123,6 +123,9 @@ namespace ParamTests
         {
             Person p = this._dao.LoadUser("jdmo");
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
+
+            Person p2 = this._dao.LoadUser("elec");
+            Assert.That(p2.Name.Equals("Mathilde Roed Birk"));
         }
 
         [Test]
@@ -134,21 +137,16 @@ namespace ParamTests
         }
 
         [Test]
-        public void TestPreparedStatements()
-        {
-            var p = new MySqlCommand("INSERT INTO person (name, address) VALUES (@name, @address)");
-            p.Connection = _conn;
-            p.Prepare();
-            p.Parameters.AddWithValue("@name", "Ronni Holm");
-            p.Parameters.AddWithValue("@address", null);
-            p.ExecuteScalar();
-        }
-
-        [Test]
         public void TestGetPermissions()
         {
             var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
             Assert.That(permissions.Count == 22);
+
+            var permissions2 = this._dao.GetPermissions(User.GetUser("slave", "asdf"));
+            Assert.That(permissions2.Count == 0);
+
+            var permissions3 = this._dao.GetPermissions(User.GetUser("elec", "hemmelighed"));
+            Assert.That(permissions3.Count == 3);
         }
 
         [Test]
@@ -178,35 +176,55 @@ namespace ParamTests
         {
             var workplaces = this._dao.GetWorkplaces(VoterListApp.CurrentUser);
             Assert.That(workplaces.Count == 1);
+
+            var workplaces2 = this._dao.GetWorkplaces(User.GetUser("slave", "asdf"));
+            Assert.That(workplaces2.Count == 2);
+        }
+
+        [Test]
+        public void TestSetHasVoted()
+        {
+            var c = new Citizen(1, "2405901253");
+            c.SetHasVoted();
         }
 
         [Test]
         public void TestLoadVoterCardById()
         {
             VoterCard votercard = this._dao.LoadVoterCard(5);
-
             Assert.That(votercard.IdKey.Equals("1HN8O9M9"));
+            VoterCard votercard2 = this._dao.LoadVoterCard(1);
+            Assert.That(votercard2.IdKey.Equals("HR5F4D7"));
         }
 
         [Test]
         public void TestLoadVoterCardByIdKey()
         {
             VoterCard votercard = this._dao.LoadVoterCard("5HU9KQY4");
-
             Assert.That(votercard.Id == 3);
+            VoterCard votercard2 = this._dao.LoadVoterCard("HR5F4D7");
+            Assert.That(votercard2.Id == 1);
         }
 
         [Test]
-        public void TestUpdatePeople()
+        public void TestDataTransform()
         {
             var dt = new DataTransformer();
             dt.TransformData();
+
+            var select = new MySqlCommand("SELECT COUNT(*) FROM person;", this._conn);
+            object o = select.ExecuteScalar();
+            Assert.That(Convert.ToInt32(o) == 16);
+
+            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Mik Thomasen'", this._conn);
+            var i = selectData.ExecuteScalar();
+            Assert.That(i.ToString() == "1");
         }
 
         //List<VoterCard> Find(VoterCard voterCard);
 
         [Test]
-        void TestSavePerson()
+        public void TestSavePerson()
         {
             /*this._dao.Save(new Person() { Name = "Helle Thorsen" });
             MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Helle Thorsen'", this._conn);

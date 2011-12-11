@@ -8,12 +8,12 @@ namespace DigitalVoterList.Election
     /// <summary>
     /// An actual election, that runs at a specific time, in a specific area and with a specific set of elegible voters.
     /// </summary>
-    public class ElectionEvent
+    public abstract class ElectionEvent
     {
         private DateTime _date;
         private string _name;
 
-        public ElectionEvent(DateTime date, string name)
+        protected ElectionEvent(DateTime date, string name)
         {
             Contract.Requires(!date.Equals(null));
             Contract.Requires(!string.IsNullOrEmpty(name));
@@ -53,15 +53,9 @@ namespace DigitalVoterList.Election
             }
         }
 
-        /// <summary>
-        /// What votingVenue should be used for this citizen
-        /// </summary>
-        /// <returns></returns>
-        public VotingVenue VotingVenueForCitizen(Citizen citizen)
-        {
-            //return DAOFactory.CurrentUserDAO.FindVotingVenue(citizen);
-            throw new NotImplementedException();
-        }
+        public abstract VotingVenue VotingVenueForCitizen(RawPerson rawPerson);
+
+        public abstract bool CitizenEligibleToVote(RawPerson rawPerson);
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.

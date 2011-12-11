@@ -200,6 +200,6 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="voterCard"></param>
         /// <param name="update">The update function</param>
-        void UpdatePeople(Func<Person, RawPerson, Person> update);
+        void UpdatePeople(Func<Citizen, RawPerson, Citizen> update);
     }
 }

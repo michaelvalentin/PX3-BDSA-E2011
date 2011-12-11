@@ -21,7 +21,7 @@ namespace DigitalVoterList.Utilities
         {
             Contract.Requires(!string.IsNullOrEmpty(data));
             Contract.Requires(data.Length <= 10);
-            Contract.Requires(IsBarcodeReady(data));
+            Contract.Requires(IsBarcodeValid(data));
             _data = data;
             _image = GenerateBarcode(_data);
         }
@@ -48,7 +48,7 @@ namespace DigitalVoterList.Utilities
             //http://www.techrepublic.com/blog/howdoi/how-do-i-generate-barcodes-using-c/173
         }
 
-        public static bool IsBarcodeReady(string data)
+        public static bool IsBarcodeValid(string data)
         {
             Regex barcode = new Regex("[0-9A-Z]");
             return barcode.IsMatch(data);
@@ -59,7 +59,7 @@ namespace DigitalVoterList.Utilities
         private void ObjectInvariant()
         {
             Contract.Invariant(_data.Length <= 10);
-            Contract.Invariant(IsBarcodeReady(_data));
+            Contract.Invariant(IsBarcodeValid(_data));
         }
     }
 }
