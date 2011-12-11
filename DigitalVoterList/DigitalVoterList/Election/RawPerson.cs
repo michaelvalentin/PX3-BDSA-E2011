@@ -6,7 +6,6 @@
 
 namespace DigitalVoterList.Election
 {
-    using System;
 
     /// <summary>
     /// TODO: Update summary.
@@ -21,13 +20,13 @@ namespace DigitalVoterList.Election
 
         public string AddressPrevious { get; set; }
 
-        public DateTime? Birthday { get; set; }
+        public string Birthday { get; set; }
 
         public string Birthplace { get; set; }
 
         public bool Alive { get; set; }
 
-        public DateTime? Deathdate { get; set; }
+        public string Deathdate { get; set; }
 
         public int Age { get; set; }
 
