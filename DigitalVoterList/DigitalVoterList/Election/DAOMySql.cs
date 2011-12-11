@@ -499,30 +499,82 @@ namespace DigitalVoterList.Election
 
         private List<User> PriFindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching)
         {
+            //WAIT
             throw new NotImplementedException();
         }
 
         public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching)
         {
+            Contract.Requires(data != null);
+            Contract.Ensures(Contract.Result<List<VoterCard>>() != null);
             return (List<VoterCard>)LoadWithTransaction(() => PriFindVoterCards(data, matching));
-        }
-
-        private List<VoterCard> PriFindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching)
-        {
-            throw new NotImplementedException();
         }
 
         public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data)
         {
+
+            Contract.Requires(data != null);
+            Contract.Ensures(Contract.Result<List<VoterCard>>() != null);
             return FindVoterCards(data, SearchMatching.Similair);
         }
+
+        private List<VoterCard> PriFindVoterCards(Dictionary<VoterCardSearchParam, object> searchData, SearchMatching matching)
+        {
+            Contract.Requires(Transacting(), "Must be in transaction");
+            Contract.Requires(searchData != null);
+            Contract.Ensures(Contract.Result<List<VoterCard>>() != null);
+            var searchParams = new Dictionary<string, string>()
+								   {
+									   {"person_id",null},
+									   {"valid",null},
+									   {"id_key",null}
+								   };
+            foreach (var kv in searchData)
+            {
+                switch (kv.Key)
+                {
+                    case VoterCardSearchParam.CitizenId:
+                        searchParams["person_id"] = kv.Value.ToString();
+                        break;
+                    case VoterCardSearchParam.Valid:
+                        Debug.Assert(kv.Value is bool, "Valid should be a boolean value");
+                        searchParams["valid"] = (bool)kv.Value ? "1" : "0";
+                        break;
+                    case VoterCardSearchParam.IdKey:
+                        searchParams["id_key"] = kv.Value.ToString();
+                        break;
+                    default:
+                        throw new ArgumentException("Unexpected CitizenSearchParam not implemented.");
+                        break;
+                }
+            }
+            MySqlCommand findVoterCards = PrepareSearchQuery("voter_card", searchParams, matching);
+            List<int> resultIds = new List<int>();
+            Query(findVoterCards, (rdr) =>
+            {
+                while (rdr.Read())
+                {
+                    resultIds.Add(rdr.GetInt32("id"));
+                }
+            });
+            List<VoterCard> result = new List<VoterCard>();
+            foreach (int id in resultIds)
+            {
+                result.Add(PriLoadVoterCard(id));
+            }
+            return result;
+        }
+
 
         /// <summary>
         /// Create this person with this data!
         /// </summary>
         /// <param name="citizen">The person to register</param>
         /// <returns>Was the attempt successful?</returns>
-        public void Save(Citizen citizen)
+
+        //todo: this method is here for historic reasons, delete it at when shipping.
+
+        /*public void Save(Citizen citizen)
         {
             Contract.Requires(citizen != null, "Input person must not be null!");
             Contract.Requires(citizen.DbId >= 0, "DbId must be greater than or equal to zero");
@@ -537,7 +589,7 @@ namespace DigitalVoterList.Election
                 DoTransaction(() => PriSaveNew(citizen));
             }
 
-        }
+        }*/
 
         private void PriSave(Citizen citizen)
         {
@@ -604,7 +656,10 @@ namespace DigitalVoterList.Election
                 cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
             Execute(cmd);
-            PriSaveQuestions(citizen);
+
+            var cmd2 = this.Prepare("SELECT LAST_INSERT_ID()");
+            var i = Convert.ToInt32(ScalarQuery(cmd2));
+            PriSaveQuestions(LoadCitizen(i));
         }
 
         private void PriSaveQuestions(Citizen c)
@@ -617,16 +672,20 @@ namespace DigitalVoterList.Election
             if (c.SecurityQuestions.Count > 0)
             {
                 StringBuilder insertQuery = new StringBuilder("INSERT INTO quiz (person_id, question, answer) VALUES ");
+                var first = true;
                 foreach (var quiz in c.SecurityQuestions)
                 {
+                    if (!first) insertQuery.Append(",");
                     insertQuery.Append("(");
                     insertQuery.Append(c.DbId);
-                    insertQuery.Append(",");
+                    insertQuery.Append(",'");
                     insertQuery.Append(quiz.Question);
-                    insertQuery.Append(",");
+                    insertQuery.Append("','");
                     insertQuery.Append(quiz.Answer);
-                    insertQuery.Append(")");
+                    insertQuery.Append("')");
+                    first = false;
                 }
+                insertQuery.Append(";");
                 MySqlCommand insertQuestions = Prepare(insertQuery.ToString());
                 Execute(insertQuestions);
             }
@@ -943,12 +1002,13 @@ namespace DigitalVoterList.Election
             Contract.Requires(PriLoadCitizen(c.DbId).EligibleToVote == true, "Input citizen should be eligible to vote");
             Contract.Requires(PriLoadCitizen(c.DbId).HasVoted == false, "Input citizen must not have voted");
             Contract.Ensures(PriLoadCitizen(c.DbId).HasVoted == true, "If successfull, the citizen must have voted after the method is finished");
-            MySqlCommand setHasVoted = Prepare("UPDATE person SET has_voted=1 WHERE has_voted=0 AND eligible_to_vote=1 AND id=@id");
+            MySqlCommand setHasVoted = Prepare("UPDATE person SET has_voted=1 WHERE has_voted=0 AND eligible_to_vote=1 AND id=@id; SELECT ROW_COUNT();");
             setHasVoted.Parameters.AddWithValue("@id", c.DbId);
-            int affected = Convert.ToInt32(ScalarQuery(setHasVoted));
+            object result = ScalarQuery(setHasVoted);
+            int affected = Convert.ToInt32(result);
             if (affected != 1)
             {
-                throw new Exception("Updating that a person has voted should effect one and only one row");
+                throw new Exception("Updating that a person has voted should effect one and only one row, but was " + affected);
             }
         }
 
@@ -962,7 +1022,13 @@ namespace DigitalVoterList.Election
         /// <returns>Was the attempt succesful?</returns>
         public void ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
         {
-            throw new NotImplementedException();
+            Contract.Requires(user != null);
+            Contract.Requires(PriExistsWithId("user", user.DbId));
+            Contract.Requires(newPasswordHash != null);
+            Contract.Requires(oldPasswordHash != null);
+            Contract.Requires(ValidateUser(user.Username, oldPasswordHash));
+            if (!ValidateUser(user.Username, oldPasswordHash)) throw new Exception("Wrong password for user \"" + user.Username + "\""); //Make sure that we can't change password with a wrong password..
+            DoTransaction(() => PriChangePassword(user, newPasswordHash));
         }
 
         /// <summary>
@@ -973,7 +1039,22 @@ namespace DigitalVoterList.Election
         /// <returns>Was th attempt succesful?</returns>
         public void ChangePassword(User user, string newPasswordHash)
         {
-            throw new NotImplementedException();
+            Contract.Requires(user != null);
+            Contract.Requires(PriExistsWithId("user", user.DbId));
+            Contract.Requires(newPasswordHash != null);
+            DoTransaction(() => PriChangePassword(user, newPasswordHash));
+        }
+
+        private void PriChangePassword(User user, string newPasswordHash)
+        {
+            Contract.Requires(Transacting(), "Must be done in a transaction");
+            Contract.Requires(user != null);
+            Contract.Requires(PriExistsWithId("user", user.DbId));
+            Contract.Requires(newPasswordHash != null);
+            MySqlCommand updatePassword = Prepare("UPDATE user SET password_hash=@pwdHash WHERE id=@id");
+            updatePassword.Parameters.AddWithValue("@pwdHash", newPasswordHash);
+            updatePassword.Parameters.AddWithValue("@id", user.DbId);
+            Execute(updatePassword);
         }
 
         /// <summary>
@@ -983,6 +1064,7 @@ namespace DigitalVoterList.Election
         /// <returns>Was the attempt succesful?</returns>
         public void MarkUserInvalid(User user)
         {
+            //WAIT
             throw new NotImplementedException();
         }
 
@@ -993,16 +1075,7 @@ namespace DigitalVoterList.Election
         /// <returns>Was the attempt succesful</returns>
         public void RestoreUser(User user)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Mark this voter card as invalid!
-        /// </summary>
-        /// <param name="voterCard">The voter card which should be marked as invalid</param>
-        /// <returns>Was the attempt succesful?</returns>
-        public void MarkVoterCardInvalid(VoterCard voterCard)
-        {
+            //WAIT
             throw new NotImplementedException();
         }
 
@@ -1014,7 +1087,13 @@ namespace DigitalVoterList.Election
         {
             var connection = new MySqlConnection(this._connectionString);
             connection.Open();
-            const string Query = "SELECT * FROM raw_person_data";
+            const string Query =
+                "SELECT " + "p.*, " + "f.name AS fathers_name, " + "f.birthday AS fathers_birthday, "
+                + "f.age AS fathers_age, " + "f.education AS fathers_education, " + "f.dead AS father_dead, "
+                + "m.name AS mothers_name, " + "m.birthday AS mothers_birthday, " + "m.age AS mothers_age, "
+                + "m.education AS mothers_education, " + "m.dead AS mothers_dead " + "FROM raw_person_data p "
+                + "LEFT JOIN raw_person_data f ON p.father_cpr = f.cpr "
+                + "LEFT JOIN raw_person_data m ON m.mother_cpr = m.cpr;";
             var loadRowPeople = new MySqlCommand(Query, connection);
             MySqlDataReader rdr = null;
 
@@ -1025,12 +1104,24 @@ namespace DigitalVoterList.Election
                 while (rdr.Read())
                 {
                     RawPerson rawPerson = new RawPerson();
-                    DoIfNotDbNull(rdr, "name", lbl => rawPerson.Name = rdr.GetString(lbl));
-                    DoIfNotDbNull(rdr, "CPR", lbl => rawPerson.CPR = rdr.GetString(lbl));
                     DoIfNotDbNull(rdr, "address", lbl => rawPerson.Address = rdr.GetString(lbl));
-                    DoIfNotDbNull(rdr, "birthplace", lbl => rawPerson.Birthplace = rdr.GetString(lbl));
-                    DoIfNotDbNull(rdr, "passport_number", lbl => rawPerson.PassportNumber = rdr.GetString(lbl));
                     DoIfNotDbNull(rdr, "address_previous", lbl => rawPerson.AddressPrevious = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "age", lbl => rawPerson.Age = rdr.GetInt32(lbl));
+                    DoIfNotDbNull(rdr, "birthday", lbl => rawPerson.Birthday = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "birthplace", lbl => rawPerson.Birthplace = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "CPR", lbl => rawPerson.CPR = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "city", lbl => rawPerson.City = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "deathdate", lbl => rawPerson.Deathdate = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "disempowered", lbl => rawPerson.Disempowered = rdr.GetBoolean(lbl));
+                    DoIfNotDbNull(rdr, "driver_id", lbl => rawPerson.DriverID = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "education", lbl => rawPerson.Education = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "military_served", lbl => rawPerson.MilitaryServed = rdr.GetBoolean(lbl));
+                    DoIfNotDbNull(rdr, "name", lbl => rawPerson.Name = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "nationality", lbl => rawPerson.Nationality = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "passport_number", lbl => rawPerson.PassportNumber = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "telephone", lbl => rawPerson.TelephoneNumber = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "workplace", lbl => rawPerson.Workplace = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "zipcode", lbl => rawPerson.Zipcode = rdr.GetInt32(lbl));
 
                     if (rawPerson.CPR != null)
                     {
@@ -1052,7 +1143,7 @@ namespace DigitalVoterList.Election
             }
             catch (Exception ex)
             {
-                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+                throw;
             }
             finally
             {
@@ -1134,7 +1225,6 @@ namespace DigitalVoterList.Election
             }
             catch (Exception ex)
             {
-                throw;
                 try
                 {
                     _transaction.Rollback();
@@ -1145,6 +1235,7 @@ namespace DigitalVoterList.Election
                     // TODO: Make a logging function and maybe a security alert...
                     throw;
                 }
+                throw;
             }
             _transaction = null;
         }

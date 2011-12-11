@@ -87,7 +87,7 @@ INSERT INTO `workplace` (`user_id`, `voting_venue_id`) VALUES
 (2, 2);
 
 INSERT INTO `raw_person_data` (`cpr`, `name`, `mother_cpr`, `father_cpr`, `address`, `address_previous`, `gender`, `birthday`, `deathdate`, `dead`, `birthplace`, `age`, `driver_id`, `military_served`, `workplace`, `education`, `telephone`, `passport_number`, `city`, `zipcode`, `nationality`, `disempowered`) VALUES
-('2405901253', 'Jens Dahl Møllerhøj','1009014537',NULL,'Nørre Alle 75','Hagens Alle 17','male','1990-24-05',NULL,0,'Gentofte Hospital',21,NULL,1,'ITU',NULL,'281566001','1234567890','København Ø',2100,'DNK',0),
+('2405901253', 'Jens Dahl Møllerhøj','1009014537',NULL,'Nørre Alle 75','Hagens Alle 17','male','1990-05-24',NULL,0,'Gentofte Hospital',21,NULL,1,'ITU',NULL,'281566001','1234567890','København Ø',2100,'DNK',0),
 ('0101404821', 'Mik Thomasen', '1007170920', '1701091251', NULL, 'Lærkevej 25', 'male', '1940-01-01', NULL, 0, 'Nykøbing F. Centralsygehus', 71, NULL, 0, 'Gypsum Recycling International A/S', NULL, NULL, '719709942', 'Kibæk', 6933, 'DNK', 0),
 ('0102574530', 'Ronja Degn Clemmensen', NULL, NULL, 'Dambakken 13', 'Kløvervej 52', 'female', '1957-02-01', NULL, 0, 'Sygehus Syd, Næstved', 54, NULL, 0, 'Gjensidige', 'Billedkunst, kunstteori og formidling', NULL, NULL, 'Gredstedbro', 6771, 'DNK', 0),
 ('0108660320', 'Amanda Østergård Vilhelmsen', '0202341400', '3004421281', 'Langerødvej 48', NULL, 'female', '1966-08-01', NULL, 0, 'Herlev Hospital', 45, NULL, 0, 'Dreist Advokater', 'Klassisk musiker', NULL, '682142010', 'Vestervig', 7770, 'DNK', 0),

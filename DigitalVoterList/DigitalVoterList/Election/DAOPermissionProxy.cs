@@ -174,14 +174,6 @@ namespace DigitalVoterList.Election
             return null;
         }
 
-        public void Save(Citizen citizen)
-        {
-            if (ActionPermitted(SystemAction.SavePerson))
-            {
-                _dao.Save(citizen);
-            }
-        }
-
         public void Save(User user)
         {
             if (ActionPermitted(SystemAction.SaveUser))
@@ -243,14 +235,6 @@ namespace DigitalVoterList.Election
             if (ActionPermitted(SystemAction.RestoreUser))
             {
                 _dao.RestoreUser(user);
-            }
-        }
-
-        public void MarkVoterCardInvalid(VoterCard voterCard)
-        {
-            if (ActionPermitted(SystemAction.MarkVoteCardInvalid))
-            {
-                _dao.MarkVoterCardInvalid(voterCard);
             }
         }
 

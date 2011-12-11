@@ -122,13 +122,6 @@ namespace DigitalVoterList.Election
         List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data);
 
         /// <summary>
-        /// Create this person with this data!
-        /// </summary>
-        /// <param name="citizen">The person to register</param>
-        /// <returns>Was the attempt successful?</returns>
-        void Save(Citizen citizen);
-
-        /// <summary>
         /// Create this user with this data!
         /// </summary>
         /// <param name="user">The user to register</param>
@@ -187,13 +180,6 @@ namespace DigitalVoterList.Election
         /// <param name="user">The user to mark as valid</param>
         /// <returns>Was the attempt succesful</returns>
         void RestoreUser(User user);
-
-        /// <summary>
-        /// Mark this voter card as invalid!
-        /// </summary>
-        /// <param name="voterCard">The voter card which should be marked as invalid</param>
-        /// <returns>Was the attempt succesful?</returns>
-        void MarkVoterCardInvalid(VoterCard voterCard);
 
         /// <summary>
         /// Update all persons in the dataset with this update

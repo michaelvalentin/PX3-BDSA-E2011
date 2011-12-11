@@ -9,6 +9,7 @@ namespace ParamTests
 
     using DigitalVoterList;
     using DigitalVoterList.Election;
+
     using NUnit.Framework;
 
     [TestFixture]
@@ -149,17 +150,21 @@ namespace ParamTests
             Assert.That(permissions3.Count == 3);
         }
 
-        [Test]
+        /*[Test]
         public void TestSaveCitizen()
         {
             //Replace jens with morten
             var c = new Citizen(1, "1201561234");
             c.Name = "Morten Hyllekilde";
+            c.SecurityQuestions.Add(new Quiz("Who are you?", "A test person"));
             this._dao.Save(c);
 
-            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Morten Hyllekilde'", this._conn);
+            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM quiz WHERE person_id=1", this._conn);
             var i = selectData.ExecuteScalar();
             Assert.That(i.ToString() == "1");
+
+            selectData = new MySqlCommand("SELECT COUNT(*) FROM quiz WHERE name='Morten Hyllekilde'", this._conn);
+
 
             //Replace make new citizen
             var d = new Citizen(0, "1507814321");
@@ -169,7 +174,7 @@ namespace ParamTests
             MySqlCommand selectData2 = new MySqlCommand("SELECT COUNT(*) FROM person", this._conn);
             var i2 = selectData2.ExecuteScalar();
             Assert.That(i2.ToString() == "5");
-        }
+        }*/
 
         [Test]
         public void TestGetWorkplaces()
@@ -182,10 +187,56 @@ namespace ParamTests
         }
 
         [Test]
+        public void TestFindVoterCards()
+        {
+            int validVoterCards = _dao.FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
+                                                          {
+                                                              {VoterCardSearchParam.Valid,true}
+                                                          }, SearchMatching.Exact).Count;
+            Assert.That(validVoterCards == 4, "Couldn't find all 4 valid voter cards");
+            int withLetterHinKeyAndValid = _dao.FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
+                                                           {
+                                                               {VoterCardSearchParam.Valid,true},
+                                                               {VoterCardSearchParam.IdKey,"H"}
+                                                           }, SearchMatching.Similair).Count;
+            Assert.That(withLetterHinKeyAndValid == 3, "Couldn't find the 3 valid voter cards with letter H in idKey");
+        }
+
+        [Test]
+        public void TestChangePassword()
+        {
+            User u = _dao.LoadUser(2);
+            u.ChangePassword("passwordWorking1234");
+            Assert.That(User.GetUser(u.Username, "passwordWorking1234").DbId == 2);
+        }
+
+        [Test]
         public void TestSetHasVoted()
         {
-            var c = new Citizen(1, "2405901253");
+            //Eligible voter that has not voted -> Success
+            Citizen c = _dao.LoadCitizen(1);
             c.SetHasVoted();
+            MySqlCommand checkHasVoted = new MySqlCommand("SELECT id FROM person WHERE id=@id AND has_voted=1 AND eligible_to_vote=1", _conn);
+            checkHasVoted.Prepare();
+            checkHasVoted.Parameters.AddWithValue("@id", 1);
+            object result = checkHasVoted.ExecuteScalar();
+            Assert.That(result != null, "Has voted was not updated in database!");
+
+            //Non-eligible voter...
+            Citizen c2 = _dao.LoadCitizen(2);
+            Assert.Throws(typeof(Exception), c2.SetHasVoted, "Uneligible voter can never vote!");
+            checkHasVoted.Parameters.Clear();
+            checkHasVoted.Parameters.AddWithValue("@id", 2);
+            result = checkHasVoted.ExecuteScalar();
+            Assert.That(result == null, "Uneligible voter can never vote!");
+
+            //Has allready voted..
+            Citizen c4 = _dao.LoadCitizen(4);
+            Assert.Throws(typeof(Exception), c4.SetHasVoted, "Voters must never vote twice!");
+            checkHasVoted.Parameters.Clear();
+            checkHasVoted.Parameters.AddWithValue("@id", 4);
+            result = checkHasVoted.ExecuteScalar();
+            Assert.That(result != null, "Voter with id 4 should allready have voted");
         }
 
         [Test]
@@ -212,13 +263,15 @@ namespace ParamTests
             var dt = new DataTransformer();
             dt.TransformData();
 
+            // 13 persons in row data, 4 persons in in current, one overlap (Jens) = 16 total
             var select = new MySqlCommand("SELECT COUNT(*) FROM person;", this._conn);
             object o = select.ExecuteScalar();
             Assert.That(Convert.ToInt32(o) == 16);
 
+
             MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Mik Thomasen'", this._conn);
             var i = selectData.ExecuteScalar();
-            Assert.That(i.ToString() == "1");
+            Assert.That(i.ToString() == "1", "Mik Thomasen was not insert into data");
         }
 
         //List<VoterCard> Find(VoterCard voterCard);
