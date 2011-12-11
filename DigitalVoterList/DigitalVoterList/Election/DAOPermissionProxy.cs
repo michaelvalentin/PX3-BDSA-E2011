@@ -254,7 +254,7 @@ namespace DigitalVoterList.Election
             }
         }
 
-        public void UpdatePeople(Func<Person, RawPerson, Person> update)
+        public void UpdatePeople(Func<Citizen, RawPerson, Citizen> update)
         {
             if (ActionPermitted(SystemAction.UpdatePeople))
             {

@@ -207,10 +207,18 @@ namespace ParamTests
         }
 
         [Test]
-        public void TestUpdatePeople()
+        public void TestDataTransform()
         {
             var dt = new DataTransformer();
             dt.TransformData();
+
+            var select = new MySqlCommand("SELECT COUNT(*) FROM person;", this._conn);
+            object o = select.ExecuteScalar();
+            Assert.That(Convert.ToInt32(o) == 12);
+
+            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Mik Thomasen'", this._conn);
+            var i = selectData.ExecuteScalar();
+            Assert.That(i.ToString() == "1");
         }
 
         //List<VoterCard> Find(VoterCard voterCard);

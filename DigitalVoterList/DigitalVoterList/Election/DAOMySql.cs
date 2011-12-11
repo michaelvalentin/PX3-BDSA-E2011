@@ -981,7 +981,7 @@ namespace DigitalVoterList.Election
         /// Update all persons in the dataset with this update
         /// </summary>
         /// <param name="updateFunc"></param>
-        public void UpdatePeople(Func<Person, RawPerson, Person> updateFunc)
+        public void UpdatePeople(Func<Citizen, RawPerson, Citizen> updateFunc)
         {
             var connection = new MySqlConnection(this._connectionString);
             connection.Open();
@@ -1007,10 +1007,16 @@ namespace DigitalVoterList.Election
                         List<Citizen> listOfCitizens =
                             FindCitizens(
                                 new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, rawPerson.CPR } });
-
-                        Citizen c = (listOfCitizens.Count > 0) ? listOfCitizens[0] : new Citizen(0, rawPerson.CPR);
-                        c = (Citizen)updateFunc(c, rawPerson);
-                        PriSave(c);
+                        if ((listOfCitizens.Count > 0))
+                        {
+                            Citizen c = updateFunc(listOfCitizens[0], rawPerson);
+                            PriSave(c);
+                        }
+                        else
+                        {
+                            Citizen c = updateFunc(new Citizen(0, rawPerson.CPR), rawPerson);
+                            PriSaveNew(c);
+                        }
                     }
                 }
             }
@@ -1030,7 +1036,8 @@ namespace DigitalVoterList.Election
 
         private void MarkPeopleNotInRawDataUneligibleToVote()
         {
-            MySqlCommand cmd = new MySqlCommand("UPDATE person SET eligible_to_vote=0 WHERE cpr NOT IN (SELECT cpr FROM raw_person_data);");
+            Contract.Requires(this.Transacting(), "This can only be done in a transaction.");
+            MySqlCommand cmd = this.Prepare("UPDATE person SET eligible_to_vote=0 WHERE cpr NOT IN (SELECT cpr FROM raw_person_data);");
             this.Execute(cmd);
         }
 
