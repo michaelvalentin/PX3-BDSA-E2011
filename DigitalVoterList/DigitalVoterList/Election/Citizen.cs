@@ -74,8 +74,6 @@ namespace DigitalVoterList.Election
             HasVoted = true;
         }
 
-        private bool ValidCpr(string cpr)
-
         [ContractInvariantMethod]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
         private void ObjectInvariant()
@@ -100,9 +98,9 @@ namespace DigitalVoterList.Election
 
         [ContractInvariantMethod]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
-        private void ObjectInvariant()
+        private void ObjectInvariantMethod()
         {
-            Contract.Invariant(this.ValidCpr(this.Cpr));
+            Contract.Invariant(ValidCpr(this.Cpr));
         }
 
         public bool Equals(Citizen other)

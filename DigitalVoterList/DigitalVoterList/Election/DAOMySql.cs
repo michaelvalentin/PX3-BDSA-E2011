@@ -435,7 +435,7 @@ namespace DigitalVoterList.Election
             findCardId.Parameters.AddWithValue("@idKey", idKey);
             object result = ScalarQuery(findCardId);
             if (result == null) return null;
-            int cardId = Convert.ToInt32(ScalarQuery(findCardId));
+            int cardId = Convert.ToInt32(result);
             return PriLoadVoterCard(cardId);
         }
 

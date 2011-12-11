@@ -257,7 +257,7 @@ namespace DigitalVoterList.Election
             {
                 return true;
             }
-            return base.Equals(other) && Equals(other._permissions, this._permissions) && Equals(other._workplaces, this._workplaces) && other._lastSuccessfullValidationTime.Equals(this._lastSuccessfullValidationTime) && Equals(other.UserSalt, this.UserSalt) && other.Valid.Equals(this.Valid) && other.DBId == this.DBId;
+            return base.Equals(other) && Equals(other._permissions, this._permissions) && Equals(other._workplaces, this._workplaces) && other._lastSuccessfullValidationTime.Equals(this._lastSuccessfullValidationTime) && Equals(other.UserSalt, this.UserSalt) && other.Valid.Equals(this.Valid) && other.DbId == this.DbId;
         }
 
         public override int GetHashCode()
@@ -267,17 +267,15 @@ namespace DigitalVoterList.Election
                 int result = base.GetHashCode();
                 result = (result * 397) ^ (this._permissions != null ? this._permissions.GetHashCode() : 0);
                 result = (result * 397) ^ (this._workplaces != null ? this._workplaces.GetHashCode() : 0);
-                result = (result * 397) ^ (this._lastSuccessfullValidationTime.HasValue ? this._lastSuccessfullValidationTime.Value.GetHashCode() : 0);
+                result = (result * 397) ^
+                         (this._lastSuccessfullValidationTime.HasValue
+                              ? this._lastSuccessfullValidationTime.Value.GetHashCode()
+                              : 0);
                 result = (result * 397) ^ (this.UserSalt != null ? this.UserSalt.GetHashCode() : 0);
                 result = (result * 397) ^ this.Valid.GetHashCode();
-                result = (result * 397) ^ this.DBId;
+                result = (result * 397) ^ this.DbId;
                 return result;
             }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(Cpr == null || Citizen.ValidCpr(Cpr));
         }
     }
 }

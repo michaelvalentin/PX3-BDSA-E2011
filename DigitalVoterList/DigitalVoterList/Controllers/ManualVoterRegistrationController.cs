@@ -4,8 +4,6 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
-    using System.Windows;
-    using System.Windows.Controls;
 
     /// <summary>
     /// A controller for the manual registration project
@@ -29,13 +27,13 @@ namespace DigitalVoterList.Controllers
             _neededPermissions.Add(SystemAction.SetHasVotedManually);
 
             _view.VoterValidation.Children.Clear();
-            _view.VoterValidation.Children.Add(new ManualVoterValidationView());
+            //_view.VoterValidation.Children.Add(new ManualVoterValidationView());
 
             _searchController.PersonFound += SearchPersonFound;
             _view.SearchVoterButton.Click += SearchEvent;
-            _view.VoterIdentification.VoterCprDigits.PasswordChanged += CheckCpr;
+            //_view.VoterIdentification.VoterCprDigits.PasswordChanged += CheckCpr;
             _view.RegisterVoterButton.Click += RegisterVoter;
-            view.VoterIdentification.PreviewKeyDown += HideImages;
+            //view.VoterIdentification.PreviewKeyDown += HideImages;
         }
 
         private void SearchEvent(object sender, EventArgs e)
@@ -53,6 +51,16 @@ namespace DigitalVoterList.Controllers
                 _view.VoterIdentification.VoterAddress.Text = p.Address;
             }
             _searchWindow.Close();
+        }
+
+        protected override void RegisterVoter(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void LoadVoterValidation(Citizen c)
+        {
+            throw new NotImplementedException();
         }
     }
 }

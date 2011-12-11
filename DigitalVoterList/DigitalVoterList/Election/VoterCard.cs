@@ -4,15 +4,18 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.Contracts;
+
 namespace DigitalVoterList.Election
 {
-    using System;
 
     /// <summary>
     /// A ticket to be exchanged for a ballot, that is send out to the voter as a part of the validation process.
     /// </summary>
     public class VoterCard
     {
+        private string _idKey;
+
         /// <summary>
         /// The ElectionEvent that the Voter Card is attached to.
         /// </summary>
@@ -26,21 +29,22 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// The database id of the Voter Card.
         /// </summary>
-        public int Id {get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// The id-key, corresponding to the barcode on the physical votercard
         /// </summary>
-        public string IdKey {
+        public string IdKey
+        {
             get
             {
-                return IdKey;
+                return _idKey;
             }
             set
             {
                 Contract.Requires(value != null);
-                IdKey = value;
-            } 
+                _idKey = value;
+            }
         }
 
         public bool MarkAsInvalid()
@@ -52,8 +56,7 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// A getter and setter for _valid. This says if the Voter Card is valid or not.
         /// </summary>
-        // TODO: Make setter..
-        public bool Valid { get; private set; }
+        public bool Valid { get; set; }
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
@@ -111,6 +114,5 @@ namespace DigitalVoterList.Election
                 return result;
             }
         }
-        public bool Valid { get; set; }
     }
 }

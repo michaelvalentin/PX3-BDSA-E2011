@@ -44,7 +44,7 @@ namespace DigitalVoterList.Controllers
         {
             PersonFound.Invoke(this, new SearchPersonEventArgs(p));
         }
-        
+
         /// <summary>
         /// Clear the listbox and the textblocks in the view
         /// </summary>
@@ -58,8 +58,6 @@ namespace DigitalVoterList.Controllers
         }
 
         /// <summary>
-<<<<<<< HEAD
-=======
         /// Search for a person with the information inserted in the textblocks and insert
         /// every person as an item in the listbox
         /// </summary>
@@ -79,17 +77,13 @@ namespace DigitalVoterList.Controllers
         }
 
         /// <summary>
->>>>>>> d4e1171e71cc807ca9b52c2292fcced1fdf47bd7
         /// Find person with the information inserted in the textblocks
         /// </summary>
         /// <returns>A list of persons found from the inserted information</returns>
         private List<Citizen> Search()
         {
-<<<<<<< HEAD
             /*
-=======
 
->>>>>>> d4e1171e71cc807ca9b52c2292fcced1fdf47bd7
             _searchPerson.Clear();
 
             Person person = new Person();
@@ -97,8 +91,6 @@ namespace DigitalVoterList.Controllers
             person.Address = _view.addressTextBox.Text;
             person.Cpr = _view.cprTextBox.Text;
             person.PassportNumber = _view.passportTextBox.Text;
-
-<<<<<<< HEAD
             return DAOFactory.CurrentUserDAO.Find(person);
             */
             List<Person> persons = new List<Person>();
@@ -112,11 +104,9 @@ namespace DigitalVoterList.Controllers
                 p.PassportNumber = "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i;
                 persons.Add(p);
             }
-            return persons;
-=======
+            //return persons;
             //return DAOFactory.CurrentUserDAO.Find(person);
             throw new NotImplementedException();
->>>>>>> d4e1171e71cc807ca9b52c2292fcced1fdf47bd7
         }
 
         /// <summary>
@@ -174,26 +164,6 @@ namespace DigitalVoterList.Controllers
             FirePersonFoundEvent(p);
             Clear();
             return p;
-        }
-
-        /// <summary>
-        /// Search for a person with the information inserted in the textblocks and insert
-        /// every person as an item in the listbox
-        /// </summary>
-        /// <param name="sender">The sender</param>
-        /// <param name="e">The event</param>
-        private void SearchEvent(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("DET VIRKER?");
-            if (e is KeyEventArgs && ((KeyEventArgs)e).Key != Key.Enter) return;
-            if (this.Search().Count > 0)
-            {
-                this.ListView(this.Search()); 
-            }
-            else
-            {
-                this._view.statusTextBlock.Text = "No persons found with the specified information";
-            }
         }
 
         /// <summary>
