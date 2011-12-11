@@ -51,6 +51,9 @@ namespace DigitalVoterList.Election
             if (!String.IsNullOrEmpty(rawPerson.Workplace)) quizzes.Add(new Quiz("Where do you work?", rawPerson.Workplace));
             if (!String.IsNullOrEmpty(rawPerson.Zipcode.ToString())) quizzes.Add(new Quiz("What is your zipcode?", rawPerson.Zipcode.ToString()));
             if (!String.IsNullOrEmpty(rawPerson.City)) quizzes.Add(new Quiz("In what city do you live?", rawPerson.City));
+            if (!String.IsNullOrEmpty(rawPerson.DriverID)) quizzes.Add(new Quiz("What is your driver ID number", rawPerson.DriverID));
+            if (!String.IsNullOrEmpty(rawPerson.PassportNumber)) quizzes.Add(new Quiz("What is your passport number", rawPerson.PassportNumber));
+            quizzes.Add(new Quiz("What is the answer to life the universe and everything?", "42"));
 
             return quizzes;
         }

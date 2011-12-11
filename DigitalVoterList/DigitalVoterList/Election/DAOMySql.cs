@@ -996,12 +996,24 @@ namespace DigitalVoterList.Election
                 while (rdr.Read())
                 {
                     RawPerson rawPerson = new RawPerson();
-                    DoIfNotDbNull(rdr, "name", lbl => rawPerson.Name = rdr.GetString(lbl));
-                    DoIfNotDbNull(rdr, "CPR", lbl => rawPerson.CPR = rdr.GetString(lbl));
                     DoIfNotDbNull(rdr, "address", lbl => rawPerson.Address = rdr.GetString(lbl));
-                    DoIfNotDbNull(rdr, "birthplace", lbl => rawPerson.Birthplace = rdr.GetString(lbl));
-                    DoIfNotDbNull(rdr, "passport_number", lbl => rawPerson.PassportNumber = rdr.GetString(lbl));
                     DoIfNotDbNull(rdr, "address_previous", lbl => rawPerson.AddressPrevious = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "age", lbl => rawPerson.Age = rdr.GetInt32(lbl));
+                    DoIfNotDbNull(rdr, "birthday", lbl => rawPerson.Birthday = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "birthplace", lbl => rawPerson.Birthplace = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "CPR", lbl => rawPerson.CPR = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "city", lbl => rawPerson.City = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "deathdate", lbl => rawPerson.Deathdate = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "disempowered", lbl => rawPerson.Disempowered = rdr.GetBoolean(lbl));
+                    DoIfNotDbNull(rdr, "driver_id", lbl => rawPerson.DriverID = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "education", lbl => rawPerson.Education = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "military_served", lbl => rawPerson.MilitaryServed = rdr.GetBoolean(lbl));
+                    DoIfNotDbNull(rdr, "name", lbl => rawPerson.Name = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "nationality", lbl => rawPerson.Nationality = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "passport_number", lbl => rawPerson.PassportNumber = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "telephone", lbl => rawPerson.TelephoneNumber = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "workplace", lbl => rawPerson.Workplace = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "zipcode", lbl => rawPerson.Zipcode = rdr.GetInt32(lbl));
 
                     if (rawPerson.CPR != null)
                     {
@@ -1023,7 +1035,7 @@ namespace DigitalVoterList.Election
             }
             catch (Exception ex)
             {
-                throw new DataAccessException("Unable to connect to database. Error message: " + ex.Message);
+                throw;
             }
             finally
             {
