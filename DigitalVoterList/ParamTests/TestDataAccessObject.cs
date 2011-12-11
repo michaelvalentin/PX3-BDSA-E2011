@@ -141,7 +141,7 @@ namespace ParamTests
         public void TestGetPermissions()
         {
             var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
-            Assert.That(permissions.Count == 22);
+            Assert.That(permissions.Count == 24);
 
             var permissions2 = this._dao.GetPermissions(User.GetUser("slave", "asdf"));
             Assert.That(permissions2.Count == 0);
@@ -260,13 +260,14 @@ namespace ParamTests
         [Test]
         public void TestDataTransform()
         {
+            var u = VoterListApp.CurrentUser;
             var dt = new DataTransformer();
             dt.TransformData();
 
             // 13 persons in row data, 4 persons in in current, one overlap (Jens) = 16 total
             var select = new MySqlCommand("SELECT COUNT(*) FROM person;", this._conn);
             object o = select.ExecuteScalar();
-            Assert.That(Convert.ToInt32(o) == 16);
+            Assert.That(Convert.ToInt32(o) == 16, "Did not import expected amount of people.");
 
             MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Mik Thomasen'", this._conn);
             var i = selectData.ExecuteScalar();

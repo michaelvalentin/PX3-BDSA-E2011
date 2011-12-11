@@ -7,6 +7,8 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Windows;
+    using System.Windows.Controls;
 
     /// <summary>
     /// A controller for the manual registration project
