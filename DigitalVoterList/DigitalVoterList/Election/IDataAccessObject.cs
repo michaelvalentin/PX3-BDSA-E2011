@@ -122,13 +122,6 @@ namespace DigitalVoterList.Election
         List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data);
 
         /// <summary>
-        /// Create this person with this data!
-        /// </summary>
-        /// <param name="citizen">The person to register</param>
-        /// <returns>Was the attempt successful?</returns>
-        void Save(Citizen citizen);
-
-        /// <summary>
         /// Create this user with this data!
         /// </summary>
         /// <param name="user">The user to register</param>

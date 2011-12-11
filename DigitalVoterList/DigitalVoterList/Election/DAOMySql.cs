@@ -522,7 +522,10 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="citizen">The person to register</param>
         /// <returns>Was the attempt successful?</returns>
-        public void Save(Citizen citizen)
+
+        //todo: this method is here for historic reasons, delete it at when shipping.
+
+        /*public void Save(Citizen citizen)
         {
             Contract.Requires(citizen != null, "Input person must not be null!");
             Contract.Requires(citizen.DbId >= 0, "DbId must be greater than or equal to zero");
@@ -537,7 +540,7 @@ namespace DigitalVoterList.Election
                 DoTransaction(() => PriSaveNew(citizen));
             }
 
-        }
+        }*/
 
         private void PriSave(Citizen citizen)
         {
@@ -604,7 +607,10 @@ namespace DigitalVoterList.Election
                 cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
             Execute(cmd);
-            PriSaveQuestions(citizen);
+
+            var cmd2 = this.Prepare("SELECT LAST_INSERT_ID()");
+            var i = Convert.ToInt32(ScalarQuery(cmd2));
+            PriSaveQuestions(LoadCitizen(i));
         }
 
         private void PriSaveQuestions(Citizen c)
@@ -617,16 +623,20 @@ namespace DigitalVoterList.Election
             if (c.SecurityQuestions.Count > 0)
             {
                 StringBuilder insertQuery = new StringBuilder("INSERT INTO quiz (person_id, question, answer) VALUES ");
+                var first = true;
                 foreach (var quiz in c.SecurityQuestions)
                 {
+                    if (!first) insertQuery.Append(",");
                     insertQuery.Append("(");
                     insertQuery.Append(c.DbId);
-                    insertQuery.Append(",");
+                    insertQuery.Append(",'");
                     insertQuery.Append(quiz.Question);
-                    insertQuery.Append(",");
+                    insertQuery.Append("','");
                     insertQuery.Append(quiz.Answer);
-                    insertQuery.Append(")");
+                    insertQuery.Append("')");
+                    first = false;
                 }
+                insertQuery.Append(";");
                 MySqlCommand insertQuestions = Prepare(insertQuery.ToString());
                 Execute(insertQuestions);
             }
@@ -1014,7 +1024,13 @@ namespace DigitalVoterList.Election
         {
             var connection = new MySqlConnection(this._connectionString);
             connection.Open();
-            const string Query = "SELECT * FROM raw_person_data";
+            const string Query =
+                "SELECT " + "p.*, " + "f.name AS fathers_name, " + "f.birthday AS fathers_birthday, "
+                + "f.age AS fathers_age, " + "f.education AS fathers_education, " + "f.dead AS father_dead, "
+                + "m.name AS mothers_name, " + "m.birthday AS mothers_birthday, " + "m.age AS mothers_age, "
+                + "m.education AS mothers_education, " + "m.dead AS mothers_dead " + "FROM raw_person_data p "
+                + "LEFT JOIN raw_person_data f ON p.father_cpr = f.cpr "
+                + "LEFT JOIN raw_person_data m ON m.mother_cpr = m.cpr;";
             var loadRowPeople = new MySqlCommand(Query, connection);
             MySqlDataReader rdr = null;
 

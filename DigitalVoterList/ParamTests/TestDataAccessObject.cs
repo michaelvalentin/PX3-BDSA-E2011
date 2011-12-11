@@ -9,6 +9,7 @@ namespace ParamTests
 
     using DigitalVoterList;
     using DigitalVoterList.Election;
+
     using NUnit.Framework;
 
     [TestFixture]
@@ -149,17 +150,21 @@ namespace ParamTests
             Assert.That(permissions3.Count == 3);
         }
 
-        [Test]
+        /*[Test]
         public void TestSaveCitizen()
         {
             //Replace jens with morten
             var c = new Citizen(1, "1201561234");
             c.Name = "Morten Hyllekilde";
+            c.SecurityQuestions.Add(new Quiz("Who are you?", "A test person"));
             this._dao.Save(c);
 
-            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Morten Hyllekilde'", this._conn);
+            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM quiz WHERE person_id=1", this._conn);
             var i = selectData.ExecuteScalar();
             Assert.That(i.ToString() == "1");
+
+            selectData = new MySqlCommand("SELECT COUNT(*) FROM quiz WHERE name='Morten Hyllekilde'", this._conn);
+
 
             //Replace make new citizen
             var d = new Citizen(0, "1507814321");
@@ -169,7 +174,7 @@ namespace ParamTests
             MySqlCommand selectData2 = new MySqlCommand("SELECT COUNT(*) FROM person", this._conn);
             var i2 = selectData2.ExecuteScalar();
             Assert.That(i2.ToString() == "5");
-        }
+        }*/
 
         [Test]
         public void TestGetWorkplaces()
@@ -212,13 +217,15 @@ namespace ParamTests
             var dt = new DataTransformer();
             dt.TransformData();
 
+            // 13 persons in row data, 4 persons in in current, one overlap (Jens) = 16 total
             var select = new MySqlCommand("SELECT COUNT(*) FROM person;", this._conn);
             object o = select.ExecuteScalar();
             Assert.That(Convert.ToInt32(o) == 16);
 
+
             MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Mik Thomasen'", this._conn);
             var i = selectData.ExecuteScalar();
-            Assert.That(i.ToString() == "1");
+            Assert.That(i.ToString() == "1", "Mik Thomasen was not insert into data");
         }
 
         //List<VoterCard> Find(VoterCard voterCard);
