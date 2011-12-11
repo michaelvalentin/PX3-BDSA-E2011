@@ -62,7 +62,14 @@ namespace DigitalVoterList.Election
 
         public HashSet<Quiz> SecurityQuestions
         {
-            get { return _securityQuestions ?? new HashSet<Quiz>(); }
+            get
+            {
+                if (_securityQuestions == null)
+                {
+                    _securityQuestions = new HashSet<Quiz>();
+                }
+                return _securityQuestions;
+            }
             set { _securityQuestions = value ?? new HashSet<Quiz>(); }
         }
 
