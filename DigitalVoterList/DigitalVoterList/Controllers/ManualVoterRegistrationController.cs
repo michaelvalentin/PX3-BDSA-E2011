@@ -4,6 +4,9 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Diagnostics;
+    using System.Windows;
+    using System.Windows.Controls;
 
     /// <summary>
     /// A controller for the manual registration project
@@ -14,6 +17,7 @@ namespace DigitalVoterList.Controllers
         private SearchPersonController _searchController;
         private SearchPersonView _searchView;
         private SearchPersonWindow _searchWindow;
+        private Citizen _citizen;
 
         public ManualVoterRegistrationController(VoterRegistrationView view)
             : base(view)
@@ -22,6 +26,8 @@ namespace DigitalVoterList.Controllers
             _searchView = new SearchPersonView();
             _searchWindow = new SearchPersonWindow();
             _searchController = new SearchPersonController(_searchView, _searchWindow);
+            _citizen = null;
+            Disable(_view.RegisterVoterButton);
 
             _neededPermissions.Add(SystemAction.FindPerson);
             _neededPermissions.Add(SystemAction.SetHasVotedManually);
@@ -30,9 +36,10 @@ namespace DigitalVoterList.Controllers
             _view.VoterValidation.Children.Add(new ManualVoterValidationView());
             _view.Height = 420;
 
+            _view.VoterIdentification.VoterCprDigits.PasswordChanged += CheckVoterValidationCpr;
+            _view.VoterIdentification.VoterCprBirthday.TextChanged += FocusToCpr;
             _searchController.PersonFound += SearchPersonFound;
             _view.SearchVoterButton.Click += SearchEvent;
-            //_view.VoterIdentification.VoterCprDigits.PasswordChanged += CheckCpr;
             _view.RegisterVoterButton.Click += RegisterVoter;
             //view.VoterIdentification.PreviewKeyDown += HideImages;
         }
@@ -61,7 +68,63 @@ namespace DigitalVoterList.Controllers
             _view.VoterValidation.Children.Add(validationView);
             if (c != null)
             {
-                ManuVoterValidationController mvc = new ManuVoterValidationController(validationView, c);
+                ManualVoterValidationController mvc = new ManualVoterValidationController(validationView, c);
+                mvc.Show();
+            }
+        }
+
+        private void CheckVoterValidationCpr(object sender, RoutedEventArgs routedEventArgs)
+        {
+            string birthday = _view.VoterIdentification.VoterCprBirthday.Text;
+            string digits = _view.VoterIdentification.VoterCprDigits.Password;
+            _citizen = null;
+
+            if (digits.Length == 4 && _view.VoterIdentification.VoterCardNumber.Text.Length == 0)
+            {
+                IDataAccessObject dao = DAOFactory.CurrentUserDAO;
+                ManualVoterValidationView validationView = new ManualVoterValidationView();
+
+                _view.VoterValidation.Children.Clear();
+                _view.VoterValidation.Children.Add(validationView);
+
+                _citizen = dao.LoadCitizen(birthday + digits);
+
+                if (this._citizen != null)
+                {
+                    ManualVoterValidationController mvc = new ManualVoterValidationController(validationView, _citizen);
+                    mvc.Show();
+                    Enable(_view.RegisterVoterButton);
+                    _view.RegisterVoterButton.Focus();
+                }
+                LoadVoterData();
+            }
+        }
+
+        private void LoadVoterData()
+        {
+            if (_citizen == null)
+            {
+                _view.VoterIdentification.VoterName.Text = "";
+                _view.VoterIdentification.VoterAddress.Text = "";
+                _view.VoterIdentification.VoterCprDigits.Password = "";
+                _citizen = null;
+            }
+            else
+            {
+                _view.VoterIdentification.VoterName.Text = _citizen.Name;
+                _view.VoterIdentification.VoterAddress.Text = _citizen.Address;
+            }
+            ClearStatusMessage();
+        }
+
+        private void FocusToCpr(object sender, TextChangedEventArgs textChangedEventArgs)
+        {
+            if (_view.VoterIdentification.VoterCprBirthday.Text.Length == 6)
+            {
+                _view.VoterIdentification.VoterCprDigits.Focus();
+
+                var validationController = new ManuVoterValidationController(validationView, c);
+                validationController.Show();
 
             }
         }

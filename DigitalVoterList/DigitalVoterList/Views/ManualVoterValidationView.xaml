@@ -10,12 +10,9 @@
             <TextBlock Name="LeftTextBlock" Text="" HorizontalAlignment="Left" Width="235" />
         </Border>
         <TextBlock HorizontalAlignment="Right" Margin="0,0,490,0" Name="RightTextBlock" Text="" TextAlignment="Left" Width="235" />
-            <ScrollViewer CanContentScroll="True" Margin="475,0,0,0" MaxHeight="300">
-            <Border BorderBrush="Silver" BorderThickness="1" Height="200" Name="border2" Width="489">
-                <StackPanel CanVerticallyScroll="True" Height="183" MaxHeight="285" Name="QuestionStackPanel" ScrollViewer.VerticalScrollBarVisibility="Auto" Width="446">
-                    <ListBox Height="185" HorizontalAlignment="Left" Margin="477,5,0,0" MaxHeight="285" Name="QuestionListBox" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalAlignment="Top" Width="470" />
-                </StackPanel>
-            </Border>
+        <Border BorderBrush="Silver" BorderThickness="1" Name="border2" Margin="472,0,0,0"></Border>
+        <ScrollViewer CanContentScroll="True" MaxHeight="200" Margin="472,0,-1,-1">
+            <ListBox Name="QuestionListBox" ScrollViewer.VerticalScrollBarVisibility="Auto" Width="473" Height="200" Margin="0" />
         </ScrollViewer>
     </Grid>
 </UserControl>

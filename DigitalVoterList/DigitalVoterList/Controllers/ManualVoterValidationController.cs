@@ -1,23 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DigitalVoterList.Views;
-using DigitalVoterList.Election;
 using System.Windows;
 using System.Windows.Controls;
+using DigitalVoterList.Election;
 using DigitalVoterList.Utilities;
+using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
     using System.Diagnostics;
 
-    class ManuVoterValidationController
+    class ManualVoterValidationController
     {
         private ManualVoterValidationView _view;
         private Citizen _voter;
 
-        public ManuVoterValidationController(ManualVoterValidationView view, Citizen voter)
+        public ManualVoterValidationController(ManualVoterValidationView view, Citizen voter)
         {
             _view = view;
             _voter = voter;
@@ -43,13 +40,13 @@ namespace DigitalVoterList.Controllers
 
         private TextBlock AdjustedQuestionTextBox(Quiz quiz)
         {
-            Debug.WriteLine("Made Question: "+ quiz.Question);
+            Debug.WriteLine("Made Question: " + quiz.Question);
             TextBlock questionTextBlock = new TextBlock();
             questionTextBlock.Text = quiz.Question;
             questionTextBlock.TextWrapping = TextWrapping.Wrap;
             questionTextBlock.TextAlignment = TextAlignment.Left;
             questionTextBlock.HorizontalAlignment = HorizontalAlignment.Left;
-            questionTextBlock.Width = 310;
+            questionTextBlock.Width = 250;
 
             return questionTextBlock;
         }
@@ -69,7 +66,7 @@ namespace DigitalVoterList.Controllers
 
         public void Hide()
         {
-            _view.QuestionStackPanel.Children.RemoveRange(0, _view.QuestionStackPanel.Children.Count);
+            _view.QuestionListBox.Items.Clear();
         }
 
         private string Birthday(Citizen citizen)
