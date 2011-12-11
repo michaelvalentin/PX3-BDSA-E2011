@@ -76,10 +76,12 @@ INSERT INTO `quiz` (`id`, `question`, `answer`, `person_id`) VALUES
 
 INSERT INTO `voter_card` (`id`, `person_id`, `valid`, `id_key`) VALUES
 (1, 1, 1, 'HR5F4D7'),
-(2, 2, 0, 'UIO8ONH7'),
-(3, 2, 1, '5HU9KQY4'),
+(2, 2, 1, 'UIO8ONH7'),
+(3, 2, 0, '5HU9KQY4'),
 (4, 3, 1, '68JGU9NG'),
-(5, 4, 1, '1HN8O9M9');
+(5, 3, 0, '1HN8O9M9'),
+(6, 4, 0, '5DPN6E4S'),
+(7, 4, 0, 'JN0IAU9S');
 
 INSERT INTO `workplace` (`user_id`, `voting_venue_id`) VALUES
 (1, 1),

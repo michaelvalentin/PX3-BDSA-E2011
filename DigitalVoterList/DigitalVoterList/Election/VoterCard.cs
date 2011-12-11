@@ -8,6 +8,9 @@ using System.Diagnostics.Contracts;
 
 namespace DigitalVoterList.Election
 {
+    using System;
+
+    using DigitalVoterList.Utilities;
 
     /// <summary>
     /// A ticket to be exchanged for a ballot, that is send out to the voter as a part of the validation process.
@@ -15,6 +18,8 @@ namespace DigitalVoterList.Election
     public class VoterCard
     {
         private string _idKey;
+
+        private static Random _random = new Random();
 
         /// <summary>
         /// The ElectionEvent that the Voter Card is attached to.
@@ -46,6 +51,16 @@ namespace DigitalVoterList.Election
                 _idKey = value;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static string GenerateIdKey()
+        {
+            return RandomStringGenerator.RandomString(8);
+        }
+
 
         /// <summary>
         /// This says if the Voter Card is valid or not.

@@ -1167,6 +1167,56 @@ namespace DigitalVoterList.Election
             DoTransaction(() => this.MarkPeopleNotInRawDataUneligibleToVote());
         }
 
+        /// <summary>
+        /// Update all persons in the dataset with this update
+        /// </summary>
+        /// <param name="updateFunc"></param>
+        public void UpdateVoterCards()
+        {
+            var connection = new MySqlConnection(this._connectionString);
+            connection.Open();
+            const string Query = "SELECT id FROM person p WHERE eligible_to_vote=1 AND (SELECT COUNT(*) FROM voter_card v WHERE v.person_id = p.id AND v.valid=1)=0;";
+            var loadEligiblePeople = new MySqlCommand(Query, connection);
+            MySqlDataReader rdr = null;
+
+            try
+            {
+                rdr = loadEligiblePeople.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    var v = new VoterCard();
+                    var id = rdr.GetInt32("id");
+                    v.Citizen = LoadCitizen(id);
+                    v.ElectionEvent = Settings.Election;
+                    v.IdKey = VoterCard.GenerateIdKey();
+                    v.Valid = true;
+                    PriSaveNew(v);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                if (rdr != null) rdr.Close();
+                connection.Close();
+            }
+
+            //Update people that are not in the raw data
+            DoTransaction(
+                () => this.MarkVoterCardsInvalidForCitizensUneligibleToVote()
+            );
+        }
+
+        private void MarkVoterCardsInvalidForCitizensUneligibleToVote()
+        {
+            Contract.Requires(this.Transacting(), "This can only be done in a transaction.");
+            MySqlCommand cmd = this.Prepare("UPDATE voter_card SET valid=0 WHERE person_id=(SELECT id FROM person WHERE eligible_to_vote=0);");
+            this.Execute(cmd);
+        }
+
         private void MarkPeopleNotInRawDataUneligibleToVote()
         {
             Contract.Requires(this.Transacting(), "This can only be done in a transaction.");

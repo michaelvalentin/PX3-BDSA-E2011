@@ -77,6 +77,11 @@ namespace DigitalVoterList.Election
         VoterCard LoadVoterCard(string idKey);
 
         /// <summary>
+        /// Update votercards
+        /// </summary>
+        void UpdateVoterCards();
+
+        /// <summary>
         /// What persons exists with data similiar to this data?
         /// </summary>
         /// <param name="data">The data to search with</param>

@@ -340,6 +340,30 @@ namespace ParamTests
             rdr.Close();
         }
 
+        [Test]
+        public void TestUpdateVoterCards()
+        {
+            // Valid votercard for citizen uneligible to vote is marked invalid
+            var v = _dao.LoadVoterCard(2);
+            Assert.That(v.Valid, "This votercard should be valid in the testdata");
+
+            MySqlCommand select = new MySqlCommand("SELECT COUNT(*) FROM voter_card WHERE person_id=4 AND valid=1;", _conn);
+            var i = Convert.ToInt32(select.ExecuteScalar());
+            Assert.That(i == 0, "This citizen should not have any valid votercards in the test data");
+
+            _dao.UpdateVoterCards(); //UPDATE!
+
+            v = _dao.LoadVoterCard(2);
+            Assert.That(!v.Valid, "Valid votercard should be marked invalid for citizen uneligible to vote");
+
+            v = _dao.LoadVoterCard(1);
+            Assert.That(v.Valid, "Valid votercard for valid citizen should remain unchanged");
+
+            i = Convert.ToInt32(select.ExecuteScalar());
+            Assert.That(i == 1, "Eligible citizen with no valid votercards should had one generated.");
+        }
+
+
         //void SetHasVoted(Citizen citizen, string cprKey);
 
         //void SetHasVoted(Citizen citizen);

@@ -52,11 +52,8 @@ namespace DigitalVoterList.Election
 
         public Citizen LoadCitizen(int id)
         {
-            if (ActionPermitted(SystemAction.LoadPerson))
-            {
-                return _dao.LoadCitizen(id);
-            }
-            return null;
+            Contract.Requires(this.ActionPermitted(SystemAction.LoadPerson), "You dont have permission to load information about citizens");
+            return _dao.LoadCitizen(id);
         }
 
         public Citizen LoadCitizen(string cpr)
@@ -118,6 +115,17 @@ namespace DigitalVoterList.Election
                 return _dao.LoadVoterCard(idKey);
             }
             return null;
+        }
+
+        /// <summary>
+        /// Update votercards
+        /// </summary>
+        public void UpdateVoterCards()
+        {
+            if (ActionPermitted(SystemAction.ScanVoterCard))
+            {
+                _dao.UpdateVoterCards();
+            }
         }
 
         public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching)
