@@ -24,6 +24,7 @@ namespace DigitalVoterList.Controllers
             Disable(_view.VoterIdentification.VoterCprBirthday);
             _view.VoterIdentification.VoterCprBirthday.Text = "XXXXXX";
 
+            Disable(_view.RegisterVoterButton);
             _view.SearchVoterButton.Visibility = Visibility.Hidden;
             _cprTries = 0;
 
@@ -34,13 +35,13 @@ namespace DigitalVoterList.Controllers
 
             _view.VoterIdentification.VoterCprDigits.LostFocus += CheckCpr;
             _view.VoterIdentification.VoterCprDigits.PasswordChanged += (o, e) =>
-                                                                            {
-                                                                                if (!((PasswordBox)o).Password.Equals(""))
-                                                                                {
-                                                                                    ClearStatusMessage();
-                                                                                }
-                                                                            };
-            _view.RegisterVoterButton.Click += RegisterVoter;
+            {
+                if (!((PasswordBox)o).Password.Equals(""))
+                {
+                    ClearStatusMessage();
+                }
+            };
+            
             //_view.VoterIdentification.PreviewKeyDown += HideImages;
         }
 
@@ -58,6 +59,7 @@ namespace DigitalVoterList.Controllers
                 string checkCprDigits = Citizen.Cpr.Substring(6, 4);
                 if (cprDigits.Equals(checkCprDigits))
                 {
+                    Enable(_view.RegisterVoterButton);
                     _view.StatusImageSucces.Visibility = Visibility.Visible;
                     _view.StatusText.Text = "The four last digits in the cpr number are correct!";
                     _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
@@ -81,32 +83,6 @@ namespace DigitalVoterList.Controllers
                 _view.StatusText.Text = "The maximum number of tries exceeded. Go to manual validation";
                 _view.StatusImageError.Visibility = Visibility.Visible;
             }
-        }
-
-
-        protected override void RegisterVoter(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-            /*if (VoterCard != null)
-            {
-                try
-                {
-                    DAOFactory.CurrentUserDAO.SetHasVoted(this.Citizen, this._view.VoterIdentification.VoterCprDigits.Password);
-                    _view.StatusImageSucces.Visibility = Visibility.Visible;
-                    _view.StatusText.Text = "Citizen registered!";
-                }
-                catch (Exception ex)
-                {
-                    //TODO: throw ex;
-                    _view.StatusImageError.Visibility = Visibility.Visible;
-                    _view.StatusText.Text = ex.Message;
-                }
-            }
-            else
-            {
-                _view.StatusText.Text = "No person found with the inserted information";
-                _view.StatusImageWarning.Visibility = Visibility.Visible;
-            }*/
         }
 
         protected override void LoadVoterValidation(Citizen c)

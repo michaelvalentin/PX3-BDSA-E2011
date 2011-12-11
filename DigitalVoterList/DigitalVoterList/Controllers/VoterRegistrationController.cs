@@ -4,16 +4,18 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DigitalVoterList.Election;
 using DigitalVoterList.Views;
+using System.Windows;
+using DigitalVoterList.Utilities;
 
 namespace DigitalVoterList.Controllers
 {
-    using System.Windows;
 
     /// <summary>
     /// A controller for handling the registration of voters
     /// </summary>
     public abstract class VoterRegistrationController : ContentController
     {
+
         private VoterRegistrationView _view;
         private Citizen _citizen;
         public Citizen Citizen
@@ -57,6 +59,7 @@ namespace DigitalVoterList.Controllers
             _view.VoterIdentification.VoterCardNumber.TextChanged += VoterCardNumberChanged;
             _view.RegisterVoterButton.Click += RegisterVoterWrapper;
             _view.RegisterVoterButton.KeyDown += RegisterVoterWrapper;
+            _view.RegisterVoterButton.Click += RegisterVoter;
         }
 
         protected void Disable(TextBox t)
@@ -64,6 +67,21 @@ namespace DigitalVoterList.Controllers
             t.Background = new SolidColorBrush(Color.FromRgb(210, 210, 210));
             t.IsEnabled = false;
             t.IsTabStop = false;
+        }
+
+        protected void Disable(Button b)
+        {
+            b.Background = new SolidColorBrush(Color.FromRgb(210, 210, 210));
+            b.IsEnabled = false;
+            b.IsTabStop = false;
+        }
+
+        protected void Enable(Button b)
+        {
+            //TODO: Set standard button color
+            //b.Background = new SolidColorBrush(Color.FromRgb(210, 210, 210));
+            b.IsEnabled = true;
+            b.IsTabStop = true;
         }
 
         protected void HideImages()
@@ -79,7 +97,30 @@ namespace DigitalVoterList.Controllers
             RegisterVoter(sender, e);
         }
 
-        protected abstract void RegisterVoter(object sender, EventArgs e);
+        protected void RegisterVoter(object sender, EventArgs e)
+        {
+            if (Citizen != null)
+            {
+                try
+                {
+                    //TODO: TEST IF REGISTERED
+                    DAOFactory.CurrentUserDAO.SetHasVoted(Citizen, _view.VoterIdentification.VoterCprDigits.Password);
+                    _view.StatusImageSucces.Visibility = Visibility.Visible;
+                    _view.StatusText.Text = "Citizen registered!";
+                }
+                catch (Exception ex)
+                {
+                    //TODO: throw ex;
+                    _view.StatusImageError.Visibility = Visibility.Visible;
+                    _view.StatusText.Text = ex.Message;
+                }
+            }
+            else
+            {
+                _view.StatusText.Text = "No person found with the inserted information";
+                _view.StatusImageWarning.Visibility = Visibility.Visible;
+            }
+        }
 
         private void VoterCardNumberChanged(object sender, EventArgs e)
         {
@@ -100,7 +141,7 @@ namespace DigitalVoterList.Controllers
             LoadVoterData();
         }
 
-        protected void LoadVoterData()
+        private void LoadVoterData()
         {
             if (Citizen == null)
             {

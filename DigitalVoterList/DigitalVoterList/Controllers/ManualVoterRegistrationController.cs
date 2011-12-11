@@ -27,7 +27,8 @@ namespace DigitalVoterList.Controllers
             _neededPermissions.Add(SystemAction.SetHasVotedManually);
 
             _view.VoterValidation.Children.Clear();
-            //_view.VoterValidation.Children.Add(new ManualVoterValidationView());
+            _view.VoterValidation.Children.Add(new ManualVoterValidationView());
+            _view.Height = 420;
 
             _searchController.PersonFound += SearchPersonFound;
             _view.SearchVoterButton.Click += SearchEvent;
@@ -53,14 +54,16 @@ namespace DigitalVoterList.Controllers
             _searchWindow.Close();
         }
 
-        protected override void RegisterVoter(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void LoadVoterValidation(Citizen c)
         {
-            throw new NotImplementedException();
+            _view.VoterValidation.Children.Clear();
+            ManualVoterValidationView validationView = new ManualVoterValidationView();
+            _view.VoterValidation.Children.Add(validationView);
+            if (c != null)
+            {
+                ManuVoterValidationController mvc = new ManuVoterValidationController(validationView, c);
+
+            }
         }
     }
 }
