@@ -122,7 +122,7 @@ namespace DigitalVoterList.Election
         public void UpdateVoterCards()
         {
             Contract.Requires(this.ActionPermitted(SystemAction.UpdateVoterCards));
-            this.TestPermission(SystemAction.UpdateVoterCards, "You dont have permission to scan votercards");
+            this.TestPermission(SystemAction.UpdateVoterCards, "You dont have permission to update votercards");
             _dao.UpdateVoterCards();
         }
 
@@ -225,8 +225,8 @@ namespace DigitalVoterList.Election
 
         public void UpdatePeople(Func<Citizen, RawPerson, Citizen> update)
         {
-            Contract.Requires(this.ActionPermitted(SystemAction.UpdatePeople));
-            this.TestPermission(SystemAction.UpdatePeople, "You don't have permission to update the citizen data.");
+            Contract.Requires(this.ActionPermitted(SystemAction.UpdateCitizens));
+            this.TestPermission(SystemAction.UpdateCitizens, "You don't have permission to update citizen data.");
             _dao.UpdatePeople(update);
         }
 

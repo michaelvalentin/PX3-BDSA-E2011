@@ -4,7 +4,6 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
-    using System.Diagnostics;
     using System.Windows;
     using System.Windows.Controls;
 
@@ -123,8 +122,8 @@ namespace DigitalVoterList.Controllers
             {
                 _view.VoterIdentification.VoterCprDigits.Focus();
 
-                var validationController = new ManuVoterValidationController(validationView, c);
-                validationController.Show();
+                //var validationController = new ManuVoterValidationController(validationView, c);
+                //validationController.Show();
 
             }
         }
