@@ -3,6 +3,7 @@
 using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using DigitalVoterList.Utilities;
 using MySql.Data.MySqlClient;
 
 namespace DigitalVoterList.Election
@@ -70,7 +71,7 @@ namespace DigitalVoterList.Election
                                            "    p.id=@id");
             command.Parameters.AddWithValue("@id", id);
             Citizen c = null;
-            Query(command, (MySqlDataReader rdr) =>
+            Query(command, rdr =>
             {
                 rdr.Read();
                 c = new Citizen(id, rdr.GetString("cpr"), rdr.GetInt32("has_voted") != 0);
@@ -86,6 +87,16 @@ namespace DigitalVoterList.Election
                 DoIfNotDbNull(rdr, "address", lbl => { c.Address = rdr.GetString(lbl); });
                 DoIfNotDbNull(rdr, "place_of_birth", lbl => { c.PlaceOfBirth = rdr.GetString(lbl); });
                 DoIfNotDbNull(rdr, "passport_number", lbl => { c.PassportNumber = rdr.GetString(lbl); });
+            });
+            MySqlCommand findQuestions = Prepare("SELECT * FROM quiz WHERE person_id=@id");
+            findQuestions.Parameters.AddWithValue("@id", id);
+            Query(findQuestions, rdr =>
+            {
+                while (rdr.Read())
+                {
+                    Quiz q = new Quiz(rdr.GetString("question"), rdr.GetString("answer"));
+                    c.SecurityQuestions.Add(q);
+                }
             });
             return c;
         }
@@ -598,9 +609,27 @@ namespace DigitalVoterList.Election
 
         private void PriSaveQuestions(Citizen c)
         {
+            Contract.Requires(Transacting(), "Must be done in a transaction");
+            Contract.Requires(PriExistsWithId("person", c.DbId));
             MySqlCommand deleteQuestions = Prepare("DELETE FROM quiz WHERE person_id=@id");
             deleteQuestions.Parameters.AddWithValue("@id", c.DbId);
-            //TOOD: make insertion of new questions...
+            Execute(deleteQuestions);
+            if (c.SecurityQuestions.Count > 0)
+            {
+                StringBuilder insertQuery = new StringBuilder("INSERT INTO quiz (person_id, question, answer) VALUES ");
+                foreach (var quiz in c.SecurityQuestions)
+                {
+                    insertQuery.Append("(");
+                    insertQuery.Append(c.DbId);
+                    insertQuery.Append(",");
+                    insertQuery.Append(quiz.Question);
+                    insertQuery.Append(",");
+                    insertQuery.Append(quiz.Answer);
+                    insertQuery.Append(")");
+                }
+                MySqlCommand insertQuestions = Prepare(insertQuery.ToString());
+                Execute(insertQuestions);
+            }
         }
 
         /// <summary>
