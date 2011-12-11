@@ -238,14 +238,6 @@ namespace DigitalVoterList.Election
             }
         }
 
-        public void MarkVoterCardInvalid(VoterCard voterCard)
-        {
-            if (ActionPermitted(SystemAction.MarkVoteCardInvalid))
-            {
-                _dao.MarkVoterCardInvalid(voterCard);
-            }
-        }
-
         public void UpdatePeople(Func<Citizen, RawPerson, Citizen> update)
         {
             if (ActionPermitted(SystemAction.UpdatePeople))

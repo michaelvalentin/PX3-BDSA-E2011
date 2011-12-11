@@ -23,6 +23,13 @@ namespace DigitalVoterList.Controllers
             _functionMapping.Add(_view.ManualRegistration, new ManualVoterRegistrationController(new VoterRegistrationView()));
             _functionMapping.Add(_view.ElectionAdministration, new ElectionAdministrationController(new ElectionAdministrationView()));
 
+            _view.ChangePassword.Click += (s, e) =>
+                                              {
+                                                  var pwdWin = new ChangePasswordWindow();
+                                                  new ChangeOwnPasswordController(pwdWin);
+                                                  pwdWin.Show();
+                                              };
+
             UpdateMenuAccess();
             ShowScreen(_functionMapping[_view.NormalRegistration]);
 
