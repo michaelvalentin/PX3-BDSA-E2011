@@ -5,27 +5,44 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
-    using System.Diagnostics;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
     using DigitalVoterList.Election;
 
-    class SearchPersonController
+    class SearchPersonController : ContentController
     {
         private SearchPersonView _view;
-        private List<Person> _searchPerson = new List<Person>();
-        private bool _isSelected;
+        private SearchPersonWindow _window;
+        private List<Person> _searchPerson;
+        public event EventHandler<SearchPersonEventArgs> PersonFound;
 
-        public SearchPersonController(SearchPersonView view)
+        public SearchPersonController(SearchPersonView view, SearchPersonWindow window)
         {
+            _neededPermissions.Add(SystemAction.FindPerson);
+
+            _window = window;
             _view = view;
 
-            _view.selectButton.Click += SelectEvent;
+            _searchPerson = new List<Person>();
+
+            _view.SelectButton.Click += SelectEvent;
+            _view.SearchButton.Click += SearchEvent;
             _view.QuitButton.Click += QuitEvent;
-            _view.searchButton.Click += SearchEvent;
             _view.mainListBox.MouseDoubleClick += MainListBoxMouseDoubleClickEvent;
-            _view.searchButton.KeyDown += SelectEvent;
+            _view.KeyDown += SearchEvent;
+            _window.LostFocus += WindowLostFocusEvent;
+        }
+
+        private void WindowLostFocusEvent(object sender, EventArgs e)
+        {
+            _window.Focus();
+            //TODO TEST IF IT IS WORKING WHEN DB IS UP? (FOCUS LOCKED TO WINDOW)
+        }
+
+        private void FirePersonFoundEvent(Person p)
+        {
+            PersonFound.Invoke(this, new SearchPersonEventArgs(p));
         }
 
         /// <summary>
@@ -65,6 +82,7 @@ namespace DigitalVoterList.Controllers
         /// <returns>A list of persons found from the inserted information</returns>
         private List<Citizen> Search()
         {
+            /*
 
             _searchPerson.Clear();
 
@@ -73,7 +91,20 @@ namespace DigitalVoterList.Controllers
             person.Address = _view.addressTextBox.Text;
             person.Cpr = _view.cprTextBox.Text;
             person.PassportNumber = _view.passportTextBox.Text;
-
+            return DAOFactory.CurrentUserDAO.Find(person);
+            */
+            List<Person> persons = new List<Person>();
+            for (int i = 0; i < 10; i++)
+            {
+                Person p = new Person();
+                p.Name = "Anders nr. " + i;
+                p.Address = "vej nr. " + i + " 0000 by " + i;
+                p.PlaceOfBirth = "by" + i;
+                p.Cpr = "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i;
+                p.PassportNumber = "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i;
+                persons.Add(p);
+            }
+            //return persons;
             //return DAOFactory.CurrentUserDAO.Find(person);
             throw new NotImplementedException();
         }
@@ -99,7 +130,7 @@ namespace DigitalVoterList.Controllers
         /// <param name="list">The list of persons which must be listed as items in the listbox</param>
         private void ListView(IEnumerable<Person> list)
         {
-            foreach (var person in list)
+            foreach (Person person in list)
             {
                 TextBlock nameTextBlock = adjustTextBlock();
                 nameTextBlock.Text = person.Name;
@@ -125,31 +156,42 @@ namespace DigitalVoterList.Controllers
         }
 
         /// <summary>
+        /// Finds the selected item in the list
+        /// </summary>
+        private Person SelectedListBoxItem()
+        {
+            Person p = _searchPerson.ElementAt(_view.mainListBox.SelectedIndex);
+            FirePersonFoundEvent(p);
+            Clear();
+            return p;
+        }
+
+        /// <summary>
+        /// Clears and quits the window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void QuitEvent(object sender, RoutedEventArgs e)
+        {
+            this.Clear();
+            this._window.Close();
+        }
+
+        /// <summary>
         /// Finds the selected item
         /// </summary>
         /// <param name="sender">The sender</param>
         /// <param name="e">The event</param>
         private void SelectEvent(object sender, RoutedEventArgs e)
         {
-            if (_view.mainListBox.SelectedIndex != -1)
+            if (this._view.mainListBox.SelectedIndex != -1)
             {
-                SelectedListBoxItem();
+                this.SelectedListBoxItem();
             }
             else
             {
-                _view.statusTextBlock.Text = "You must select a person";
+                this._view.statusTextBlock.Text = "You must select a person";
             }
-        }
-
-        /// <summary>
-        /// Quits the window
-        /// </summary>
-        /// <param name="sender">The sender</param>
-        /// <param name="e">The event</param>
-        private void QuitEvent(object sender, RoutedEventArgs e)
-        {
-            Clear();
-            //TODO: QUIT WINDOW
         }
 
         /// <summary>
@@ -157,17 +199,17 @@ namespace DigitalVoterList.Controllers
         /// </summary>
         private void MainListBoxMouseDoubleClickEvent(object sender, MouseButtonEventArgs e)
         {
-            SelectedListBoxItem();
+            this.SelectedListBoxItem();
         }
+    }
 
-        /// <summary>
-        /// Finds the selected item in the list
-        /// </summary>
-        private void SelectedListBoxItem()
+    class SearchPersonEventArgs : EventArgs
+    {
+        public Person Person { get; private set; }
+
+        public SearchPersonEventArgs(Person person)
         {
-            Person p = _searchPerson.ElementAt(_view.mainListBox.SelectedIndex);
-            Debug.WriteLine("selected person name:" + p.Name);
-            Clear();
+            Person = person;
         }
     }
 }

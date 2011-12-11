@@ -14,12 +14,15 @@
             </Grid.ColumnDefinitions>
             <Button Content="Register Vote" Height="44" Name="RegisterVoterButton" Width="100" IsCancel="True" Margin="385,9,2,10" Grid.Column="1" />
             <TextBlock Height="44" Name="StatusText" Text="" Width="297" HorizontalAlignment="Left" Margin="73,9,0,10" Grid.Column="1" TextWrapping="Wrap" />
-            <Image Height="44" Name="StatusImage" Stretch="Fill" Width="47" Margin="11,9,429,10" Grid.Column="1" />
+            <Image Height="44" Name="StatusImageSucces" Stretch="Fill" Width="47" Margin="11,9,429,10" Grid.Column="1" Source="..\Resources\Icons\success.png"/>
+            <Image Height="44" Name="StatusImageError" Stretch="Fill" Width="47" Margin="11,9,429,10" Grid.Column="1" Source="..\Resources\Icons\error.png"/>
+            <Image Height="44" Name="StatusImageWarning" Stretch="Fill" Width="47" Margin="11,9,429,10" Source="..\Resources\Icons\warning.png" Grid.Column="1" />
             <Button Content="Search Voter" Height="44" IsCancel="True" Margin="2,10,371,9" Name="SearchVoterButton" Width="100" />
         </Grid>
         <Label Content="Voter validation" Height="31" HorizontalAlignment="Left" Margin="0,126,0,0" Name="label1" VerticalAlignment="Top" Width="137" FontSize="16" FontWeight="Bold" Padding="0" />
         <Border BorderBrush="Silver" BorderThickness="0" Height="Auto" HorizontalAlignment="Left" Margin="0,163,0,0" Name="border1" VerticalAlignment="Top" Width="Auto">
             <StackPanel Height="Auto" Name="VoterValidation" Width="960" />
         </Border>
+        <Border BorderBrush="Silver" BorderThickness="0" Height="Auto" HorizontalAlignment="Left" Margin="5,-1,0,0" Name="border2" VerticalAlignment="Top" Width="Auto"></Border>
     </Grid>
 </UserControl>

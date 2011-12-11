@@ -14,6 +14,7 @@ namespace DigitalVoterList.Election
         public Citizen(int id, string cpr)
             : base(id)
         {
+            Contract.Requires(!string.IsNullOrEmpty(cpr));
             Cpr = cpr;
         }
 
@@ -21,6 +22,26 @@ namespace DigitalVoterList.Election
             : this(id, cpr)
         {
             HasVoted = hasVoted;
+        }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <returns>
+        /// true if the specified object is equal to the current object; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The object to compare with the current object.</param>
+        public override bool Equals(Object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            return Equals(obj as Citizen);
         }
 
         private HashSet<VoterCard> _voterCards;
@@ -73,6 +94,39 @@ namespace DigitalVoterList.Election
                 return true;
             }
             return false;
+        }
+
+        [ContractInvariantMethod]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
+        private void ObjectInvariantMethod()
+        {
+            Contract.Invariant(ValidCpr(this.Cpr));
+        }
+
+        public bool Equals(Citizen other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+            return base.Equals(other) && Equals(other._voterCards, this._voterCards) && Equals(other._securityQuestions, this._securityQuestions) && other.HasVoted.Equals(this.HasVoted) && other.EligibleToVote.Equals(this.EligibleToVote) && Equals(other.VotingPlace, this.VotingPlace);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int result = (this._voterCards != null ? this._voterCards.GetHashCode() : 0);
+                result = (result * 397) ^ (this._securityQuestions != null ? this._securityQuestions.GetHashCode() : 0);
+                result = (result * 397) ^ this.HasVoted.GetHashCode();
+                result = (result * 397) ^ this.EligibleToVote.GetHashCode();
+                result = (result * 397) ^ (this.VotingPlace != null ? this.VotingPlace.GetHashCode() : 0);
+                return result;
+            }
         }
     }
 }

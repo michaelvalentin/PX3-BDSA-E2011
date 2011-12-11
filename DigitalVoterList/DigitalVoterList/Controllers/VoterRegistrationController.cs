@@ -7,6 +7,7 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Windows;
 
     /// <summary>
     /// A controller for handling the registration of voters
@@ -14,10 +15,30 @@ namespace DigitalVoterList.Controllers
     public abstract class VoterRegistrationController : ContentController
     {
         private VoterRegistrationView _view;
-        private VoterCard _voterCard;
-        protected Citizen Citizen;
+        private Citizen _citizen;
+        public Citizen Citizen
+        {
+            get { return _citizen; }
+            set
+            {
+                if (_citizen != value)
+                {
+                    _citizen = value;
+                    OnCitizenChanged();
+                }
+            }
+        }
+        public event EventHandler CitizenChanged;
 
-        public VoterRegistrationController(VoterRegistrationView view)
+        private void OnCitizenChanged()
+        {
+            if (CitizenChanged != null)
+            {
+                CitizenChanged.Invoke(this, new EventArgs());
+            }
+        }
+
+        protected VoterRegistrationController(VoterRegistrationView view)
         {
             _neededPermissions.Add(SystemAction.ScanVoterCard);
             _neededPermissions.Add(SystemAction.LoadPerson);
@@ -29,8 +50,11 @@ namespace DigitalVoterList.Controllers
             Disable(_view.VoterIdentification.VoterName);
             Disable(_view.VoterIdentification.VoterAddress);
 
+            _view.StatusImageSucces.Visibility = Visibility.Hidden;
+            _view.StatusImageError.Visibility = Visibility.Hidden;
+            _view.StatusImageWarning.Visibility = Visibility.Hidden;
+
             _view.VoterIdentification.VoterCardNumber.TextChanged += VoterCardNumberChanged;
-            _view.VoterIdentification.VoterCprDigits.LostFocus += CheckCpr;
             _view.RegisterVoterButton.Click += RegisterVoterWrapper;
             _view.RegisterVoterButton.KeyDown += RegisterVoterWrapper;
         }
@@ -42,44 +66,11 @@ namespace DigitalVoterList.Controllers
             t.IsTabStop = false;
         }
 
-        private void VoterCardNumberChanged(object sender, EventArgs e)
+        protected void HideImages()
         {
-            TextBox voterCardNumberBox = (TextBox)sender;
-            _voterCard = null;
-            if (voterCardNumberBox.Text.Length == 8)
-            {
-                IDataAccessObject dao = DAOFactory.CurrentUserDAO;
-                _voterCard = dao.LoadVoterCard(voterCardNumberBox.Text);
-            }
-            if (voterCardNumberBox.Text.Length > 8)
-            {
-                voterCardNumberBox.Text = voterCardNumberBox.Text.Substring(0, 8);
-            }
-            voterCardNumberBox.Text = voterCardNumberBox.Text.ToUpper();
-            voterCardNumberBox.CaretIndex = 8;
-            LoadVoterData();
-        }
-
-        protected void LoadVoterData()
-        {
-            if (_voterCard == null)
-            {
-                _view.VoterIdentification.VoterName.Text = "";
-                _view.VoterIdentification.VoterAddress.Text = "";
-                _view.VoterIdentification.VoterCprDigits.Password = "";
-                LoadVoterValidation(null);
-                Citizen = null;
-
-            }
-            else
-            {
-                _view.VoterIdentification.VoterName.Text = _voterCard.Citizen.Name;
-                _view.VoterIdentification.VoterAddress.Text = _voterCard.Citizen.Address;
-                SecurityQuesitonView questionView = new SecurityQuesitonView();
-                Citizen = _voterCard.Citizen;
-            }
-            _view.StatusText.Text = "";
-            LoadVoterValidation(Citizen);
+            _view.StatusImageSucces.Visibility = Visibility.Hidden;
+            _view.StatusImageError.Visibility = Visibility.Hidden;
+            _view.StatusImageWarning.Visibility = Visibility.Hidden;
         }
 
         private void RegisterVoterWrapper(object sender, EventArgs e)
@@ -88,10 +79,52 @@ namespace DigitalVoterList.Controllers
             RegisterVoter(sender, e);
         }
 
-        protected abstract void LoadVoterValidation(Citizen c);
-
-        protected abstract void CheckCpr(object sender, EventArgs e);
-
         protected abstract void RegisterVoter(object sender, EventArgs e);
+
+        private void VoterCardNumberChanged(object sender, EventArgs e)
+        {
+            TextBox voterCardNumberBox = (TextBox)sender;
+            Citizen = null;
+            if (voterCardNumberBox.Text.Length == 8)
+            {
+                IDataAccessObject dao = DAOFactory.CurrentUserDAO;
+                VoterCard voterCard = dao.LoadVoterCard(voterCardNumberBox.Text);
+                if (voterCard != null)
+                {
+                    Citizen = voterCard.Citizen;
+                    _view.VoterIdentification.VoterCprDigits.Focus();
+                }
+            }
+            voterCardNumberBox.Text = voterCardNumberBox.Text.ToUpper();
+            voterCardNumberBox.CaretIndex = 8;
+            LoadVoterData();
+        }
+
+        protected void LoadVoterData()
+        {
+            if (Citizen == null)
+            {
+                _view.VoterIdentification.VoterName.Text = "";
+                _view.VoterIdentification.VoterAddress.Text = "";
+                _view.VoterIdentification.VoterCprDigits.Password = "";
+                LoadVoterValidation(null);
+                Citizen = null;
+            }
+            else
+            {
+                _view.VoterIdentification.VoterName.Text = Citizen.Name;
+                _view.VoterIdentification.VoterAddress.Text = Citizen.Address;
+            }
+            ClearStatusMessage();
+            LoadVoterValidation(Citizen);
+        }
+
+        protected void ClearStatusMessage()
+        {
+            _view.StatusText.Text = "";
+            HideImages();
+        }
+
+        protected abstract void LoadVoterValidation(Citizen c);
     }
 }

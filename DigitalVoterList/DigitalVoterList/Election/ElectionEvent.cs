@@ -56,5 +56,50 @@ namespace DigitalVoterList.Election
         public abstract VotingVenue VotingVenueForCitizen(RawPerson rawPerson);
 
         public abstract bool CitizenEligibleToVote(RawPerson rawPerson);
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <returns>
+        /// true if the specified object is equal to the current object; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The object to compare with the current object.</param>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj.GetType() != typeof(ElectionEvent))
+            {
+                return false;
+            }
+            return Equals((ElectionEvent)obj);
+        }
+
+        public bool Equals(ElectionEvent other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+            return other._date.Equals(this._date) && Equals(other._name, this._name);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (this._date.GetHashCode() * 397) ^ (this._name != null ? this._name.GetHashCode() : 0);
+            }
+        }
     }
 }

@@ -84,7 +84,6 @@ namespace DigitalVoterList.Election
         /// </summary>
         public string Username { get; set; }
 
-
         public string UserSalt { get; set; }
 
         public bool Valid { get; set; }
@@ -204,9 +203,24 @@ namespace DigitalVoterList.Election
             }
         }
 
-        public new string ToString()
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <returns>
+        /// true if the specified object is equal to the current object; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The object to compare with the current object.</param>
+        public override bool Equals(object obj)
         {
-            return "USER( username : " + Username + " , title : " + Title + " )";
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            return Equals(obj as User);
         }
 
         public string HashPassword(string password) //todo: public or private?
@@ -224,10 +238,42 @@ namespace DigitalVoterList.Election
         }
 
         [ContractInvariantMethod]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
         private void ObjectInvariant()
         {
-            Contract.Invariant(Cpr == null || Citizen.ValidCpr(Cpr));
+            Contract.Invariant(Username != null);
+            Contract.Invariant(Title != null);
+            Contract.Invariant(UserSalt != null);
+        }
+
+        public bool Equals(User other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+            return base.Equals(other) && Equals(other._permissions, this._permissions) && Equals(other._workplaces, this._workplaces) && other._lastSuccessfullValidationTime.Equals(this._lastSuccessfullValidationTime) && Equals(other.UserSalt, this.UserSalt) && other.Valid.Equals(this.Valid) && other.DbId == this.DbId;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int result = base.GetHashCode();
+                result = (result * 397) ^ (this._permissions != null ? this._permissions.GetHashCode() : 0);
+                result = (result * 397) ^ (this._workplaces != null ? this._workplaces.GetHashCode() : 0);
+                result = (result * 397) ^
+                         (this._lastSuccessfullValidationTime.HasValue
+                              ? this._lastSuccessfullValidationTime.Value.GetHashCode()
+                              : 0);
+                result = (result * 397) ^ (this.UserSalt != null ? this.UserSalt.GetHashCode() : 0);
+                result = (result * 397) ^ this.Valid.GetHashCode();
+                result = (result * 397) ^ this.DbId;
+                return result;
+            }
         }
     }
 }
