@@ -44,7 +44,7 @@ namespace DigitalVoterList.Controllers
         {
             PersonFound.Invoke(this, new SearchPersonEventArgs(p));
         }
-
+        
         /// <summary>
         /// Clear the listbox and the textblocks in the view
         /// </summary>
@@ -80,10 +80,9 @@ namespace DigitalVoterList.Controllers
         /// Find person with the information inserted in the textblocks
         /// </summary>
         /// <returns>A list of persons found from the inserted information</returns>
-        private List<Citizen> Search()
+        private List<Person> Search()
         {
             /*
-
             _searchPerson.Clear();
 
             Person person = new Person();
@@ -104,7 +103,8 @@ namespace DigitalVoterList.Controllers
                 p.PassportNumber = "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i + "" + i;
                 persons.Add(p);
             }
-            //return persons;
+            return persons;
+
             //return DAOFactory.CurrentUserDAO.Find(person);
             throw new NotImplementedException();
         }
