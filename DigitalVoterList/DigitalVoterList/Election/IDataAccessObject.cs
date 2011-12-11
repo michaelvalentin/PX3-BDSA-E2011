@@ -189,13 +189,6 @@ namespace DigitalVoterList.Election
         void RestoreUser(User user);
 
         /// <summary>
-        /// Mark this voter card as invalid!
-        /// </summary>
-        /// <param name="voterCard">The voter card which should be marked as invalid</param>
-        /// <returns>Was the attempt succesful?</returns>
-        void MarkVoterCardInvalid(VoterCard voterCard);
-
-        /// <summary>
         /// Update all persons in the dataset with this update
         /// </summary>
         /// <param name="voterCard"></param>

@@ -182,10 +182,56 @@ namespace ParamTests
         }
 
         [Test]
+        public void TestFindVoterCards()
+        {
+            int validVoterCards = _dao.FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
+                                                          {
+                                                              {VoterCardSearchParam.Valid,true}
+                                                          }, SearchMatching.Exact).Count;
+            Assert.That(validVoterCards == 4, "Couldn't find all 4 valid voter cards");
+            int withLetterHinKeyAndValid = _dao.FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
+                                                           {
+                                                               {VoterCardSearchParam.Valid,true},
+                                                               {VoterCardSearchParam.IdKey,"H"}
+                                                           }, SearchMatching.Similair).Count;
+            Assert.That(withLetterHinKeyAndValid == 3, "Couldn't find the 3 valid voter cards with letter H in idKey");
+        }
+
+        [Test]
+        public void TestChangePassword()
+        {
+            User u = _dao.LoadUser(2);
+            u.ChangePassword("passwordWorking1234");
+            Assert.That(User.GetUser(u.Username, "passwordWorking1234").DbId == 2);
+        }
+
+        [Test]
         public void TestSetHasVoted()
         {
-            var c = new Citizen(1, "2405901253");
+            //Eligible voter that has not voted -> Success
+            Citizen c = _dao.LoadCitizen(1);
             c.SetHasVoted();
+            MySqlCommand checkHasVoted = new MySqlCommand("SELECT id FROM person WHERE id=@id AND has_voted=1 AND eligible_to_vote=1", _conn);
+            checkHasVoted.Prepare();
+            checkHasVoted.Parameters.AddWithValue("@id", 1);
+            object result = checkHasVoted.ExecuteScalar();
+            Assert.That(result != null, "Has voted was not updated in database!");
+
+            //Non-eligible voter...
+            Citizen c2 = _dao.LoadCitizen(2);
+            Assert.Throws(typeof(Exception), c2.SetHasVoted, "Uneligible voter can never vote!");
+            checkHasVoted.Parameters.Clear();
+            checkHasVoted.Parameters.AddWithValue("@id", 2);
+            result = checkHasVoted.ExecuteScalar();
+            Assert.That(result == null, "Uneligible voter can never vote!");
+
+            //Has allready voted..
+            Citizen c4 = _dao.LoadCitizen(4);
+            Assert.Throws(typeof(Exception), c4.SetHasVoted, "Voters must never vote twice!");
+            checkHasVoted.Parameters.Clear();
+            checkHasVoted.Parameters.AddWithValue("@id", 4);
+            result = checkHasVoted.ExecuteScalar();
+            Assert.That(result != null, "Voter with id 4 should allready have voted");
         }
 
         [Test]
