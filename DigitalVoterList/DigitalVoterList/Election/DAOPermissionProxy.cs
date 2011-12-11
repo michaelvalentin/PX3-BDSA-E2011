@@ -20,49 +20,54 @@ namespace DigitalVoterList.Election
             _dao = dao;
         }
 
-        private bool ActionPermitted(SystemAction a, string msg = "You don't have permission to perform this SystemAction.")
+        public bool ActionPermitted(SystemAction a)
         {
-            return true;
-
             Contract.Ensures(
                 (!_user.HasPermission(a) && Contract.Result<bool>() == false)
                 || (_user.HasPermission(a) && Contract.Result<bool>() == true));
 
-
-            if (!_user.HasPermission(a))
-            {
-                //todo: Enten skal denne metode retunere en bool eller kaste en exception, ikke begge?
-                throw new PermissionException(a, _user, msg);
-                return false;
-            }
-
-            return true;
+            return _user.HasPermission(a);
         }
 
-        private bool ActionPermittedForThisUser(User user, SystemAction a, string msg = "You don't have permission to perform this SystemAction.")
+        private void TestPermission(SystemAction a, string msg)
         {
-            if (user.Equals(_user)) return this.ActionPermitted(a, msg);
-            return false;
+            if (!this.ActionPermitted(a)) throw new PermissionException(a, _user, msg);
+        }
+
+        private void TestWorksHere(VotingVenue votingVenue)
+        {
+            if (!this.WorksHere(votingVenue)) throw new PermissionException(_user, "You don't work at this voting venue");
+        }
+
+        public bool CorrectUser(User user)
+        {
+            Contract.Requires(user != null);
+            return user.Equals(_user);
+        }
+
+        private void TestCorrectUser(User user)
+        {
+            Contract.Requires(user != null);
+            if (!this.CorrectUser(user)) throw new PermissionException(_user, "You must be logged as this user");
         }
 
         private bool WorksHere(VotingVenue v, string msg = "You can't perform this action, as you don't work in the right voting venue")
         {
-            return _user.Workplaces.Contains(v) || ActionPermitted(SystemAction.AllVotingPlaces);
+            return _user.Workplaces.Contains(v);
         }
 
         public Citizen LoadCitizen(int id)
         {
-            Contract.Requires(this.ActionPermitted(SystemAction.LoadPerson), "You dont have permission to load information about citizens");
+            Contract.Requires(this.ActionPermitted(SystemAction.LoadPerson));
+            this.TestPermission(SystemAction.LoadPerson, "You dont have permission to load information about citizens");
             return _dao.LoadCitizen(id);
         }
 
         public Citizen LoadCitizen(string cpr)
         {
-            if (ActionPermitted(SystemAction.LoadPerson))
-            {
-                return _dao.LoadCitizen(cpr);
-            }
-            return null;
+            Contract.Requires(this.ActionPermitted(SystemAction.LoadPerson));
+            this.TestPermission(SystemAction.LoadPerson, "You dont have permission to load information about citizens");
+            return _dao.LoadCitizen(cpr);
         }
 
         public User LoadUser(string username)
@@ -72,11 +77,9 @@ namespace DigitalVoterList.Election
 
         public User LoadUser(int id)
         {
-            if (ActionPermitted(SystemAction.LoadUser))
-            {
-                return _dao.LoadUser(id);
-            }
-            return null;
+            Contract.Requires(this.ActionPermitted(SystemAction.LoadUser));
+            this.TestPermission(SystemAction.LoadUser, "You dont have permission to load information about users");
+            return _dao.LoadUser(id);
         }
 
         public bool ValidateUser(string username, string passwordHash)
@@ -101,20 +104,16 @@ namespace DigitalVoterList.Election
 
         public VoterCard LoadVoterCard(int id)
         {
-            if (ActionPermitted(SystemAction.LoadVoterCard))
-            {
-                return _dao.LoadVoterCard(id);
-            }
-            return null;
+            Contract.Requires(this.ActionPermitted(SystemAction.LoadVoterCard));
+            this.TestPermission(SystemAction.LoadVoterCard, "You dont have permission to load information about votercards");
+            return _dao.LoadVoterCard(id);
         }
 
         public VoterCard LoadVoterCard(string idKey)
         {
-            if (ActionPermitted(SystemAction.ScanVoterCard))
-            {
-                return _dao.LoadVoterCard(idKey);
-            }
-            return null;
+            Contract.Requires(this.ActionPermitted(SystemAction.ScanVoterCard));
+            this.TestPermission(SystemAction.ScanVoterCard, "You dont have permission to scan votercards");
+            return _dao.LoadVoterCard(idKey);
         }
 
         /// <summary>
@@ -122,136 +121,116 @@ namespace DigitalVoterList.Election
         /// </summary>
         public void UpdateVoterCards()
         {
-            if (ActionPermitted(SystemAction.ScanVoterCard))
-            {
-                _dao.UpdateVoterCards();
-            }
+            Contract.Requires(this.ActionPermitted(SystemAction.UpdateVoterCards));
+            this.TestPermission(SystemAction.UpdateVoterCards, "You dont have permission to scan votercards");
+            _dao.UpdateVoterCards();
         }
 
         public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching)
         {
-            if (ActionPermitted(SystemAction.FindPerson))
-            {
-                return _dao.FindCitizens(data, matching);
-            }
-            return null;
-        }
-
-        public List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching)
-        {
-            if (ActionPermitted(SystemAction.FindUser))
-            {
-                return _dao.FindUsers(data, matching);
-            }
-            return null;
-        }
-
-        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching)
-        {
-            if (ActionPermitted(SystemAction.FindVoterCard))
-            {
-                return _dao.FindVoterCards(data, matching);
-            }
-            return null;
+            Contract.Requires(this.ActionPermitted(SystemAction.FindPerson));
+            this.TestPermission(SystemAction.FindPerson, "you don't have permission to search for citizens");
+            return _dao.FindCitizens(data, matching);
         }
 
         public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data)
         {
-            if (ActionPermitted(SystemAction.FindPerson))
-            {
-                return _dao.FindCitizens(data, SearchMatching.Similair);
-            }
-            return null;
+            return FindCitizens(data, SearchMatching.Similair);
+        }
+
+        public List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching)
+        {
+            Contract.Requires(this.ActionPermitted(SystemAction.FindUser));
+            this.TestPermission(SystemAction.FindUser, "You don't have permission to search for users");
+            return _dao.FindUsers(data, matching);
         }
 
         public List<User> FindUsers(Dictionary<UserSearchParam, object> data)
         {
-            if (ActionPermitted(SystemAction.FindUser))
-            {
-                return _dao.FindUsers(data, SearchMatching.Similair);
-            }
-            return null;
+            return FindUsers(data, SearchMatching.Similair);
+        }
+
+        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching)
+        {
+            Contract.Requires(this.ActionPermitted(SystemAction.FindVoterCard));
+            this.TestPermission(SystemAction.FindVoterCard, "You don't have permission to search for votercards");
+            return _dao.FindVoterCards(data, matching);
         }
 
         public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data)
         {
-            if (ActionPermitted(SystemAction.FindVoterCard))
-            {
-                return _dao.FindVoterCards(data, SearchMatching.Similair);
-            }
-            return null;
+            return FindVoterCards(data, SearchMatching.Similair);
         }
 
         public void Save(User user)
         {
-            if (ActionPermitted(SystemAction.SaveUser))
-            {
-                _dao.Save(user);
-            }
+            Contract.Requires(this.ActionPermitted(SystemAction.SaveUser));
+            this.TestPermission(SystemAction.SaveUser, "You don't have permission to save users");
+            _dao.Save(user);
         }
 
         public void Save(VoterCard voterCard)
         {
-            if (ActionPermitted(SystemAction.SaveVoterCard))
-            {
-                _dao.Save(voterCard);
-            }
+            Contract.Requires(this.ActionPermitted(SystemAction.SaveVoterCard));
+            this.TestPermission(SystemAction.SaveVoterCard, "You don't have permission to save votercards");
+            _dao.Save(voterCard);
         }
 
         public void SetHasVoted(Citizen citizen, string cprKey)
         {
-            if (ActionPermitted(SystemAction.SetHasVoted) && WorksHere(citizen.VotingPlace))
-            {
-                _dao.SetHasVoted(citizen, cprKey);
-            }
+            Contract.Requires(this.ActionPermitted(SystemAction.SetHasVoted));
+            Contract.Requires(this.WorksHere(citizen.VotingPlace));
+            this.TestPermission(SystemAction.SetHasVoted, "You don't have permission register voting");
+            this.TestWorksHere(citizen.VotingPlace);
+            _dao.SetHasVoted(citizen, cprKey);
         }
 
         public void SetHasVoted(Citizen citizen)
         {
-            if (ActionPermitted(SystemAction.SetHasVotedManually))
-            {
-                _dao.SetHasVoted(citizen);
-            }
+            Contract.Requires(this.ActionPermitted(SystemAction.SetHasVotedManually));
+            this.TestPermission(SystemAction.SetHasVotedManually, "You don't have permission to register voting without a key");
+
+            _dao.SetHasVoted(citizen);
         }
 
         public void ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
         {
-            if (ActionPermittedForThisUser(user, SystemAction.ChangeOwnPassword))
-            {
-                _dao.ChangePassword(user, newPasswordHash, oldPasswordHash);
-            }
+            Contract.Requires(ActionPermitted(SystemAction.ChangeOwnPassword));
+            Contract.Requires(this.CorrectUser(user));
+            this.TestPermission(SystemAction.ChangeOwnPassword, "You don't have permission to change your own password");
+            this.TestCorrectUser(user);
+            _dao.ChangePassword(user, newPasswordHash, oldPasswordHash);
         }
 
         public void ChangePassword(User user, string newPasswordHash)
         {
-            if (ActionPermitted(SystemAction.ChangeOthersPassword))
-            {
-                _dao.ChangePassword(user, newPasswordHash);
-            }
+            Contract.Requires(this.ActionPermitted(SystemAction.ChangeOthersPassword));
+            this.TestPermission(SystemAction.ChangeOthersPassword, "You don't have permission to changed users passwords");
+            _dao.ChangePassword(user, newPasswordHash);
         }
 
         public void MarkUserInvalid(User user)
         {
-            if (ActionPermitted(SystemAction.MarkUserInvalid))
-            {
-                _dao.MarkUserInvalid(user);
-            }
+            Contract.Requires(this.ActionPermitted(SystemAction.MarkUserInvalid));
+            this.TestPermission(SystemAction.MarkUserInvalid, "You don't have permission to mark this user invalid");
+            _dao.MarkUserInvalid(user);
         }
 
         public void RestoreUser(User user)
         {
-            if (ActionPermitted(SystemAction.RestoreUser))
-            {
-                _dao.RestoreUser(user);
-            }
+            Contract.Requires(this.ActionPermitted(SystemAction.RestoreUser));
+            this.TestPermission(SystemAction.RestoreUser, "You don't have permission to restore this user");
+            _dao.RestoreUser(user);
         }
 
         public void UpdatePeople(Func<Citizen, RawPerson, Citizen> update)
         {
-            if (ActionPermitted(SystemAction.UpdatePeople))
-            {
-                _dao.UpdatePeople(update);
-            }
+            Contract.Requires(this.ActionPermitted(SystemAction.UpdatePeople));
+            this.TestPermission(SystemAction.UpdatePeople, "You don't have permission to update the citizen data.");
+            _dao.UpdatePeople(update);
         }
+
+
+
     }
 }

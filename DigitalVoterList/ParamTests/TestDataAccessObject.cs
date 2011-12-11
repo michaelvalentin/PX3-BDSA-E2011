@@ -266,7 +266,7 @@ namespace ParamTests
             // 13 persons in row data, 4 persons in in current, one overlap (Jens) = 16 total
             var select = new MySqlCommand("SELECT COUNT(*) FROM person;", this._conn);
             object o = select.ExecuteScalar();
-            Assert.That(Convert.ToInt32(o) == 16);
+            Assert.That(Convert.ToInt32(o) == 16,"Did not import expected amount of people.");
 
             MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Mik Thomasen'", this._conn);
             var i = selectData.ExecuteScalar();

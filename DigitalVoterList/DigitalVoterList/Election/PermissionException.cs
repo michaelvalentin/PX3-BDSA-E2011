@@ -17,6 +17,12 @@
             _user = user;
         }
 
+        public PermissionException(User user, string msg = "You don't have permission to do this.")
+            : base(msg)
+        {
+            _user = user;
+        }
+
         public SystemAction SystemAction { get; private set; }
 
         public User User { get; private set; }
