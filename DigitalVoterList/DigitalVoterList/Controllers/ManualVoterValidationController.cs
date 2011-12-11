@@ -12,12 +12,12 @@ namespace DigitalVoterList.Controllers
 {
     using System.Diagnostics;
 
-    class ManuVoterValidationController
+    class ManualVoterValidationController
     {
         private ManualVoterValidationView _view;
         private Citizen _voter;
 
-        public ManuVoterValidationController(ManualVoterValidationView view, Citizen voter)
+        public ManualVoterValidationController(ManualVoterValidationView view, Citizen voter)
         {
             _view = view;
             _voter = voter;
@@ -49,7 +49,7 @@ namespace DigitalVoterList.Controllers
             questionTextBlock.TextWrapping = TextWrapping.Wrap;
             questionTextBlock.TextAlignment = TextAlignment.Left;
             questionTextBlock.HorizontalAlignment = HorizontalAlignment.Left;
-            questionTextBlock.Width = 310;
+            questionTextBlock.Width = 250;
 
             return questionTextBlock;
         }
@@ -69,7 +69,7 @@ namespace DigitalVoterList.Controllers
 
         public void Hide()
         {
-            _view.QuestionStackPanel.Children.RemoveRange(0, _view.QuestionStackPanel.Children.Count);
+            _view.QuestionListBox.Items.Clear();
         }
 
         private string Birthday(Citizen citizen)
