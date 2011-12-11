@@ -1030,6 +1030,7 @@ namespace DigitalVoterList.Election
                     DoIfNotDbNull(rdr, "address", lbl => rawPerson.Address = rdr.GetString(lbl));
                     DoIfNotDbNull(rdr, "birthplace", lbl => rawPerson.Birthplace = rdr.GetString(lbl));
                     DoIfNotDbNull(rdr, "passport_number", lbl => rawPerson.PassportNumber = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "address_previous", lbl => rawPerson.AddressPrevious = rdr.GetString(lbl));
 
                     if (rawPerson.CPR != null)
                     {
