@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DigitalVoterList.Views;
-using DigitalVoterList.Election;
 using System.Windows;
 using System.Windows.Controls;
+using DigitalVoterList.Election;
 using DigitalVoterList.Utilities;
+using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
@@ -43,7 +40,7 @@ namespace DigitalVoterList.Controllers
 
         private TextBlock AdjustedQuestionTextBox(Quiz quiz)
         {
-            Debug.WriteLine("Made Question: "+ quiz.Question);
+            Debug.WriteLine("Made Question: " + quiz.Question);
             TextBlock questionTextBlock = new TextBlock();
             questionTextBlock.Text = quiz.Question;
             questionTextBlock.TextWrapping = TextWrapping.Wrap;

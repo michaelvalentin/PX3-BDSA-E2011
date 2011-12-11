@@ -8,6 +8,7 @@ namespace DigitalVoterList.Election
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
 
     using DigitalVoterList.Utilities;
 
@@ -42,6 +43,9 @@ namespace DigitalVoterList.Election
 
         private HashSet<Quiz> GenerateSecurityQuestions(RawPerson rawPerson)
         {
+            Contract.Requires(rawPerson != null);
+            Contract.Ensures(Contract.Result<HashSet<Quiz>>() != null);
+
             var quizzes = new HashSet<Quiz>();
 
             if (!String.IsNullOrEmpty(rawPerson.Birthplace)) quizzes.Add(new Quiz("Where were you born?", rawPerson.Birthplace));
@@ -49,11 +53,28 @@ namespace DigitalVoterList.Election
             if (!String.IsNullOrEmpty(rawPerson.Address) && !String.IsNullOrEmpty(rawPerson.AddressPrevious)) quizzes.Add(new Quiz("Where did you live before you moved to " + rawPerson.AddressPrevious + " ?", rawPerson.AddressPrevious));
             if (!String.IsNullOrEmpty(rawPerson.TelephoneNumber)) quizzes.Add(new Quiz("What is your telephone number?", rawPerson.TelephoneNumber));
             if (!String.IsNullOrEmpty(rawPerson.Workplace)) quizzes.Add(new Quiz("Where do you work?", rawPerson.Workplace));
-            if (!String.IsNullOrEmpty(rawPerson.Zipcode.ToString())) quizzes.Add(new Quiz("What is your zipcode?", rawPerson.Zipcode.ToString()));
             if (!String.IsNullOrEmpty(rawPerson.City)) quizzes.Add(new Quiz("In what city do you live?", rawPerson.City));
             if (!String.IsNullOrEmpty(rawPerson.DriverID)) quizzes.Add(new Quiz("What is your driver ID number", rawPerson.DriverID));
             if (!String.IsNullOrEmpty(rawPerson.PassportNumber)) quizzes.Add(new Quiz("What is your passport number", rawPerson.PassportNumber));
-            quizzes.Add(new Quiz("What is the answer to life the universe and everything?", "42"));
+
+            //We will not ask questions about a persons parents if they are dead.
+            if (!rawPerson.FatherDead)
+            {
+                if (rawPerson.FatherAge != null && rawPerson.FatherAge == 0) quizzes.Add(new Quiz("What is your fathers age?", rawPerson.FatherAge.ToString()));
+                if (!String.IsNullOrEmpty(rawPerson.FatherBirthday)) quizzes.Add(new Quiz("When were your father born?", rawPerson.FatherBirthday));
+                if (!String.IsNullOrEmpty(rawPerson.FatherEducation)) quizzes.Add(new Quiz("What is your fathers education", rawPerson.FatherEducation));
+                if (!String.IsNullOrEmpty(rawPerson.FatherName)) quizzes.Add(new Quiz("What is your fathers name?", rawPerson.FatherName));
+            }
+
+            if (!rawPerson.MotherDead)
+            {
+                if (rawPerson.MotherAge != null && rawPerson.MotherAge == 0) quizzes.Add(new Quiz("What is your mothers age?", rawPerson.MotherAge.ToString()));
+                if (!String.IsNullOrEmpty(rawPerson.MotherBirthday)) quizzes.Add(new Quiz("When were your mother born?", rawPerson.MotherBirthday));
+                if (!String.IsNullOrEmpty(rawPerson.MotherEducation)) quizzes.Add(new Quiz("What is your mothers education", rawPerson.MotherEducation));
+                if (!String.IsNullOrEmpty(rawPerson.MotherName)) quizzes.Add(new Quiz("What is your mothers name?", rawPerson.MotherName));
+            }
+
+            quizzes.Add(new Quiz("What is the answer to life the universe and everything?", "42")); //todo: remove this joke?
 
             return quizzes;
         }

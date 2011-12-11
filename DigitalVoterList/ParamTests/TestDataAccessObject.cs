@@ -105,7 +105,7 @@ namespace ParamTests
             Person p = this._dao.LoadCitizen("2405901253");
             Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
 
-            Person p2 = this._dao.LoadCitizen("5097508703");
+            Person p2 = this._dao.LoadCitizen("1212534321");
             Assert.That(p2.Name.Equals("Mathilde Roed Birk"));
         }
 
@@ -193,13 +193,13 @@ namespace ParamTests
                                                           {
                                                               {VoterCardSearchParam.Valid,true}
                                                           }, SearchMatching.Exact).Count;
-            Assert.That(validVoterCards == 4, "Couldn't find all 4 valid voter cards");
+            Assert.That(validVoterCards == 3, "Couldn't find all 3 valid voter cards");
             int withLetterHinKeyAndValid = _dao.FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
                                                            {
                                                                {VoterCardSearchParam.Valid,true},
                                                                {VoterCardSearchParam.IdKey,"H"}
                                                            }, SearchMatching.Similair).Count;
-            Assert.That(withLetterHinKeyAndValid == 3, "Couldn't find the 3 valid voter cards with letter H in idKey");
+            Assert.That(withLetterHinKeyAndValid == 2, "Couldn't find the 2 valid voter cards with letter H in idKey");
         }
 
         [Test]
@@ -267,7 +267,6 @@ namespace ParamTests
             var select = new MySqlCommand("SELECT COUNT(*) FROM person;", this._conn);
             object o = select.ExecuteScalar();
             Assert.That(Convert.ToInt32(o) == 16);
-
 
             MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Mik Thomasen'", this._conn);
             var i = selectData.ExecuteScalar();
@@ -340,6 +339,30 @@ namespace ParamTests
             Assert.That(rdr.GetInt32("valid") == 1, "Valid status should be correct in DB");
             rdr.Close();
         }
+
+        [Test]
+        public void TestUpdateVoterCards()
+        {
+            // Valid votercard for citizen uneligible to vote is marked invalid
+            var v = _dao.LoadVoterCard(2);
+            Assert.That(v.Valid, "This votercard should be valid in the testdata");
+
+            MySqlCommand select = new MySqlCommand("SELECT COUNT(*) FROM voter_card WHERE person_id=4 AND valid=1;", _conn);
+            var i = Convert.ToInt32(select.ExecuteScalar());
+            Assert.That(i == 0, "This citizen should not have any valid votercards in the test data");
+
+            _dao.UpdateVoterCards(); //UPDATE!
+
+            v = _dao.LoadVoterCard(2);
+            Assert.That(!v.Valid, "Valid votercard should be marked invalid for citizen uneligible to vote");
+
+            v = _dao.LoadVoterCard(1);
+            Assert.That(v.Valid, "Valid votercard for valid citizen should remain unchanged");
+
+            i = Convert.ToInt32(select.ExecuteScalar());
+            Assert.That(i == 1, "Eligible citizen with no valid votercards should had one generated.");
+        }
+
 
         //void SetHasVoted(Citizen citizen, string cprKey);
 

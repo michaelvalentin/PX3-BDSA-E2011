@@ -122,6 +122,10 @@ namespace DigitalVoterList.Controllers
             if (_view.VoterIdentification.VoterCprBirthday.Text.Length == 6)
             {
                 _view.VoterIdentification.VoterCprDigits.Focus();
+
+                var validationController = new ManuVoterValidationController(validationView, c);
+                validationController.Show();
+
             }
         }
     }

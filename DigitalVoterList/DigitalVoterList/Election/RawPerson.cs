@@ -28,11 +28,27 @@ namespace DigitalVoterList.Election
 
         public string Deathdate { get; set; }
 
-        public int Age { get; set; }
+        public int? Age { get; set; }
 
         public string MotherName { get; set; }
 
+        public int? MotherAge { get; set; }
+
+        public string MotherBirthday { get; set; }
+
+        public string MotherEducation { get; set; }
+
+        public bool MotherDead { get; set; }
+
         public string FatherName { get; set; }
+
+        public int? FatherAge { get; set; }
+
+        public string FatherBirthday { get; set; }
+
+        public string FatherEducation { get; set; }
+
+        public bool FatherDead { get; set; }
 
         public string Education { get; set; }
 
@@ -48,7 +64,7 @@ namespace DigitalVoterList.Election
 
         public string City { get; set; }
 
-        public int Zipcode { get; set; }
+        public int? Zipcode { get; set; }
 
         public string Nationality { get; set; }
 
