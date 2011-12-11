@@ -222,7 +222,6 @@ namespace ParamTests
             object o = select.ExecuteScalar();
             Assert.That(Convert.ToInt32(o) == 16);
 
-
             MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Mik Thomasen'", this._conn);
             var i = selectData.ExecuteScalar();
             Assert.That(i.ToString() == "1", "Mik Thomasen was not insert into data");

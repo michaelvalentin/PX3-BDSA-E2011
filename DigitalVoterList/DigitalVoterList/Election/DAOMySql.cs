@@ -580,7 +580,7 @@ namespace DigitalVoterList.Election
                 cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
             Execute(cmd);
-            PriSaveQuestions(citizen);
+            PriSaveQuestions(citizen.DbId, citizen.SecurityQuestions);
         }
 
         private void PriSaveNew(Citizen citizen)
@@ -609,26 +609,26 @@ namespace DigitalVoterList.Election
             Execute(cmd);
 
             var cmd2 = this.Prepare("SELECT LAST_INSERT_ID()");
-            var i = Convert.ToInt32(ScalarQuery(cmd2));
-            PriSaveQuestions(LoadCitizen(i));
+            var id = Convert.ToInt32(ScalarQuery(cmd2));
+            PriSaveQuestions(id, citizen.SecurityQuestions);
         }
 
-        private void PriSaveQuestions(Citizen c)
+        private void PriSaveQuestions(int id, HashSet<Quiz> quizzes)
         {
             Contract.Requires(Transacting(), "Must be done in a transaction");
-            Contract.Requires(PriExistsWithId("person", c.DbId));
+            Contract.Requires(PriExistsWithId("person", id));
             MySqlCommand deleteQuestions = Prepare("DELETE FROM quiz WHERE person_id=@id");
-            deleteQuestions.Parameters.AddWithValue("@id", c.DbId);
+            deleteQuestions.Parameters.AddWithValue("@id", id);
             Execute(deleteQuestions);
-            if (c.SecurityQuestions.Count > 0)
+            if (quizzes.Count > 0)
             {
                 StringBuilder insertQuery = new StringBuilder("INSERT INTO quiz (person_id, question, answer) VALUES ");
                 var first = true;
-                foreach (var quiz in c.SecurityQuestions)
+                foreach (var quiz in quizzes)
                 {
                     if (!first) insertQuery.Append(",");
                     insertQuery.Append("(");
-                    insertQuery.Append(c.DbId);
+                    insertQuery.Append(id);
                     insertQuery.Append(",'");
                     insertQuery.Append(quiz.Question);
                     insertQuery.Append("','");
@@ -1028,9 +1028,9 @@ namespace DigitalVoterList.Election
                 "SELECT " + "p.*, " + "f.name AS fathers_name, " + "f.birthday AS fathers_birthday, "
                 + "f.age AS fathers_age, " + "f.education AS fathers_education, " + "f.dead AS father_dead, "
                 + "m.name AS mothers_name, " + "m.birthday AS mothers_birthday, " + "m.age AS mothers_age, "
-                + "m.education AS mothers_education, " + "m.dead AS mothers_dead " + "FROM raw_person_data p "
+                + "m.education AS mothers_education, " + "m.dead AS mother_dead " + "FROM raw_person_data p "
                 + "LEFT JOIN raw_person_data f ON p.father_cpr = f.cpr "
-                + "LEFT JOIN raw_person_data m ON m.mother_cpr = m.cpr;";
+                + "LEFT JOIN raw_person_data m ON p.mother_cpr = m.cpr;";
             var loadRowPeople = new MySqlCommand(Query, connection);
             MySqlDataReader rdr = null;
 
@@ -1059,6 +1059,18 @@ namespace DigitalVoterList.Election
                     DoIfNotDbNull(rdr, "telephone", lbl => rawPerson.TelephoneNumber = rdr.GetString(lbl));
                     DoIfNotDbNull(rdr, "workplace", lbl => rawPerson.Workplace = rdr.GetString(lbl));
                     DoIfNotDbNull(rdr, "zipcode", lbl => rawPerson.Zipcode = rdr.GetInt32(lbl));
+
+                    DoIfNotDbNull(rdr, "fathers_name", lbl => rawPerson.FatherName = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "fathers_age", lbl => rawPerson.FatherAge = rdr.GetInt32(lbl));
+                    DoIfNotDbNull(rdr, "fathers_birthday", lbl => rawPerson.FatherBirthday = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "fathers_education", lbl => rawPerson.FatherEducation = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "father_dead", lbl => rawPerson.FatherDead = rdr.GetBoolean(lbl));
+
+                    DoIfNotDbNull(rdr, "mothers_name", lbl => rawPerson.MotherName = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "mothers_age", lbl => rawPerson.MotherAge = rdr.GetInt32(lbl));
+                    DoIfNotDbNull(rdr, "mothers_birthday", lbl => rawPerson.MotherBirthday = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "mothers_education", lbl => rawPerson.MotherEducation = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "mother_dead", lbl => rawPerson.MotherDead = rdr.GetBoolean(lbl));
 
                     if (rawPerson.CPR != null)
                     {
