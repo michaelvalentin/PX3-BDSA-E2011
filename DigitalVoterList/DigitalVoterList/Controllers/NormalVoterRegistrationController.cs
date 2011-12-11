@@ -1,6 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 using DigitalVoterList.Election;
 using DigitalVoterList.Views;
 
@@ -13,86 +11,107 @@ namespace DigitalVoterList.Controllers
     /// </summary>
     public class NormalVoterRegistrationController : VoterRegistrationController
     {
-        private VoterRegistrationView _view;
-        private int _cprTries;
-        private Citizen _cprTrier;
+        private readonly VoterRegistrationView _view;
+        private int _cprTries = 0;
 
         public NormalVoterRegistrationController(VoterRegistrationView view)
             : base(view)
         {
             _view = view;
+            _view.Height = 314;
+
             Disable(_view.VoterIdentification.VoterCprBirthday);
             _view.VoterIdentification.VoterCprBirthday.Text = "XXXXXX";
-
             Disable(_view.RegisterVoterButton);
             _view.SearchVoterButton.Visibility = Visibility.Hidden;
-            _cprTries = 0;
 
             _view.VoterValidation.Children.Clear();
             _view.VoterValidation.Children.Add(new SecurityQuesitonView());
-            _view.Height = 314;
 
+            _view.VoterIdentification.VoterCprDigits.PasswordChanged += CheckCpr;
 
-            _view.VoterIdentification.VoterCprDigits.LostFocus += CheckCpr;
-            _view.VoterIdentification.VoterCprDigits.PasswordChanged += (o, e) =>
-            {
-                if (!((PasswordBox)o).Password.Equals(""))
-                {
-                    ClearStatusMessage();
-                }
-            };
-            
-            //_view.VoterIdentification.PreviewKeyDown += HideImages;
+            base.CitizenChanged += LoadVoterValidation;
+            base.CitizenChanged += () =>
+                                       {
+                                           _view.VoterIdentification.VoterCprDigits.Password = "";
+                                           _cprTries = 0;
+                                       };
         }
 
         private void CheckCpr(object sender, EventArgs e)
         {
-            if (_view.VoterIdentification.VoterCprDigits.Password.Length != 4 || Citizen == null) return;
-            if (_cprTrier != null && _cprTrier.Equals(Citizen))
+            _view.VoterIdentification.CprSuccessImage.Visibility = Visibility.Hidden;
+            string cprDigits = _view.VoterIdentification.VoterCprDigits.Password;
+
+            if (cprDigits.Length != 4 || Citizen == null) { return; }
+
+            string checkCprDigits = Citizen.Cpr.Substring(6, 4);
+            if (cprDigits.Equals(checkCprDigits) && _cprTries < 3)
             {
-                _cprTries = 0;
-                _cprTrier = Citizen;
-            }
-            if (_cprTries < 3)
-            {
-                string cprDigits = _view.VoterIdentification.VoterCprDigits.Password;
-                string checkCprDigits = Citizen.Cpr.Substring(6, 4);
-                if (cprDigits.Equals(checkCprDigits))
-                {
-                    Enable(_view.RegisterVoterButton);
-                    _view.StatusImageSucces.Visibility = Visibility.Visible;
-                    _view.StatusText.Text = "The four last digits in the cpr number are correct!";
-                    _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
-                    _cprTries = -1;
-                }
-                else if (_cprTries == 2)
-                {
-                    _view.StatusText.Text = "The maximum number of tries exceeded. Go to manual validation";
-                    _view.StatusImageError.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    _view.StatusText.Text = "The last four digits of the cpr number are wrong. Try again";
-                    _view.StatusImageWarning.Visibility = Visibility.Visible;
-                    _view.VoterIdentification.VoterCprDigits.Password = "";
-                }
-                _cprTries++;
+                ClearStatusMessage();
+                _cprTries = -1;
+                _view.VoterIdentification.CprSuccessImage.Visibility = Visibility.Visible;
             }
             else
             {
-                _view.StatusText.Text = "The maximum number of tries exceeded. Go to manual validation";
-                _view.StatusImageError.Visibility = Visibility.Visible;
+                ShowWarning("The last four digits of the cpr number are wrong. Try again");
+                _view.VoterIdentification.VoterCprDigits.Password = "";
+            }
+
+            _cprTries++;
+
+            if (_cprTries > 2)
+            {
+                ShowError("The maximum number of tries exceeded. Go to manual validation");
             }
         }
 
-        protected override void LoadVoterValidation(Citizen c)
+        private void LoadVoterValidation()
         {
             _view.VoterValidation.Children.Clear();
-            SecurityQuesitonView questionView = new SecurityQuesitonView();
+            var questionView = new SecurityQuesitonView();
             _view.VoterValidation.Children.Add(questionView);
-            if (c != null)
+            if (Citizen != null)
             {
-                new RandomQuestionController(questionView, c);
+                new RandomQuestionController(questionView, Citizen);
+            }
+        }
+
+        protected override void RegisterVoter(object sender, EventArgs e)
+        {
+            if (Citizen != null)
+            {
+                try
+                {
+                    IDataAccessObject dao = DAOFactory.CurrentUserDAO;
+                    if (Citizen.HasVoted)
+                    {
+                        ShowError("Voter has allready voted!");
+                        return;
+                    }
+                    if (!Citizen.EligibleToVote)
+                    {
+                        ShowError("Citizen is not eligible to vote!");
+                        return;
+                    }
+                    string cprDigits = _view.VoterIdentification.VoterCprDigits.Password;
+                    if (!Citizen.Cpr.Substring(6, 4).Equals(cprDigits))
+                    {
+                        ShowError("CPR-Digits are incorrect!");
+                        return;
+                    }
+                    DAOFactory.CurrentUserDAO.SetHasVoted(Citizen, cprDigits);
+                    ShowSuccess("Citizen registered!");
+                }
+                catch (Exception ex)
+                {
+                    //TODO: Log the exception for security / maintainance...
+                    ShowError("An unexpected error occured. Please try again.");
+                }
+            }
+            else
+            {
+                ShowWarning("No person found with the inserted information");
             }
         }
     }

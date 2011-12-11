@@ -10,6 +10,7 @@ namespace DigitalVoterList.Views
         public MainWindow()
         {
             InitializeComponent();
+            Closed += (s, e) => VoterListApp.App.Shutdown();
         }
     }
 }
