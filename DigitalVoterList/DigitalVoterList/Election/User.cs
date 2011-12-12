@@ -232,7 +232,7 @@ namespace DigitalVoterList.Election
         }
 
         [Pure]
-        private string HashPassword(string password) //todo: public or private?
+        private string HashPassword(string password)
         {
             string salted = UserSalt + password + "AX7530G7FR";
             MD5 md5 = System.Security.Cryptography.MD5.Create();

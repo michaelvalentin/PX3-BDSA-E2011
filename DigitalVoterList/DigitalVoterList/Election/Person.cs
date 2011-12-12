@@ -61,7 +61,7 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// The database id of the person
         /// </summary>
-        public int DbId { get; private set; }
+        public int DbId { get; set; }
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.

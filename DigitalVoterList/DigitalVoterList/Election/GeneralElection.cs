@@ -9,7 +9,7 @@ namespace DigitalVoterList.Election
     using System;
 
     /// <summary>
-    /// TODO: Update summary.
+    /// An example of an election implementation. This contains rules regarding a specific kind of election.
     /// </summary>
     public class GeneralElection : ElectionEvent
     {
@@ -28,11 +28,10 @@ namespace DigitalVoterList.Election
         {
             /*
                 This method should calculate there a citizen should vote from his data. This might be calculated from a list of zipcodes in the database,
-             *  But looking at GPS coordinates or other stuff. In this implementation, the all citizens vote at the same voting venue.
+             *  by looking at GPS coordinates or other stuff.
             */
 
-            return null; //todo: Make this smarter
-
+            return new VotingVenue(1, "Dyssegårdskolens aula", "Dyssegårdsvej 34");
         }
 
         /// <summary>

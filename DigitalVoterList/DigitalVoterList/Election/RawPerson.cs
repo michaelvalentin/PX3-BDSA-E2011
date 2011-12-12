@@ -8,9 +8,9 @@ namespace DigitalVoterList.Election
 {
 
     /// <summary>
-    /// TODO: Update summary.
+    /// Raw person data
     /// </summary>
-    public class RawPerson
+    public struct RawPerson
     {
         public string Name { get; set; }
 

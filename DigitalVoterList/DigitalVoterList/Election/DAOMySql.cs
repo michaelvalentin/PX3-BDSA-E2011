@@ -149,8 +149,7 @@ namespace DigitalVoterList.Election
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(tableName != null);
             Contract.Requires(id > 0);
-            MySqlCommand cmd = Prepare("SELECT id FROM @tableName WHERE id=@id");
-            cmd.Parameters.AddWithValue("@tableName", tableName);
+            MySqlCommand cmd = Prepare("SELECT COUNT(*) FROM " + tableName + " WHERE id=@id;");
             cmd.Parameters.AddWithValue("@id", id);
             object found = ScalarQuery(cmd);
             return found != null;
@@ -161,7 +160,7 @@ namespace DigitalVoterList.Election
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(citizenId > 0, "A valid database id must be greater than zero.");
-            MySqlCommand cmd = Prepare("SELECT cpr FROM person WHERE id=@id");
+            MySqlCommand cmd = Prepare("SELECT cpr FROM person WHERE id=@id;");
             cmd.Parameters.AddWithValue("@id", citizenId);
             object result = ScalarQuery(cmd);
             string cpr = (string)(result ?? "");
@@ -412,7 +411,7 @@ namespace DigitalVoterList.Election
         private VoterCard PriLoadVoterCard(int id)
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
-            Contract.Requires(PriExistsWithId("votercard", id), "Votercard must exist in the database to be loaded.");
+            Contract.Requires(PriExistsWithId("voter_card", id), "Votercard must exist in the database to be loaded.");
             Contract.Ensures(Contract.Result<VoterCard>() != null);
             MySqlCommand command = Prepare("SELECT * FROM voter_card v LEFT JOIN person p ON p.id=v.person_id WHERE v.id=@id");
             command.Parameters.AddWithValue("@id", id);
@@ -640,12 +639,13 @@ namespace DigitalVoterList.Election
 
         private void PriSaveNew(Citizen citizen)
         {
+            var idAssigned = 0;
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(citizen != null, "Input citizen must not be null!");
             Contract.Requires(citizen.DbId == 0, "DbId must be equal to zero");
             Contract.Requires(citizen.Cpr != null && Citizen.ValidCpr(citizen.Cpr), "A citizen must be saved with a valid CPR number");
             Contract.Requires(citizen.VotingPlace == null || PriExistsWithId("voting_venue", citizen.VotingPlace.DbId), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
-            Contract.Ensures(LoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");
+            Contract.Ensures(PriLoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");
             MySqlCommand cmd = Prepare("INSERT INTO person (name,address,cpr,eligible_to_vote,place_of_birth,passport_number,voting_venue_id) VALUES (@name, @address, @cpr, @eligibleToVote, @placeOfBirth, @passportNumber, @votingVenueId)");
             var mapping = new Dictionary<string, string>()
 							  {
@@ -664,8 +664,8 @@ namespace DigitalVoterList.Election
             Execute(cmd);
 
             var cmd2 = this.Prepare("SELECT LAST_INSERT_ID()");
-            var id = Convert.ToInt32(ScalarQuery(cmd2));
-            PriSaveQuestions(id, citizen.SecurityQuestions);
+            citizen.DbId = Convert.ToInt32(ScalarQuery(cmd2));
+            PriSaveQuestions(citizen.DbId, citizen.SecurityQuestions);
         }
 
         private void PriSaveQuestions(int id, HashSet<Quiz> quizzes)
@@ -1146,12 +1146,12 @@ namespace DigitalVoterList.Election
                         if ((listOfCitizens.Count > 0))
                         {
                             Citizen c = updateFunc(listOfCitizens[0], rawPerson);
-                            PriSave(c);
+                            DoTransaction(() => PriSave(c));
                         }
                         else
                         {
                             Citizen c = updateFunc(new Citizen(0, rawPerson.CPR), rawPerson);
-                            PriSaveNew(c);
+                            DoTransaction(() => PriSaveNew(c));
                         }
                     }
                 }
@@ -1194,7 +1194,7 @@ namespace DigitalVoterList.Election
                     v.ElectionEvent = Settings.Election;
                     v.IdKey = VoterCard.GenerateIdKey();
                     v.Valid = true;
-                    PriSaveNew(v);
+                    Save(v);
                 }
             }
             catch (Exception ex)

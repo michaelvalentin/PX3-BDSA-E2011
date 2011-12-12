@@ -13,7 +13,7 @@ namespace DigitalVoterList.Election
     using DigitalVoterList.Utilities;
 
     /// <summary>
-    /// TODO: Update summary.
+    /// An importer able to import the raw data in to our database
     /// </summary>
     public class DataTransformer
     {
@@ -43,7 +43,6 @@ namespace DigitalVoterList.Election
 
         private HashSet<Quiz> GenerateSecurityQuestions(RawPerson rawPerson)
         {
-            Contract.Requires(rawPerson != null);
             Contract.Ensures(Contract.Result<HashSet<Quiz>>() != null);
 
             var quizzes = new HashSet<Quiz>();

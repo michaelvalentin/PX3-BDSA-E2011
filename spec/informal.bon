@@ -16,7 +16,9 @@ cluster_chart ELECTION
 explanation
 	"Things related to an election for a parlament or similair"
 class PERSON
-	description "A humanbeing with a name"
+	description "A human being with a name"
+class RAWPERSON
+	description "A datastructure containing all the data that can be found about a human being."
 class CITIZEN
 	description "A person with a valid and unique ID-number (CPR-number)"
 class USER
@@ -24,6 +26,8 @@ class USER
 class VOTER_CARD
 	description "A ticket to be exchanged for a ballot, that is send out to the voter as a part of the validation process."
 class ELECTION_EVENT
+	description "A standardized interface for an election."
+class GENERAL_EVENT
 	description "An actual election, that runs at a specific time, in a specific area and with a specific set of elegible voters."
 class VOTING_VENUE
 	description "A specific venue for voting, typically a school or similair public place."
@@ -46,6 +50,8 @@ class BARCODE
 	description "An optical, machine readable, representation of simple data"
 class QUIZ
 	description "A linguistic expression used to make a request for information"
+class RETRY_UTILITY
+	description "A utility for retrying actions"
 end
 
 cluster_chart ADMINISTRATION
@@ -53,10 +59,21 @@ explanation
 	"Things related to the administration of an election"
 class VOTER_CARD_PRINTER
 	description "A system that can generate a voter card, given a set of information."
-class DATA_COLLECTOR
+class DATA_TRANSFORMER
 	description "A system that can collect the necessary data for an election event."
 class DATA_ANALYZER
 	description "A system that can analyze the turnout results after an election."
+end
+
+class_chart RETRY_UTILITY
+indexing
+	in_cluster: "UTILITIES";
+	created: "2011-11-25";
+	revised: "2011-11-25"
+explanation
+	"A utility for retrying actions"
+command
+	"Please retry this action after this amount of time!"
 end
 
 class_chart PERSON
@@ -150,7 +167,7 @@ explanation
 	"An event containing data of an election."
 query
 	"Can I have a new election with this name and date?",
-	"When are you scheduled to be?"
+	"When are you scheduled to be?",
 	"What is your name?"
 command
 	"Change your scheduled election date!",
@@ -266,7 +283,7 @@ indexing
 explanation
 	"A brief assessment used as an authenticator"
 query
-	"Give me a new quiz with this question and this answer to it"
+	"Give me a new quiz with this question and this answer to it",
 	"What is the question?",
 	"What is the answer?"
 constraint
@@ -281,33 +298,19 @@ indexing
 explanation
 	"A printer used to create the physical voter cards"
 query
-	"May I have a new voter card printer?"
+	"May I have a new voter card printer?",
 	"May I have a voter card based on this voter card information",
 constraint
 	""
 end
 
-class_chart DATA_COLLECTOR
+class_chart DATA_TRANSFORMER
 indexing
 	in_cluster: "ADMINISTRATION";
 	created: "2011-11-25";
 	revised: "2011-11-25"
 explanation
 	"A system used to collect information about all citizens"
-query
-	"",
-	""
-constraint
-	""
-end
-
-class_chart DATA_ANALYZER
-indexing
-	in_cluster: "ADMINISTRATION";
-	created: "2011-11-25";
-	revised: "2011-11-25"
-explanation
-	"A system used to analyze the data of the election"
 query
 	"",
 	""

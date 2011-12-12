@@ -142,7 +142,7 @@ namespace ParamTests
         public void TestGetPermissions()
         {
             var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
-            Assert.That(permissions.Count == 24);
+            Assert.That(permissions.Count == 25);
 
             var permissions2 = this._dao.GetPermissions(User.GetUser("slave", "asdf"));
             Assert.That(permissions2.Count == 0);

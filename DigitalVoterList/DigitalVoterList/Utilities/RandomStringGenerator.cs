@@ -10,7 +10,7 @@ namespace DigitalVoterList.Utilities
     using System.Text;
 
     /// <summary>
-    /// TODO: Update summary.
+    /// A generator that can produce random strings of a given size
     /// </summary>
     public class RandomStringGenerator
     {

@@ -91,14 +91,6 @@ namespace DigitalVoterList.Election
             return Equals((VoterCard)obj);
         }
 
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(ElectionEvent != null);
-            Contract.Invariant(Citizen != null);
-            Contract.Invariant(IdKey != null);
-        }
-
         public bool Equals(VoterCard other)
         {
             if (ReferenceEquals(null, other))

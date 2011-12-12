@@ -8,7 +8,7 @@ namespace DigitalVoterList.Election
 {
 
     /// <summary>
-    /// TODO: Update summary.
+    /// You can search for this when seraching for citizens
     /// </summary>
     public enum CitizenSearchParam
     {
