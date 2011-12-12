@@ -1068,6 +1068,7 @@ namespace DigitalVoterList.Election
                     DoIfNotDbNull(rdr, "birthplace", lbl => rawPerson.Birthplace = rdr.GetString(lbl));
                     DoIfNotDbNull(rdr, "CPR", lbl => rawPerson.CPR = rdr.GetString(lbl));
                     DoIfNotDbNull(rdr, "city", lbl => rawPerson.City = rdr.GetString(lbl));
+                    DoIfNotDbNull(rdr, "dead", lbl => rawPerson.Dead = rdr.GetBoolean(lbl));
                     DoIfNotDbNull(rdr, "deathdate", lbl => rawPerson.Deathdate = rdr.GetString(lbl));
                     DoIfNotDbNull(rdr, "disempowered", lbl => rawPerson.Disempowered = rdr.GetBoolean(lbl));
                     DoIfNotDbNull(rdr, "driver_id", lbl => rawPerson.DriverID = rdr.GetString(lbl));
@@ -1132,7 +1133,9 @@ namespace DigitalVoterList.Election
         {
             var connection = new MySqlConnection(this._connectionString);
             connection.Open();
-            const string Query = "SELECT id FROM person p WHERE eligible_to_vote=1 AND (SELECT COUNT(*) FROM voter_card v WHERE v.person_id = p.id AND v.valid=1)=0;";
+            //const string Query = "SELECT id FROM person p WHERE eligible_to_vote=1 AND (SELECT COUNT(*) FROM voter_card v WHERE v.person_id = p.id AND v.valid=1)=0;";
+            const string Query = "SELECT id FROM person p WHERE eligible_to_vote=1 AND p.id NOT IN (SELECT person_id FROM voter_card v WHERE v.person_id = p.id AND v.valid=1);";
+
             var loadEligiblePeople = new MySqlCommand(Query, connection);
             MySqlDataReader rdr = null;
 
@@ -1170,7 +1173,7 @@ namespace DigitalVoterList.Election
         private void MarkVoterCardsInvalidForCitizensUneligibleToVote()
         {
             Contract.Requires(this.Transacting(), "This can only be done in a transaction.");
-            MySqlCommand cmd = this.Prepare("UPDATE voter_card SET valid=0 WHERE person_id=(SELECT id FROM person WHERE eligible_to_vote=0);");
+            MySqlCommand cmd = this.Prepare("UPDATE voter_card SET valid=0 WHERE person_id IN (SELECT id FROM person WHERE eligible_to_vote=0);");
             this.Execute(cmd);
         }
 

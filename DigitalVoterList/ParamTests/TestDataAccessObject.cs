@@ -235,8 +235,12 @@ namespace ParamTests
             Assert.That(Convert.ToInt32(o) == 16, "Did not import expected amount of people.");
 
             MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Mik Thomasen'", this._conn);
-            var i = selectData.ExecuteScalar();
-            Assert.That(i.ToString() == "1", "Mik Thomasen was not insert into data");
+            var i = Convert.ToInt32(selectData.ExecuteScalar());
+            Assert.That(i == 1, "Mik Thomasen was not insert into data");
+
+            select = new MySqlCommand("SELECT COUNT(*) FROM person WHERE eligible_to_vote=1;", this._conn);
+            i = Convert.ToInt32(select.ExecuteScalar());
+            Assert.That(i > 5);
         }
 
         [Test]
