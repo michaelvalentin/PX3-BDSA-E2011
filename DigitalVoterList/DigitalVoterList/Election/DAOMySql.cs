@@ -665,7 +665,7 @@ namespace DigitalVoterList.Election
 			Contract.Requires(!(user.DbId > 0) || user.PersonDbId > 0, "When updating a user, PersonDbId must be greater than zero.");
 			Contract.Requires(user.Cpr == null || Citizen.ValidCpr(user.Cpr), "A user must have a valid CPR number or no CPR number");
 			Contract.Requires(!(user.DbId > 0) || this.ExistsInDb(user), "DbId > 0 => UserExists. Eg. if updating, the user to update must exist.");
-			Contract.Requires(!(user.DbId > 0) || ExistsInDb(user), "DbId > 0 => userPersonExists. Eg. if updating, the users person to update must exist."); //todo: this is not correct.. the contract seems impossible to test..
+			Contract.Requires(!(user.DbId > 0) || ExistsInDb(new Person(user.PersonDbId)), "DbId > 0 => userPersonExists. Eg. if updating, the users person to update must exist.");
 			Contract.Requires(user.Username != null);
 			Contract.Requires(user.Title != null);
 			Contract.Requires(user.UserSalt != null);
@@ -822,33 +822,6 @@ namespace DigitalVoterList.Election
 				updateUser.Parameters.AddWithValue("@" + kv.Key, kv.Value);
 			}
 			Execute(updateUser);
-		}
-
-		/// <summary>
-		/// Create this voter card with this data!
-		/// </summary>
-		/// <param name="voterCard">The voter card to register</param>
-		/// <returns>Was the attempt successful?</returns>
-		public void Save(VoterCard voterCard)
-		{
-			Contract.Requires(voterCard != null);
-			Contract.Requires(voterCard.Citizen != null);
-			Contract.Requires(ExistsInDb(voterCard.Citizen), "A voter card must belong to a person in the database");
-			Contract.Requires(voterCard.IdKey != null);
-			/*Contract.Requires(FindVoterCards(
-				new Dictionary<VoterCardSearchParam, object>() { { VoterCardSearchParam.IdKey, voterCard.IdKey } },
-				SearchMatching.Exact).Count == 0, "Voter card id-key must be unique!");*/
-			Contract.Requires(voterCard.Id >= 0, "VoterCard id must be greater than zero");
-			Contract.Requires(!(voterCard.Id > 0) || ExistsInDb(voterCard));
-
-			if (voterCard.Id == 0)
-			{
-				DoTransaction(() => PriSaveNew(voterCard));
-			}
-			else
-			{
-				DoTransaction(() => PriSave(voterCard));
-			}
 		}
 
 		private int PriSaveNew(VoterCard voterCard)
@@ -1015,28 +988,6 @@ namespace DigitalVoterList.Election
 		}
 
 		/// <summary>
-		/// Mark this user as invalid!
-		/// </summary>
-		/// <param name="user">The user who should be marked as invalid</param>
-		/// <returns>Was the attempt succesful?</returns>
-		public void MarkUserInvalid(User user)
-		{
-			//WAIT
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Mark this invalid user as valid again.
-		/// </summary>
-		/// <param name="user">The user to mark as valid</param>
-		/// <returns>Was the attempt succesful</returns>
-		public void RestoreUser(User user)
-		{
-			//WAIT
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
 		/// Update all persons in the dataset with this update
 		/// </summary>
 		/// <param name="updateFunc"></param>
@@ -1148,7 +1099,7 @@ namespace DigitalVoterList.Election
 					v.ElectionEvent = Settings.Election;
 					v.IdKey = VoterCard.GenerateIdKey();
 					v.Valid = true;
-					Save(v);
+					DoTransaction(() => PriSave(v));
 				}
 			}
 			catch (Exception ex)
@@ -1228,64 +1179,52 @@ namespace DigitalVoterList.Election
 		{
 			get
 			{
-				if (_connection == null)
-				{
-					_connection = new MySqlConnection(_connectionString);
-					_connection.Open();
-				}
-				return _connection;
-				/*if (_connection != null && _connection.State.Equals("Open"))
+				if (_connection != null && _connection.State.Equals("Open"))
 				{
 					return _connection;
 				}
 				else
 				{
-					RetryUtility.RetryAction(() => Reconnect(), 3, 500);
-					return Connection;
-				}*/
+					_preparedStatements = new Dictionary<string, MySqlCommand>();
+					RetryUtility.RetryAction(() =>
+							{
+								_connection = new MySqlConnection(_connectionString);
+								_connection.Open();
+							}, 5, 500);
+				}
+				return _connection;
 			}
-		}
-
-		/// <summary>
-		/// Try to reconnect to the database
-		/// </summary>
-		private void Reconnect()
-		{
-			try
-			{
-				if (_connection != null) _connection.Close();
-			}
-			catch { }
-			_connection = new MySqlConnection(_connectionString);
-			_connection.Open();
-			_preparedStatements = new Dictionary<string, MySqlCommand>();
 		}
 
 		/// <summary>
 		/// Do this in a transaction, and handle all transaction and connection issues that might occur
 		/// </summary>
 		/// <param name="act">What to do...</param>
-		private void DoTransaction(Action act, IsolationLevel isolationLevel)
+		/// <param name="isolationLevel">The isolation level to use</param>
+		private void DoTransaction(Action act, IsolationLevel isolationLevel = IsolationLevel.Serializable)
 		{
-			try
-			{
-				_transaction = Connection.BeginTransaction(isolationLevel);
-				act();
-				_transaction.Commit();
-			}
-			catch (Exception ex)
+			RetryUtility.RetryAction(() =>
 			{
 				try
 				{
-					_transaction.Rollback();
+					_transaction = Connection.BeginTransaction(isolationLevel);
+					act();
+					_transaction.Commit();
 				}
-				catch (Exception excep)
+				catch (Exception ex)
 				{
-					//todo: And retry? We can't just rollback the function, we need to try again..
-					// TODO: Make a logging function and maybe a security alert...
+					try
+					{
+						_transaction.Rollback();
+					}
+					catch (Exception excep)
+					{
+						_connection = null; //If we can't rollback, clear the connection; something is very wrong...
+						//SKIPPEDTODO: Make a logging function and maybe a security alert... 
+					}
+					throw;
 				}
-				throw;
-			}
+			}, 3, 700);
 			_transaction = null;
 		}
 
@@ -1296,15 +1235,6 @@ namespace DigitalVoterList.Election
 		public bool Transacting()
 		{
 			return (_transaction != null);
-		}
-
-		/// <summary>
-		/// Do this in a transaction, and handle all transaction and connection issues that might occur
-		/// </summary>
-		/// <param name="act">What to do...</param>
-		private void DoTransaction(Action act)
-		{
-			DoTransaction(act, IsolationLevel.Serializable);
 		}
 
 		/// <summary>
@@ -1393,30 +1323,14 @@ namespace DigitalVoterList.Election
 
 		private void Execute(MySqlCommand cmd)
 		{
-			try
-			{
-				cmd.ExecuteNonQuery();
-			}
-			catch (Exception ex)
-			{
-				//TODO: Write some catch shit...!!!!
-				throw;
-			}
+			cmd.ExecuteNonQuery();
 		}
 
 		//Brug en scalar
 		private void ScalarQuery(MySqlCommand cmd, Action<object> func)
 		{
-			try
-			{
-				object o = cmd.ExecuteScalar();
-				func(o);
-			}
-			catch (Exception ex)
-			{
-				//TODO: Write some catch shit...!!!!
-				throw;
-			}
+			object o = cmd.ExecuteScalar();
+			func(o);
 		}
 
 		//Returner scalar
@@ -1435,11 +1349,6 @@ namespace DigitalVoterList.Election
 			{
 				rdr = cmd.ExecuteReader();
 				func(rdr);
-			}
-			catch (Exception ex)
-			{
-				//TODO: Write some catch shit...!!!!
-				throw;
 			}
 			finally
 			{

@@ -189,7 +189,7 @@ namespace ParamTests
 
             //Non-eligible voter...
             Citizen c2 = _dao.LoadCitizen(2);
-            //Assert.Throws(typeof(Exception), c2.SetHasVoted, "Uneligible voter can never vote!");
+            //Assert.Throws(typeof(Exception), c2.SetHasVoted, "Uneligible voter can never vote!");  //Only if compiled without contracts..
             try
             {
                 c2.SetHasVoted();
@@ -206,7 +206,7 @@ namespace ParamTests
 
             //Has allready voted..
             Citizen c4 = _dao.LoadCitizen(4);
-            //Assert.Throws(typeof(Exception), c4.SetHasVoted, "Voters must never vote twice!");
+            //Assert.Throws(typeof(Exception), c4.SetHasVoted, "Voters must never vote twice!");  //Only if compiled without contracts..
             try
             {
                 c4.SetHasVoted();
