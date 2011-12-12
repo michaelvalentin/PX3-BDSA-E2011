@@ -9,6 +9,7 @@ namespace ParamTests
 
     using DigitalVoterList;
     using DigitalVoterList.Election;
+    using DigitalVoterList.Election.Administration;
 
     using NUnit.Framework;
 
@@ -132,9 +133,9 @@ namespace ParamTests
         [Test]
         public void TestValidateUser()
         {
-            Assert.That(this._dao.ValidateUser("jdmo", VoterListApp.CurrentUser.HashPassword("12345")));
-            Assert.That(!this._dao.ValidateUser("jdmo2", VoterListApp.CurrentUser.HashPassword("12345")));
-            Assert.That(!this._dao.ValidateUser("jdmo", VoterListApp.CurrentUser.HashPassword("1235")));
+            Assert.That(this._dao.ValidateUser("jdmo", "89D2F4EDD669E164DE3463B83F0F41F0"));
+            Assert.That(!this._dao.ValidateUser("jdmo2", "89D2F4EDD669E164DE3463B83F0F41F0"));
+            Assert.That(!this._dao.ValidateUser("jdmo", "62lio+3lkaFDA62lio+3lkaFDA"));
         }
 
         [Test]
@@ -149,32 +150,6 @@ namespace ParamTests
             var permissions3 = this._dao.GetPermissions(User.GetUser("elec", "hemmelighed"));
             Assert.That(permissions3.Count == 3);
         }
-
-        /*[Test]
-        public void TestSaveCitizen()
-        {
-            //Replace jens with morten
-            var c = new Citizen(1, "1201561234");
-            c.Name = "Morten Hyllekilde";
-            c.SecurityQuestions.Add(new Quiz("Who are you?", "A test person"));
-            this._dao.Save(c);
-
-            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM quiz WHERE person_id=1", this._conn);
-            var i = selectData.ExecuteScalar();
-            Assert.That(i.ToString() == "1");
-
-            selectData = new MySqlCommand("SELECT COUNT(*) FROM quiz WHERE name='Morten Hyllekilde'", this._conn);
-
-
-            //Replace make new citizen
-            var d = new Citizen(0, "1507814321");
-            d.Name = "Secret Ninja";
-            this._dao.Save(d);
-
-            MySqlCommand selectData2 = new MySqlCommand("SELECT COUNT(*) FROM person", this._conn);
-            var i2 = selectData2.ExecuteScalar();
-            Assert.That(i2.ToString() == "5");
-        }*/
 
         [Test]
         public void TestGetWorkplaces()
@@ -274,17 +249,6 @@ namespace ParamTests
             Assert.That(i.ToString() == "1", "Mik Thomasen was not insert into data");
         }
 
-        //List<VoterCard> Find(VoterCard voterCard);
-
-        [Test]
-        public void TestSavePerson()
-        {
-            /*this._dao.Save(new Person() { Name = "Helle Thorsen" });
-            MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Helle Thorsen'", this._conn);
-            object o = selectData.ExecuteScalar();
-            Assert.That(((int)o) == 1);*/
-        }
-
         [Test]
         public void TestFindCitizen()
         {
@@ -319,8 +283,6 @@ namespace ParamTests
             Assert.That(result.Count == 1);
             Assert.That(result[0].Name.Equals("Jens Dahl Møllerhøj"), "Person was not Jens Dahl Møllerhøj");
         }
-
-        //void Save(User user);
 
         [Test]
         public void TestSaveNewVoterCard()
@@ -364,25 +326,13 @@ namespace ParamTests
             Assert.That(i == 1, "Eligible citizen with no valid votercards should had one generated.");
         }
 
+        [Test]
+        public void TestPrintVoterCards()
+        {
+            var vp = new VoterCardPrinter();
+            _dao.PrintVoterCards(vp);
+        }
 
-        //void SetHasVoted(Citizen citizen, string cprKey);
-
-        //void SetHasVoted(Citizen citizen);
-
-
-        /*void ChangePassword(User user, string newPasswordHash, string oldPasswordHash);
-
-        void ChangePassword(User user, string newPasswordHash);
-
-        void MarkUserInvalid(User user);
-
-        void RestoreUser(User user);
-
-        void MarkVoterCardInvalid(VoterCard voterCard);
-
-        void UpdatePeople(Func<Person, RawPerson, Person> update);
-
-        VotingVenue FindVotingVenue(Citizen citizen); */
 
         #endregion
 

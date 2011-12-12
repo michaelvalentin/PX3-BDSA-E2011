@@ -1,13 +1,12 @@
 ﻿namespace DigitalVoterList.Election.Administration
 {
     using System.Diagnostics.Contracts;
-    using System.Windows;
     using System.Windows.Controls;
 
     /// <summary>
     /// A printer used to create the physical voter cards
     /// </summary>
-    public class VoterCardPrinter : FrameworkElement
+    public class VoterCardPrinter
     {
         public VoterCardPrinter()
         {

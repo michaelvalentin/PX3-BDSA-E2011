@@ -42,6 +42,9 @@ namespace DigitalVoterList.Election
         MarkUserInvalid,
         RestoreUser,
         MarkVoteCardInvalid,
+
+        //PRINT
+        PrintVoterCards
     }
 }
 

@@ -22,7 +22,8 @@ INSERT INTO `action` (`id`, `label`) VALUES
 (21, 'RestoreUser'),
 (22, 'MarkVoterCardInvalid'),
 (23, 'UpdateCitizens'),
-(24, 'UpdateVotercards');
+(24, 'UpdateVoterCards'),
+(25, 'PrintVoterCards');
 
 INSERT INTO `user` (`id`, `user_name`, `title`, `person_id`, `password_hash`, `user_salt`) VALUES
 (1, 'jdmo', 'Sys Tester', 1, '89D2F4EDD669E164DE3463B83F0F41F0', 'lkaFDA62lio+3'),
@@ -54,6 +55,7 @@ INSERT INTO `permission` (`action_id`, `user_id`) VALUES
 (22, 1),
 (23, 1),
 (24, 1),
+(25, 1),
 (8, 3),
 (5, 3),
 (16, 3);

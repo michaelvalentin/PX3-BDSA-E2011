@@ -1,7 +1,6 @@
 ﻿
 namespace DigitalVoterList.Election
 {
-    using System;
     using System.Diagnostics.Contracts;
 
     /// <summary>
@@ -28,7 +27,7 @@ namespace DigitalVoterList.Election
 
         public int DbId { get; private set; }
 
-        public static bool operator ==(VotingVenue a, VotingVenue b) //todo: do this nicer
+        public static bool operator ==(VotingVenue a, VotingVenue b)
         {
             var c = a ?? new VotingVenue(0, null, null);
             var d = b ?? new VotingVenue(0, null, null);
@@ -63,7 +62,7 @@ namespace DigitalVoterList.Election
             }
             return Equals((VotingVenue)obj);
         }
-        
+
         [ContractInvariantMethod]
         private void ObjectInvariant()
         {

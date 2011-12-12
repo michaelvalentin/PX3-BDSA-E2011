@@ -1,6 +1,4 @@
-﻿
-
-using System.Data;
+﻿using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using DigitalVoterList.Utilities;
@@ -11,6 +9,8 @@ namespace DigitalVoterList.Election
     using System;
     using System.Collections.Generic;
     using System.Text;
+
+    using DigitalVoterList.Election.Administration;
 
     public class DAOMySql : IDataAccessObject
     {
@@ -36,7 +36,6 @@ namespace DigitalVoterList.Election
 
         private Citizen PriLoadCitizen(string cpr)
         {
-            //TODO: should this use findCitizens?
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(cpr != null);
             Contract.Requires(FindCitizens(new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, cpr } }).Count == 1, "Person must exist in the database");
@@ -564,32 +563,6 @@ namespace DigitalVoterList.Election
             }
             return result;
         }
-
-
-        /// <summary>
-        /// Create this person with this data!
-        /// </summary>
-        /// <param name="citizen">The person to register</param>
-        /// <returns>Was the attempt successful?</returns>
-
-        //todo: this method is here for historic reasons, delete it at when shipping.
-
-        /*public void Save(Citizen citizen)
-        {
-            Contract.Requires(citizen != null, "Input person must not be null!");
-            Contract.Requires(citizen.DbId >= 0, "DbId must be greater than or equal to zero");
-            Contract.Requires(!(citizen.DbId > 0) || ExistsInDb(citizen), "If updating, the citizen to update must exist");
-            Contract.Requires(Citizen.ValidCpr(citizen.Cpr));
-            if (citizen.DbId > 0)
-            {
-                DoTransaction(() => PriSave(citizen));
-            }
-            else
-            {
-                DoTransaction(() => PriSaveNew(citizen));
-            }
-
-        }*/
 
         private void PriSave(Citizen citizen)
         {
@@ -1222,6 +1195,36 @@ namespace DigitalVoterList.Election
             Contract.Requires(this.Transacting(), "This can only be done in a transaction.");
             MySqlCommand cmd = this.Prepare("UPDATE person SET eligible_to_vote=0 WHERE cpr NOT IN (SELECT cpr FROM raw_person_data);");
             this.Execute(cmd);
+        }
+
+        public void PrintVoterCards(VoterCardPrinter printer)
+        {
+            var connection = new MySqlConnection(this._connectionString);
+            connection.Open();
+            const string Query = "SELECT id FROM voter_card WHERE valid=1;";
+            var validVotercards = new MySqlCommand(Query, connection);
+            MySqlDataReader rdr = null;
+
+            try
+            {
+                rdr = validVotercards.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    var id = rdr.GetInt32("id");
+                    var v = LoadVoterCard(id);
+                    printer.Print(v);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                if (rdr != null) rdr.Close();
+                connection.Close();
+            }
         }
 
         #endregion

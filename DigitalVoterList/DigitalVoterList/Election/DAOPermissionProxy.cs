@@ -5,6 +5,8 @@ namespace DigitalVoterList.Election
     using System;
     using System.Diagnostics.Contracts;
 
+    using DigitalVoterList.Election.Administration;
+
     /// <summary>
     /// A proxy to handle permissions for data access actions
     /// </summary>
@@ -51,9 +53,9 @@ namespace DigitalVoterList.Election
             if (!this.CorrectUser(user)) throw new PermissionException(_user, "You must be logged as this user");
         }
 
-        private bool WorksHere(VotingVenue v, string msg = "You can't perform this action, as you don't work in the right voting venue")
+        private bool WorksHere(VotingVenue v, string msg = "You can't perform this action, as you don't work in the right voting venue, or have global access")
         {
-            return _user.Workplaces.Contains(v);
+            return _user.Workplaces.Contains(v) || this.ActionPermitted(SystemAction.AllVotingPlaces);
         }
 
         public Citizen LoadCitizen(int id)
@@ -230,7 +232,15 @@ namespace DigitalVoterList.Election
             _dao.UpdatePeople(update);
         }
 
-
-
+        /// <summary>
+        /// Update all persons in the dataset with this update
+        /// </summary>
+        /// <param name="voterCardPrinter"></param>
+        public void PrintVoterCards(VoterCardPrinter voterCardPrinter)
+        {
+            Contract.Requires(this.ActionPermitted(SystemAction.PrintVoterCards));
+            this.TestPermission(SystemAction.PrintVoterCards, "You don't have permission to print votercards.");
+            _dao.PrintVoterCards(voterCardPrinter);
+        }
     }
 }

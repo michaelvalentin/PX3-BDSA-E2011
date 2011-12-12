@@ -6,6 +6,7 @@ namespace DigitalVoterList.Election
 
     using System;
 
+    using DigitalVoterList.Election.Administration;
 
     /// <summary>
     /// An object to access the database in a standardized way.
@@ -189,8 +190,13 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// Update all persons in the dataset with this update
         /// </summary>
-        /// <param name="voterCard"></param>
         /// <param name="update">The update function</param>
         void UpdatePeople(Func<Citizen, RawPerson, Citizen> update);
+
+        /// <summary>
+        /// Update all persons in the dataset with this update
+        /// </summary>
+        /// <param name="voterCardPrinter"></param>
+        void PrintVoterCards(VoterCardPrinter voterCardPrinter);
     }
 }
