@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Windows;
 using DigitalVoterList.Election;
 using DigitalVoterList.Views;
 
@@ -22,7 +23,8 @@ namespace DigitalVoterList.Controllers
         private readonly VoterRegistrationView _view;
         private readonly SearchCitizenController _searchController;
         private readonly SearchCitizenView _searchView;
-        private readonly SearchCitizenWindow _searchWindow;
+        private readonly ManualVoterValidationController _validationController;
+        private Window _currentSearchWindow;
 
         public ManualVoterRegistrationController(VoterRegistrationView view)
             : base(view)
@@ -32,11 +34,13 @@ namespace DigitalVoterList.Controllers
 
             _view = view;
             _searchView = new SearchCitizenView();
-            _searchWindow = new SearchCitizenWindow();
-            _searchController = new SearchCitizenController(_searchView, _searchWindow);
+            _searchView.QuitButton.Click += (s, e) => _currentSearchWindow.Close();
+            _searchController = new SearchCitizenController(_searchView);
 
             _view.VoterValidation.Children.Clear();
-            _view.VoterValidation.Children.Add(new ManualVoterValidationView());
+            var validationView = new ManualVoterValidationView();
+            _validationController = new ManualVoterValidationController(validationView);
+            _view.VoterValidation.Children.Add(validationView);
             _view.Height = 420;
 
             _view.VoterIdentification.VoterCardNumber.TextChanged += (s, e) =>
@@ -66,7 +70,7 @@ namespace DigitalVoterList.Controllers
                 };
             _view.VoterIdentification.VoterCprDigits.PasswordChanged += DigitsOnlyPassword;
 
-            _view.SearchVoterButton.Click += (s, e) => _searchWindow.Show();
+            _view.SearchVoterButton.Click += (s, e) => ShowSearchVoterWindow();
             _searchController.CitizenFound += SearchCitizenFound;
 
             CitizenChanged += LoadVoterValidation;
@@ -92,6 +96,22 @@ namespace DigitalVoterList.Controllers
                 return;
             }
             Citizen = result[0];
+        }
+
+        private void ShowSearchVoterWindow()
+        {
+            var win = new Window();
+            win.Content = _searchView;
+            win.Closed += (s, e) =>
+            {
+                ((Window)s).Content = null;
+            };
+            win.Height = _searchView.Height + 30;
+            win.Width = _searchView.Width + 10;
+            win.ResizeMode = ResizeMode.NoResize;
+            win.Show();
+            win.LostFocus += (s, e) => win.Focus(); //Force focus
+            _currentSearchWindow = win;
         }
 
         private void DigitsOnlyPassword(object sender, EventArgs e)
@@ -121,28 +141,64 @@ namespace DigitalVoterList.Controllers
         private void SearchCitizenFound(Citizen c)
         {
             Citizen = c;
-            _searchWindow.Close();
+            _currentSearchWindow.Close();
         }
 
         protected void LoadVoterValidation()
         {
-            _view.VoterValidation.Children.Clear();
-            var validationView = new ManualVoterValidationView();
-            _view.VoterValidation.Children.Add(validationView);
-            if (Citizen != null)
+            if (Citizen == null)
             {
-                var mvc = new ManualVoterValidationController(validationView, Citizen);
+                _validationController.Clear();
+                return;
             }
+            _validationController.Show(Citizen);
         }
 
         protected override void RegisterVoter(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (Citizen == null)
+            {
+                ShowError("An unexpected error occured. Please try again.");
+                return;
+            }
+            if (!Citizen.EligibleToVote)
+            {
+                ShowError("Citizen is not eligible to vote!");
+                return;
+            }
+            if (Citizen.HasVoted)
+            {
+                ShowError("Citizen has allready voted");
+                return;
+            }
+            try
+            {
+                DAOFactory.CurrentUserDAO.SetHasVoted(Citizen);
+                ShowSuccess("Voter registered!");
+                Disable(_view.RegisterVoterButton);
+            }
+            catch (Exception ex)
+            {
+                //TODO: Log the exception for security / maintainance...
+                ShowError("An unexpected error occured. Please try again.");
+            }
         }
 
         protected override void CheckAbilityToVote()
         {
-            //throw new NotImplementedException();
+            Disable(_view.RegisterVoterButton);
+            if (Citizen == null) return;
+            if (!Citizen.EligibleToVote)
+            {
+                ShowError("Citizen is not eligible to vote!");
+                return;
+            }
+            if (Citizen.HasVoted)
+            {
+                ShowError("Citizen has allready voted");
+                return;
+            }
+            Enable(_view.RegisterVoterButton);
         }
     }
 }

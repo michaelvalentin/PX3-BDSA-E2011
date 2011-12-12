@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="500" d:DesignWidth="960">
     <Grid>
-        <TextBlock Height="23" HorizontalAlignment="Left" Margin="68,97,0,0" Name="textBlock1" Text="ADMINISTRATION" VerticalAlignment="Top" FontSize="20" />
+        <Button Content="Import Data" Height="49" HorizontalAlignment="Left" Margin="554,109,0,0" Name="ImportDataBtn" VerticalAlignment="Top" Width="249" FontSize="18" />
+        <Button Content="Update Voter Cards" Height="49" HorizontalAlignment="Left" Margin="554,212,0,0" Name="UpdateVoterCardsBtn" VerticalAlignment="Top" Width="249" FontSize="18" />
+        <Button Content="Print Voter Cards" Height="49" HorizontalAlignment="Left" Margin="554,315,0,0" Name="PrintVoterCardsBtn" VerticalAlignment="Top" Width="249" FontSize="18" />
     </Grid>
 </UserControl>

@@ -87,39 +87,37 @@ namespace DigitalVoterList.Controllers
 
         protected override void RegisterVoter(object sender, EventArgs e)
         {
-            if (Citizen != null)
-            {
-                try
-                {
-                    IDataAccessObject dao = DAOFactory.CurrentUserDAO;
-                    if (Citizen.HasVoted)
-                    {
-                        ShowError("Voter has allready voted!");
-                        return;
-                    }
-                    if (!Citizen.EligibleToVote)
-                    {
-                        ShowError("Citizen is not eligible to vote!");
-                        return;
-                    }
-                    string cprDigits = _view.VoterIdentification.VoterCprDigits.Password;
-                    if (!Citizen.Cpr.Substring(6, 4).Equals(cprDigits))
-                    {
-                        ShowError("CPR-Digits are incorrect!");
-                        return;
-                    }
-                    DAOFactory.CurrentUserDAO.SetHasVoted(Citizen, cprDigits);
-                    ShowSuccess("Citizen registered!");
-                }
-                catch (Exception ex)
-                {
-                    //TODO: Log the exception for security / maintainance...
-                    ShowError("An unexpected error occured. Please try again.");
-                }
-            }
-            else
+            if (Citizen == null)
             {
                 ShowWarning("No person found with the inserted information");
+                return;
+            }
+            if (Citizen.HasVoted)
+            {
+                ShowError("Voter has allready voted!");
+                return;
+            }
+            if (!Citizen.EligibleToVote)
+            {
+                ShowError("Citizen is not eligible to vote!");
+                return;
+            }
+            string cprDigits = _view.VoterIdentification.VoterCprDigits.Password;
+            if (!Citizen.Cpr.Substring(6, 4).Equals(cprDigits))
+            {
+                ShowError("CPR-Digits are incorrect!");
+                return;
+            }
+            try
+            {
+                DAOFactory.CurrentUserDAO.SetHasVoted(Citizen, cprDigits);
+                ShowSuccess("Citizen registered!");
+                Disable(_view.RegisterVoterButton);
+            }
+            catch (Exception ex)
+            {
+                //TODO: Log the exception for security / maintainance...
+                ShowError("An unexpected error occured. Please try again.");
             }
         }
 

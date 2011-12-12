@@ -122,22 +122,18 @@ namespace DigitalVoterList.Controllers
 
         protected void Disable(TextBox t)
         {
-            t.Background = new SolidColorBrush(Color.FromRgb(210, 210, 210));
             t.IsEnabled = false;
             t.IsTabStop = false;
         }
 
         protected void Disable(Button b)
         {
-            b.Background = new SolidColorBrush(Color.FromRgb(210, 210, 210));
             b.IsEnabled = false;
             b.IsTabStop = false;
         }
 
         protected void Enable(Button b)
         {
-            //TODO: Set standard button color
-            //b.Background = new SolidColorBrush(Color.FromRgb(210, 210, 210));
             b.IsEnabled = true;
             b.IsTabStop = true;
         }
