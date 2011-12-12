@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Authors:
+ * Team: PX3
+ * Date: 12-12-2011
+ */
+
+using System;
 using DigitalVoterList.Election;
 
 namespace DigitalVoterList.Election
@@ -42,6 +48,9 @@ namespace DigitalVoterList.Election
         MarkUserInvalid,
         RestoreUser,
         MarkVoteCardInvalid,
+
+        //PRINT
+        PrintVoterCards
     }
 }
 

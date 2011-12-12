@@ -1,4 +1,10 @@
-﻿using DigitalVoterList.Election;
+﻿/*
+ * Authors:
+ * Team: PX3
+ * Date: 12-12-2011
+ */
+
+using DigitalVoterList.Election;
 using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers

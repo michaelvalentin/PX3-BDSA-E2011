@@ -1,7 +1,6 @@
 ﻿namespace DigitalVoterList.Election.Administration
 {
     using System.Diagnostics.Contracts;
-    using System.Windows;
     using System.Windows.Controls;
 
     /// <summary>

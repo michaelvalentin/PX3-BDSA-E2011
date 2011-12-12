@@ -1,8 +1,8 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="VoterCard.cs" company="">
-// TODO: Update copyright text.
-// </copyright>
-// -----------------------------------------------------------------------
+﻿/*
+ * Authors:
+ * Team: PX3
+ * Date: 12-12-2011
+ */
 
 using System.Diagnostics.Contracts;
 

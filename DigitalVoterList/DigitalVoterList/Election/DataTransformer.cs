@@ -1,8 +1,8 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="DataCollector.cs" company="">
-// TODO: Update copyright text.
-// </copyright>
-// -----------------------------------------------------------------------
+﻿/*
+ * Authors:
+ * Team: PX3
+ * Date: 12-12-2011
+ */
 
 namespace DigitalVoterList.Election
 {
@@ -73,8 +73,6 @@ namespace DigitalVoterList.Election
                 if (!String.IsNullOrEmpty(rawPerson.MotherEducation)) quizzes.Add(new Quiz("What is your mothers education", rawPerson.MotherEducation));
                 if (!String.IsNullOrEmpty(rawPerson.MotherName)) quizzes.Add(new Quiz("What is your mothers name?", rawPerson.MotherName));
             }
-
-            quizzes.Add(new Quiz("What is the answer to life the universe and everything?", "42")); //todo: remove this joke?
 
             return quizzes;
         }

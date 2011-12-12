@@ -1,4 +1,10 @@
-﻿using System.Windows.Controls;
+﻿/*
+ * Authors:
+ * Team: PX3
+ * Date: 12-12-2011
+ */
+
+using System.Windows.Controls;
 
 namespace DigitalVoterList.Views
 {
