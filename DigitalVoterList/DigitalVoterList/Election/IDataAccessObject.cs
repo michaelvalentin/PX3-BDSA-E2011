@@ -97,26 +97,11 @@ namespace DigitalVoterList.Election
         List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching = SearchMatching.Similair);
 
         /// <summary>
-        /// What votercards exists with data similiar to this data?
-        /// </summary>
-        /// <param name="data">The data to search with</param>
-        /// <param name="matching">What type of search matching to use</param>
-        /// <returns>A list of voter cards that have the specified data</returns>
-        List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching = SearchMatching.Similair);
-
-        /// <summary>
         /// Create this user with this data!
         /// </summary>
         /// <param name="user">The user to register</param>
         /// <returns>Was the attempt successful?</returns>
         void Save(User user);
-
-        /// <summary>
-        /// Create this voter card with this data!
-        /// </summary>
-        /// <param name="voterCard">The voter card to register</param>
-        /// <returns>Was the attempt successful?</returns>
-        void Save(VoterCard voterCard);
 
         /// <summary>
         /// Mark that a voter has voted with standard validation!
@@ -149,20 +134,6 @@ namespace DigitalVoterList.Election
         /// <param name="newPasswordHash">The hash of the new password to use</param>
         /// <returns>Was th attempt succesful?</returns>
         void ChangePassword(User user, string newPasswordHash);
-
-        /// <summary>
-        /// Mark this user as invalid!
-        /// </summary>
-        /// <param name="user">The user who should be marked as invalid</param>
-        /// <returns>Was the attempt succesful?</returns>
-        void MarkUserInvalid(User user);
-
-        /// <summary>
-        /// Mark this invalid user as valid again.
-        /// </summary>
-        /// <param name="user">The user to mark as valid</param>
-        /// <returns>Was the attempt succesful</returns>
-        void RestoreUser(User user);
 
         /// <summary>
         /// Update all persons in the dataset with this update

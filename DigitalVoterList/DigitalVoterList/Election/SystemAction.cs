@@ -14,42 +14,25 @@ namespace DigitalVoterList.Election
         Nothing,
         AllVotingPlaces,
 
-        //CREATE
         CreateUser,
-        CreatePerson,
-        CreateVoterCard,
 
-        //READ
-        LoadPerson,
+        LoadCitizen,
         LoadUser,
         LoadVoterCard,
         ScanVoterCard,
 
-        //SEARCH
-        FindPerson,
+        FindCitizen,
         FindUser,
-        FindVoterCard,
-        FindElegibleVoters,
         FindVotingVenue,
 
-        //UPDATE
-        SavePerson,
         SaveUser,
-        SaveVoterCard,
         SetHasVoted,
         SetHasVotedManually,
         ChangeOwnPassword,
         ChangeOthersPassword,
-        MarkPeopleNotInRawDataUneligibleToVote,
         UpdateCitizens,
         UpdateVoterCards,
 
-        //DELETE
-        MarkUserInvalid,
-        RestoreUser,
-        MarkVoteCardInvalid,
-
-        //PRINT
         PrintVoterCards
     }
 }

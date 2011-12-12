@@ -16,7 +16,6 @@ namespace DigitalVoterList.Election
     /// <summary>
     /// A proxy to handle permissions for data access actions
     /// </summary>
-    // TODO: Consider voting-venues?
     public class DAOPermissionProxy : IDataAccessObject
     {
         private readonly User _user;
@@ -93,8 +92,8 @@ namespace DigitalVoterList.Election
 
         public Citizen LoadCitizen(int id)
         {
-            Contract.Requires(this.ActionPermitted(SystemAction.LoadPerson));
-            this.TestPermission(SystemAction.LoadPerson, "You dont have permission to load information about citizens");
+            Contract.Requires(this.ActionPermitted(SystemAction.LoadCitizen));
+            this.TestPermission(SystemAction.LoadCitizen, "You dont have permission to load information about citizens");
             return _dao.LoadCitizen(id);
         }
 
@@ -156,8 +155,8 @@ namespace DigitalVoterList.Election
 
         public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching = SearchMatching.Similair)
         {
-            Contract.Requires(this.ActionPermitted(SystemAction.FindPerson));
-            this.TestPermission(SystemAction.FindPerson, "you don't have permission to search for citizens");
+            Contract.Requires(this.ActionPermitted(SystemAction.FindCitizen));
+            this.TestPermission(SystemAction.FindCitizen, "you don't have permission to search for citizens");
             return _dao.FindCitizens(data, matching);
         }
 
@@ -168,25 +167,11 @@ namespace DigitalVoterList.Election
             return _dao.FindUsers(data, matching);
         }
 
-        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching)
-        {
-            Contract.Requires(this.ActionPermitted(SystemAction.FindVoterCard));
-            this.TestPermission(SystemAction.FindVoterCard, "You don't have permission to search for votercards");
-            return _dao.FindVoterCards(data, matching);
-        }
-
         public void Save(User user)
         {
             Contract.Requires(this.ActionPermitted(SystemAction.SaveUser));
             this.TestPermission(SystemAction.SaveUser, "You don't have permission to save users");
             _dao.Save(user);
-        }
-
-        public void Save(VoterCard voterCard)
-        {
-            Contract.Requires(this.ActionPermitted(SystemAction.SaveVoterCard));
-            this.TestPermission(SystemAction.SaveVoterCard, "You don't have permission to save votercards");
-            _dao.Save(voterCard);
         }
 
         public void SetHasVoted(Citizen citizen, string cprKey)
@@ -220,20 +205,6 @@ namespace DigitalVoterList.Election
             Contract.Requires(this.ActionPermitted(SystemAction.ChangeOthersPassword));
             this.TestPermission(SystemAction.ChangeOthersPassword, "You don't have permission to changed users passwords");
             _dao.ChangePassword(user, newPasswordHash);
-        }
-
-        public void MarkUserInvalid(User user)
-        {
-            Contract.Requires(this.ActionPermitted(SystemAction.MarkUserInvalid));
-            this.TestPermission(SystemAction.MarkUserInvalid, "You don't have permission to mark this user invalid");
-            _dao.MarkUserInvalid(user);
-        }
-
-        public void RestoreUser(User user)
-        {
-            Contract.Requires(this.ActionPermitted(SystemAction.RestoreUser));
-            this.TestPermission(SystemAction.RestoreUser, "You don't have permission to restore this user");
-            _dao.RestoreUser(user);
         }
 
         public void UpdatePeople(Func<Citizen, RawPerson, Citizen> update)

@@ -109,13 +109,6 @@ namespace DigitalVoterList.Election
             return false;
         }
 
-        [ContractInvariantMethod]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
-        private void ObjectInvariantMethod()
-        {
-            Contract.Invariant(ValidCpr(this.Cpr));
-        }
-
         public bool Equals(Citizen other)
         {
             if (ReferenceEquals(null, other))
