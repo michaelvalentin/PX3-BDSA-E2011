@@ -8,6 +8,8 @@ using System.Windows;
 
 namespace DigitalVoterList.Views
 {
+    using System.Windows.Controls;
+
     /// <summary>
     /// Interaction logic for SearchCitizenView.xaml
     /// </summary>
