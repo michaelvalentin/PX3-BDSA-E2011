@@ -1,8 +1,8 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="RawPerson.cs" company="">
-// TODO: Update copyright text.
-// </copyright>
-// -----------------------------------------------------------------------
+﻿/*
+ * Authors:
+ * Team: PX3
+ * Date: 12-12-2011
+ */
 
 namespace DigitalVoterList.Election
 {

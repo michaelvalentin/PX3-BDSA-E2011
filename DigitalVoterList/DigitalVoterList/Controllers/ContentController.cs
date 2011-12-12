@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿/*
+ * Authors:
+ * Team: PX3
+ * Date: 12-12-2011
+ */
+
+using System.Collections.Generic;
 using System.Windows.Controls;
 using DigitalVoterList.Election;
 

@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Authors:
+ * Team: PX3
+ * Date: 12-12-2011
+ */
+
+using System;
 using System.Windows.Input;
 using System.Windows.Media;
 using DigitalVoterList.Election;

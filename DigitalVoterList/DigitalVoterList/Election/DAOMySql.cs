@@ -1,4 +1,10 @@
-﻿using System.Data;
+﻿/*
+ * Authors:
+ * Team: PX3
+ * Date: 12-12-2011
+ */
+
+using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using DigitalVoterList.Utilities;

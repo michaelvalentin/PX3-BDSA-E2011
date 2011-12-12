@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Authors:
+ * Team: PX3
+ * Date: 12-12-2011
+ */
+
+using System;
 using System.Windows.Media;
 using DigitalVoterList.Election;
 using DigitalVoterList.Utilities;
@@ -6,8 +12,6 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
-    using System.Collections.Generic;
-    using System.Diagnostics;
 
     /// <summary>
     /// A controller for asking random security questions for a given citizen

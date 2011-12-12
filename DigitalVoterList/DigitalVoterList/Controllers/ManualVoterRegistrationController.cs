@@ -1,13 +1,17 @@
-﻿using System;
+﻿/*
+ * Authors:
+ * Team: PX3
+ * Date: 12-12-2011
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Windows.Controls;
 using DigitalVoterList.Election;
 using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
-    using System.Windows;
     using System.Windows.Controls;
 
     /// <summary>
