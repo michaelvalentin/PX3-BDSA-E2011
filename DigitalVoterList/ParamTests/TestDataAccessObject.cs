@@ -188,8 +188,17 @@ namespace ParamTests
             Assert.That(result != null, "Has voted was not updated in database!");
 
             //Non-eligible voter...
-            /*Citizen c2 = _dao.LoadCitizen(2);
-            Assert.Throws(typeof(Exception), c2.SetHasVoted, "Uneligible voter can never vote!");
+            Citizen c2 = _dao.LoadCitizen(2);
+            //Assert.Throws(typeof(Exception), c2.SetHasVoted, "Uneligible voter can never vote!");
+            try
+            {
+                c2.SetHasVoted();
+                Assert.Fail("Uneligible voter can never vote!");
+            }
+            catch (Exception ex)
+            {
+
+            }
             checkHasVoted.Parameters.Clear();
             checkHasVoted.Parameters.AddWithValue("@id", 2);
             result = checkHasVoted.ExecuteScalar();
@@ -197,11 +206,20 @@ namespace ParamTests
 
             //Has allready voted..
             Citizen c4 = _dao.LoadCitizen(4);
-            Assert.Throws(typeof(Exception), c4.SetHasVoted, "Voters must never vote twice!");
+            //Assert.Throws(typeof(Exception), c4.SetHasVoted, "Voters must never vote twice!");
+            try
+            {
+                c4.SetHasVoted();
+                Assert.Fail("Voters must never vote twice!");
+            }
+            catch (Exception ex)
+            {
+
+            }
             checkHasVoted.Parameters.Clear();
             checkHasVoted.Parameters.AddWithValue("@id", 4);
             result = checkHasVoted.ExecuteScalar();
-            Assert.That(result != null, "Voter with id 4 should allready have voted");*/
+            Assert.That(result != null, "Voter with id 4 should allready have voted");
         }
 
         [Test]
