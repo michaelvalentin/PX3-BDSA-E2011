@@ -67,7 +67,7 @@ namespace DigitalVoterList.Controllers
             _view.VoterIdentification.VoterCprDigits.PasswordChanged += DigitsOnlyPassword;
 
             _view.SearchVoterButton.Click += (s, e) => _searchWindow.Show();
-            _searchController.CitizenFound += SearchPersonFound;
+            _searchController.CitizenFound += SearchCitizenFound;
 
             CitizenChanged += LoadVoterValidation;
         }
@@ -118,9 +118,9 @@ namespace DigitalVoterList.Controllers
             }
         }
 
-        private void SearchPersonFound(Citizen c)
+        private void SearchCitizenFound(Citizen c)
         {
-            //Citizen = c;
+            Citizen = c;
             _searchWindow.Close();
         }
 
@@ -132,13 +132,17 @@ namespace DigitalVoterList.Controllers
             if (Citizen != null)
             {
                 var mvc = new ManualVoterValidationController(validationView, Citizen);
-                //mvc.Show(); //TODO: Skal være default behaviour for controller..
             }
         }
 
         protected override void RegisterVoter(object sender, EventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        protected override void CheckAbilityToVote()
+        {
+            //throw new NotImplementedException();
         }
     }
 }

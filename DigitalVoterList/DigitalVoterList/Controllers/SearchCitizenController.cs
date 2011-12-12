@@ -16,28 +16,32 @@ namespace DigitalVoterList.Controllers
         private SearchCitizenWindow _window;
         private List<Citizen> _searchCitizen;
         public Action<Citizen> CitizenFound;
+        public List<Citizen> SearchResult
+        {
+            get { return new List<Citizen>(_searchCitizen); }
+        }
 
         public SearchCitizenController(SearchCitizenView view, SearchCitizenWindow window)
         {
             _window = window;
             _view = view;
 
-            _view.SelectButton.Click += SelectEvent;
-            _view.SearchButton.Click += SearchEvent;
-            _view.KeyDown += SearchEvent;
-            _view.PreviewKeyDown += (s, e) => Clear();
-            _view.QuitButton.Click += (s, e) =>
-                {
-                    Clear();
-                    _window.Close();
-                };
-            _view.SearchListBox.MouseDoubleClick += this.SearchListBoxMouseDoubleClickEvent;
-            _window.LostFocus += (s, e) => _window.Focus();
-        }
-        
-        private void FireCitizenFoundEvent(Citizen c)
-        {
-            this.CitizenFound.Invoke(c);
+            _view.SearchButton.Click += (s, e) => Search();
+
+            _view.SelectButton.Click += (s, e) =>
+                                            {
+                                                int selectedIndex = _view.SearchListBox.SelectedIndex;
+                                                Select(selectedIndex);
+                                            };
+            _view.SearchListBox.MouseDoubleClick += (s, e) =>
+                                                        {
+                                                            int selectedIndex = ((ListBox)s).SelectedIndex;
+                                                            Select(selectedIndex);
+                                                        };
+
+            _view.QuitButton.Click += (s, e) => _window.Close();
+            _window.Closed += (s, e) => Clear();
+            _window.LostFocus += (s, e) => _window.Focus(); //Force focus on window as long as it is open...
         }
 
         /// <summary>
@@ -45,7 +49,8 @@ namespace DigitalVoterList.Controllers
         /// </summary>
         private void Clear()
         {
-            _view.SearchListBox.Items.Clear();
+            _searchCitizen = null;
+            LoadListBox();
             _view.nameTextBox.Text = "";
             _view.addressTextBox.Text = "";
             _view.cprTextBox.Text = "";
@@ -56,26 +61,74 @@ namespace DigitalVoterList.Controllers
         /// Search for a person with the information inserted in the textblocks and insert
         /// every person as an item in the listbox
         /// </summary>
-        /// <param name="sender">The sender</param>
-        /// <param name="e">The event</param>
-        private void SearchEvent(object sender, RoutedEventArgs e)
+        public void Search()
         {
-            if (e is KeyEventArgs && ((KeyEventArgs)e).Key != Key.Enter) return;
-            if (Search().Count > 0)
+            var searchParams = new Dictionary<CitizenSearchParam, object>();
+            if (_view.nameTextBox.Text != "")
             {
-                ListView(Search());
+                searchParams.Add(CitizenSearchParam.Name, _view.nameTextBox.Text);
             }
-            else
+            if (_view.addressTextBox.Text != "")
             {
-                _view.statusTextBlock.Text = "No persons found with that information";
+                searchParams.Add(CitizenSearchParam.Address, _view.addressTextBox.Text);
             }
+            if (_view.cprTextBox.Text != "")
+            {
+                searchParams.Add(CitizenSearchParam.Cpr, _view.cprTextBox.Text);
+            }
+            _searchCitizen = DAOFactory.CurrentUserDAO.FindCitizens(searchParams, SearchMatching.Similair);
+            LoadListBox();
+        }
+
+        private void LoadListBox()
+        {
+            if (_searchCitizen == null)
+            {
+                _view.SearchListBox.Items.Clear();
+                return;
+            }
+            foreach (var c in _searchCitizen)
+            {
+                //TODO: Make a representation..
+                /*TextBlock nameTextBlock = adjustTextBlock();
+                nameTextBlock.Text = person.Name;
+                TextBlock addressTextBlock = adjustTextBlock();
+                addressTextBlock.Text = person.Address;
+                TextBlock cprTextBlock = adjustTextBlock();
+                cprTextBlock.Text = person.Cpr;
+                TextBlock placeOfBirthTextBlock = adjustTextBlock();
+                placeOfBirthTextBlock.Text = person.PlaceOfBirth;
+                TextBlock passportNumberTextBlock = adjustTextBlock();
+                passportNumberTextBlock.Text = person.PassportNumber;
+
+                WrapPanel item = new WrapPanel();
+                item.HorizontalAlignment = HorizontalAlignment.Left;
+                item.Children.Add(nameTextBlock);
+                item.Children.Add(addressTextBlock);
+                item.Children.Add(cprTextBlock);
+                item.Children.Add(placeOfBirthTextBlock);
+                item.Children.Add(passportNumberTextBlock);
+
+                _view.SearchListBox.Items.Add(item);*/
+            }
+        }
+
+        /// <summary>
+        /// Select a citizen from the search results, based on his index in the search results.
+        /// </summary>
+        /// <param name="index">The index to look for</param>
+        public void Select(int index)
+        {
+            if (index < 0 || _searchCitizen == null || index >= _searchCitizen.Count) return;
+            CitizenFound.Invoke(_searchCitizen[index]);
+            _window.Close();
         }
 
         /// <summary>
         /// Find person with the information inserted in the textblocks
         /// </summary>
         /// <returns>A list of persons found from the inserted information</returns>
-        private List<Citizen> Search()
+        private List<Citizen> Search2()
         {
             /*
             _searchCitizen.Clear();
@@ -195,16 +248,6 @@ namespace DigitalVoterList.Controllers
         private void SearchListBoxMouseDoubleClickEvent(object sender, MouseButtonEventArgs e)
         {
             this.SelectedListBoxItem();
-        }
-    }
-
-    class SearchPersonEventArgs : EventArgs
-    {
-        public Person Person { get; private set; }
-
-        public SearchPersonEventArgs(Person person)
-        {
-            Person = person;
         }
     }
 }

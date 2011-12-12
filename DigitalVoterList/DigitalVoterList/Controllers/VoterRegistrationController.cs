@@ -60,26 +60,10 @@ namespace DigitalVoterList.Controllers
             if (c == _citizen) return;
             if (c != null && c.Equals(_citizen)) return;
             _citizen = c;
-            CitizenChanged.Invoke();
-            CheckAbilityToVote();
             LoadVoterData();
+            CheckAbilityToVote();
+            CitizenChanged.Invoke();
         }
-
-        private void CheckAbilityToVote()
-        {
-            if (Citizen != null)
-            {
-                if (!Citizen.EligibleToVote)
-                {
-                    ShowError("This citizen is not eligible to vote!");
-                }
-                if (Citizen.HasVoted)
-                {
-                    ShowError("This voter has already voted!");
-                }
-            }
-        }
-
 
         private void RegisterVoterWrapper(object sender, EventArgs e)
         {
@@ -104,6 +88,11 @@ namespace DigitalVoterList.Controllers
                     ShowError("Voter card is invalid!");
                 }
             }
+            else
+            {
+                Citizen = null;
+            }
+            CheckAbilityToVote();
             voterCardNumberBox.Text = voterCardNumberBox.Text.ToUpper();
             voterCardNumberBox.CaretIndex = 8;
         }
@@ -165,7 +154,6 @@ namespace DigitalVoterList.Controllers
             _view.StatusText.Text = msg;
             _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(0, 140, 0));
             _view.StatusImageSucces.Visibility = Visibility.Visible;
-            SetRegBtnState();
         }
 
         protected void ShowWarning(string msg)
@@ -173,7 +161,6 @@ namespace DigitalVoterList.Controllers
             _view.StatusText.Text = msg;
             _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(190, 0, 0));
             _view.StatusImageWarning.Visibility = Visibility.Visible;
-            SetRegBtnState();
         }
 
         protected void ShowError(string msg)
@@ -181,16 +168,8 @@ namespace DigitalVoterList.Controllers
             _view.StatusText.Text = msg;
             _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(190, 0, 0));
             _view.StatusImageError.Visibility = Visibility.Visible;
-            SetRegBtnState();
         }
 
-        protected void SetRegBtnState()
-        {
-            Disable(_view.RegisterVoterButton);
-            if (Citizen == null) return;
-            if (Citizen.HasVoted) return;
-            if (!Citizen.EligibleToVote) return;
-            Enable(_view.RegisterVoterButton);
-        }
+        protected abstract void CheckAbilityToVote();
     }
 }
