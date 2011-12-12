@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace DigitalVoterList.Views
 {
     /// <summary>
-    /// Interaction logic for SearchPersonWindow.xaml
+    /// Interaction logic for SearchCitizenView.xaml
     /// </summary>
-    public partial class SearchPersonWindow : Window
+    public partial class SearchCitizenView : UserControl
     {
-        public SearchPersonWindow()
+        public SearchCitizenView()
         {
             InitializeComponent();
         }

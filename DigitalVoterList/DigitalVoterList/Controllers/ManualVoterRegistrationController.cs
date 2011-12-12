@@ -16,9 +16,9 @@ namespace DigitalVoterList.Controllers
     public class ManualVoterRegistrationController : VoterRegistrationController
     {
         private readonly VoterRegistrationView _view;
-        private readonly SearchPersonController _searchController;
-        private readonly SearchPersonView _searchView;
-        private readonly SearchPersonWindow _searchWindow;
+        private readonly SearchCitizenController _searchController;
+        private readonly SearchCitizenView _searchView;
+        private readonly SearchCitizenWindow _searchWindow;
 
         public ManualVoterRegistrationController(VoterRegistrationView view)
             : base(view)
@@ -27,9 +27,9 @@ namespace DigitalVoterList.Controllers
             _neededPermissions.Add(SystemAction.SetHasVotedManually);
 
             _view = view;
-            _searchView = new SearchPersonView();
-            _searchWindow = new SearchPersonWindow();
-            _searchController = new SearchPersonController(_searchView, _searchWindow);
+            _searchView = new SearchCitizenView();
+            _searchWindow = new SearchCitizenWindow();
+            _searchController = new SearchCitizenController(_searchView, _searchWindow);
 
             _view.VoterValidation.Children.Clear();
             _view.VoterValidation.Children.Add(new ManualVoterValidationView());
@@ -63,7 +63,7 @@ namespace DigitalVoterList.Controllers
             _view.VoterIdentification.VoterCprDigits.PasswordChanged += DigitsOnlyPassword;
 
             _view.SearchVoterButton.Click += (s, e) => _searchWindow.Show();
-            _searchController.PersonFound += SearchPersonFound;
+            _searchController.CitizenFound += SearchPersonFound;
 
             CitizenChanged += LoadVoterValidation;
         }
@@ -128,7 +128,7 @@ namespace DigitalVoterList.Controllers
             if (Citizen != null)
             {
                 var mvc = new ManualVoterValidationController(validationView, Citizen);
-                mvc.Show(); //TODO: Skal være default behaviour for controller..
+                //mvc.Show(); //TODO: Skal være default behaviour for controller..
             }
         }
 

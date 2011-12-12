@@ -19,7 +19,7 @@ namespace DigitalVoterList.Controllers
             _view = view;
             _voter = voter;
             _view.QuestionListBox.Items.Clear();
-            _view.LeftTextBlock.Text = "Passport Number:" + Environment.NewLine + "Birthday:" + Environment.NewLine + "Place of birth:";
+            _view.LeftTextBlock.Text = "Passport Number:" + Environment.NewLine + "Birthday:" + Environment.NewLine + "Place of birth:" + Environment.NewLine + "Eligible to vote:" + Environment.NewLine + "Has voted:";
         }
 
         public void Show()
@@ -29,13 +29,13 @@ namespace DigitalVoterList.Controllers
             {
                 WrapPanel questionWrapPanel = new WrapPanel();
                 questionWrapPanel.HorizontalAlignment = HorizontalAlignment.Left;
-                questionWrapPanel.Children.Add(this.AdjustedQuestionTextBox(quiz));
-                questionWrapPanel.Children.Add(this.AdjustedAnswerTextBox(quiz));
+                questionWrapPanel.Children.Add(AdjustedQuestionTextBox(quiz));
+                questionWrapPanel.Children.Add(AdjustedAnswerTextBox(quiz));
 
                 _view.QuestionListBox.Items.Add(questionWrapPanel);
             }
             _view.RightTextBlock.Text = _voter.PassportNumber + Environment.NewLine + Birthday(_voter) + Environment.NewLine
-                                  + _voter.PlaceOfBirth;
+                + _voter.PlaceOfBirth + Environment.NewLine + (_voter.EligibleToVote ? "Yes" : "No") + Environment.NewLine + (_voter.HasVoted ? "Yes" : "No");
         }
 
         private TextBlock AdjustedQuestionTextBox(Quiz quiz)
