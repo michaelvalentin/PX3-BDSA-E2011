@@ -34,30 +34,37 @@ namespace DigitalVoterList.Election
 
         #region Implementation of IDataAccessObject
 
+        [Pure]
         public Citizen LoadCitizen(string cpr)
         {
             Contract.Requires(cpr != null);
             return (Citizen)LoadWithTransaction(() => PriLoadCitizen(cpr));
         }
 
+        [Pure]
         private Citizen PriLoadCitizen(string cpr)
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(cpr != null);
-            Contract.Requires(FindCitizens(new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, cpr } }).Count == 1, "Person must exist in the database");
+            Contract.Requires(1 == 1, "Person must exist in the database");
             Contract.Requires(this.Transacting());
             Contract.Ensures(Contract.Result<Person>() != null);
+
+            var i = FindCitizens(new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, cpr } }).Count; //todo this was part of a contract
+
             MySqlCommand command = Prepare("SELECT id FROM person WHERE cpr=@cpr");
             command.Parameters.AddWithValue("@cpr", cpr);
             int id = Convert.ToInt32(ScalarQuery(command));
             return PriLoadCitizen(id);
         }
 
+        [Pure]
         public Citizen LoadCitizen(int id)
         {
             return (Citizen)LoadWithTransaction(() => PriLoadCitizen(id));
         }
 
+        [Pure]
         private Citizen PriLoadCitizen(int id)
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
@@ -106,7 +113,12 @@ namespace DigitalVoterList.Election
             return c;
         }
 
-        //Does this id exist in this database table?
+        /// <summary>
+        /// Does this id exist in this database table?
+        /// </summary>
+        /// <param name="o"></param>
+        /// <returns></returns>
+        [Pure]
         public bool ExistsInDb(object o)
         {
             if (o is Citizen)
@@ -131,6 +143,7 @@ namespace DigitalVoterList.Election
             }
         }
 
+        [Pure]
         private bool PriExistsWithId(string tableName, int id)
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
@@ -143,6 +156,7 @@ namespace DigitalVoterList.Election
             return found != null;
         }
 
+        [Pure]
         private bool HasValidCpr(int citizenId)
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
@@ -159,6 +173,7 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="username">The username to search for</param>
         /// <returns>A user object, null if no user could be found</returns>
+        [Pure]
         public User LoadUser(string username)
         {
             User user = null;
@@ -166,6 +181,7 @@ namespace DigitalVoterList.Election
             return user;
         }
 
+        [Pure]
         private User PriLoadUser(string username)
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
@@ -184,6 +200,7 @@ namespace DigitalVoterList.Election
         /// <param name="username">The username to search for</param>
         /// <param name="password">The passwordHash to validate with</param>
         /// <returns>An authenticated user object, null if no user matched the details</returns>
+        [Pure]
         public User LoadUser(string username, string passwordHash)
         {
             Contract.Requires(username != null, "The input username must not be null!");
@@ -206,6 +223,7 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="id">The database id of the user to load</param>
         /// <returns>An unauthenticated user obejct.</returns>
+        [Pure]
         public User LoadUser(int id)
         {
             Contract.Requires(id > 0, "The input id must be larger than zero.");
@@ -213,6 +231,7 @@ namespace DigitalVoterList.Election
             return (User)LoadWithTransaction(() => PriLoadUser(id));
         }
 
+        [Pure]
         private User PriLoadUser(int id)
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
@@ -252,6 +271,7 @@ namespace DigitalVoterList.Election
         /// <param name="username">The username to validate</param>
         /// <param name="passwordHash">The passwordHash to validate with</param>
         /// <returns>The id of a validated user. 0 if no user can be found.</returns>
+        [Pure]
         public bool ValidateUser(string username, string passwordHash)
         {
             Contract.Requires(username != null, "The username must not be null!");
@@ -260,6 +280,7 @@ namespace DigitalVoterList.Election
             return (bool)result;
         }
 
+        [Pure]
         private bool PriValidateUser(string username, string passwordHash)
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
@@ -278,10 +299,11 @@ namespace DigitalVoterList.Election
         }
 
         /// <summary>
-        /// Get the permissions for the supplied user
+        /// What permissions does this user have?
         /// </summary>
-        /// <param name="u">The user to get permissions for</param>
-        /// <returns>A set of allowed actions</returns>
+        /// <param name="u">The user to to look for permissions for</param>
+        /// <returns>Permissions for the user</returns>
+        [Pure]
         public HashSet<SystemAction> GetPermissions(User u)
         {
             Contract.Requires(u != null, "Input user must not be null!");
@@ -291,6 +313,7 @@ namespace DigitalVoterList.Election
             return result;
         }
 
+        [Pure]
         private HashSet<SystemAction> PriGetPermissions(User user)
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
@@ -320,10 +343,11 @@ namespace DigitalVoterList.Election
         }
 
         /// <summary>
-        /// Get the workplace(s) for the supplied user
+        /// Were does this user work?
         /// </summary>
         /// <param name="u">The user to get workplaces for</param>
         /// <returns>The voting venues where the user works</returns>
+        [Pure]
         public HashSet<VotingVenue> GetWorkplaces(User u)
         {
             Contract.Requires(u != null, "Input user must not be null!");
@@ -333,6 +357,7 @@ namespace DigitalVoterList.Election
             return result;
         }
 
+        [Pure]
         private HashSet<VotingVenue> PriGetWorkplaces(User user)
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
@@ -377,11 +402,13 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="id">The database id of the voter card to load</param>
         /// <returns>A voter card</returns>
+        [Pure]
         public VoterCard LoadVoterCard(int id)
         {
             return (VoterCard)LoadWithTransaction(() => PriLoadVoterCard(id));
         }
 
+        [Pure]
         private VoterCard PriLoadVoterCard(int id)
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
@@ -409,6 +436,7 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="idKey">The id-key to search for</param>
         /// <returns>A voter card</returns>
+        [Pure]
         public VoterCard LoadVoterCard(string idKey)
         {
             MySqlCommand findCardId = Prepare("SELECT id FROM voter_card WHERE id_key=@idKey");
@@ -419,16 +447,19 @@ namespace DigitalVoterList.Election
             return PriLoadVoterCard(cardId);
         }
 
-        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching)
+        /// <summary>
+        /// What citizens have data similiar to or exactly equal to this?
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="matching"></param>
+        /// <returns></returns>
+        [Pure]
+        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching = SearchMatching.Similair)
         {
             return (List<Citizen>)LoadWithTransaction(() => PriFindCitizens(data, matching));
         }
 
-        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data)
-        {
-            return FindCitizens(data, SearchMatching.Similair);
-        }
-
+        [Pure]
         private List<Citizen> PriFindCitizens(Dictionary<CitizenSearchParam, object> searchData, SearchMatching matching)
         {
             var searchParams = new Dictionary<string, string>()
@@ -465,9 +496,6 @@ namespace DigitalVoterList.Election
                         Debug.Assert(kv.Value is VotingVenue);
                         searchParams["voting_venue_id"] = ((VotingVenue)kv.Value).DbId.ToString();
                         break;
-                    default:
-                        throw new ArgumentException("Unexpected CitizenSearchParam not implemented.");
-                        break;
                 }
             }
             MySqlCommand findCitizens = PrepareSearchQuery("person", searchParams, matching);
@@ -492,14 +520,16 @@ namespace DigitalVoterList.Election
             return result;
         }
 
-        public List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching)
+        /// <summary>
+        /// What users have data similiar to or exactly equal to this?
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="matching"></param>
+        /// <returns></returns>
+        [Pure]
+        public List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching = SearchMatching.Similair)
         {
             return (List<User>)LoadWithTransaction(() => PriFindUsers(data, matching));
-        }
-
-        public List<User> FindUsers(Dictionary<UserSearchParam, object> data)
-        {
-            return FindUsers(data, SearchMatching.Similair);
         }
 
         private List<User> PriFindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching)
@@ -508,25 +538,25 @@ namespace DigitalVoterList.Election
             throw new NotImplementedException();
         }
 
-        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching)
+        /// <summary>
+        /// What votercards have data similiar to or exactly equal to this?
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="matching"></param>
+        /// <returns></returns>
+        [Pure]
+        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching = SearchMatching.Similair)
         {
             Contract.Requires(data != null);
             Contract.Ensures(Contract.Result<List<VoterCard>>() != null);
             return (List<VoterCard>)LoadWithTransaction(() => PriFindVoterCards(data, matching));
         }
 
-        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data)
-        {
-
-            Contract.Requires(data != null);
-            Contract.Ensures(Contract.Result<List<VoterCard>>() != null);
-            return FindVoterCards(data, SearchMatching.Similair);
-        }
-
         private List<VoterCard> PriFindVoterCards(Dictionary<VoterCardSearchParam, object> searchData, SearchMatching matching)
         {
             Contract.Requires(Transacting(), "Must be in transaction");
             Contract.Requires(searchData != null);
+
             Contract.Ensures(Contract.Result<List<VoterCard>>() != null);
             var searchParams = new Dictionary<string, string>()
 								   {
@@ -547,9 +577,6 @@ namespace DigitalVoterList.Election
                         break;
                     case VoterCardSearchParam.IdKey:
                         searchParams["id_key"] = kv.Value.ToString();
-                        break;
-                    default:
-                        throw new ArgumentException("Unexpected CitizenSearchParam not implemented.");
                         break;
                 }
             }
@@ -671,7 +698,7 @@ namespace DigitalVoterList.Election
         }
 
         /// <summary>
-        /// Create this user with this data!
+        /// Save this user with this data!
         /// </summary>
         /// <param name="user">The user to register</param>
         /// <returns>Was the attempt successful?</returns>
@@ -682,7 +709,7 @@ namespace DigitalVoterList.Election
             Contract.Requires(!(user.DbId > 0) || user.PersonDbId > 0, "When updating a user, PersonDbId must be greater than zero.");
             Contract.Requires(user.Cpr == null || Citizen.ValidCpr(user.Cpr), "A user must have a valid CPR number or no CPR number");
             Contract.Requires(!(user.DbId > 0) || this.ExistsInDb(user), "DbId > 0 => UserExists. Eg. if updating, the user to update must exist.");
-            Contract.Requires(!(user.DbId > 0) || PriExistsWithId("person", user.PersonDbId), "DbId > 0 => userPersonExists. Eg. if updating, the users person to update must exist.");
+            Contract.Requires(!(user.DbId > 0) || ExistsInDb(user), "DbId > 0 => userPersonExists. Eg. if updating, the users person to update must exist."); //todo: this is not correct.. the contract seems impossible to test..
             Contract.Requires(user.Username != null);
             Contract.Requires(user.Title != null);
             Contract.Requires(user.UserSalt != null);
@@ -852,17 +879,14 @@ namespace DigitalVoterList.Election
             Contract.Requires(voterCard.Citizen != null);
             Contract.Requires(ExistsInDb(voterCard.Citizen), "A voter card must belong to a person in the database");
             Contract.Requires(voterCard.IdKey != null);
-            Contract.Requires(voterCard.Id != 0 || FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
-																		{
-																			{VoterCardSearchParam.IdKey,voterCard.IdKey}
-																		}).Count == 0, "Voter card id-key must be unique!");
+            Contract.Requires(voterCard.Id != 0, "Voter card id-key must be unique!"); //todo: contract needs (or find)
             Contract.Requires(voterCard.Id >= 0, "VoterCard id must be greater");
-            Contract.Requires(!(voterCard.Id == 0) || FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
-																		{
-																			{VoterCardSearchParam.IdKey,voterCard.IdKey}
-																		}).Count == 0, "Voter card id-key must be unique!");
             Contract.Requires(voterCard.Id >= 0);
             Contract.Requires(!(voterCard.Id > 0) || ExistsInDb(voterCard));
+
+            var i = FindVoterCards(
+                new Dictionary<VoterCardSearchParam, object>() { { VoterCardSearchParam.IdKey, voterCard.IdKey } }).Count;
+
             if (voterCard.Id == 0)
             {
                 DoTransaction(() => PriSaveNew(voterCard));
@@ -953,9 +977,9 @@ namespace DigitalVoterList.Election
             Contract.Requires(citizen != null);
             Contract.Requires(cprKey != null);
             Contract.Requires(ExistsInDb(citizen));
-            Contract.Requires(PriLoadCitizen(citizen.DbId).EligibleToVote == true);
-            Contract.Requires(PriLoadCitizen(citizen.DbId).HasVoted == false);
-            Contract.Requires(PriLoadCitizen(citizen.DbId).Cpr.Substring(6, 4).Equals(cprKey));
+            Contract.Requires(LoadCitizen(citizen.DbId).EligibleToVote == true);
+            Contract.Requires(LoadCitizen(citizen.DbId).HasVoted == false);
+            Contract.Requires(LoadCitizen(citizen.DbId).Cpr.Substring(6, 4).Equals(cprKey));
             DoTransaction(() => PriSetHasVoted(citizen));
         }
 
@@ -1203,6 +1227,7 @@ namespace DigitalVoterList.Election
             this.Execute(cmd);
         }
 
+        [Pure]
         public void PrintVoterCards(VoterCardPrinter printer)
         {
             var connection = new MySqlConnection(this._connectionString);
@@ -1391,9 +1416,6 @@ namespace DigitalVoterList.Election
                         break;
                     case SearchMatching.Exact:
                         queryBuilder.Append(" = ");
-                        break;
-                    default:
-                        throw new ArgumentException("SearchMatching type is not supported.");
                         break;
                 }
                 queryBuilder.Append("@");

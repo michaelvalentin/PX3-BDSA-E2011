@@ -28,6 +28,13 @@ namespace DigitalVoterList.Election
             _dao = dao;
         }
 
+        #region public permission functions
+
+        /// <summary>
+        /// Does my user have permission to perform this SystemAction?
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns></returns>
         public bool ActionPermitted(SystemAction a)
         {
             Contract.Ensures(
@@ -37,21 +44,32 @@ namespace DigitalVoterList.Election
             return _user.HasPermission(a);
         }
 
-        private void TestPermission(SystemAction a, string msg)
-        {
-            if (!this.ActionPermitted(a)) throw new PermissionException(a, _user, msg);
-        }
-
-        private void TestWorksHere(VotingVenue votingVenue)
-        {
-            if (!this.WorksHere(votingVenue)) throw new PermissionException(_user, "You don't work at this voting venue");
-        }
-
+        /// <summary>
+        /// Is this user my user?
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public bool CorrectUser(User user)
         {
             Contract.Requires(user != null);
             return user.Equals(_user);
         }
+
+        /// <summary>
+        /// Is my user permitted to work on this voting venue?
+        /// </summary>
+        /// <param name="v"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public bool PermittedToWorkHere(VotingVenue v, string msg = "You can't perform this action, as you don't work in the right voting venue, or have global access")
+        {
+            return _user.WorksHere(v) || this.ActionPermitted(SystemAction.AllVotingPlaces);
+        }
+
+        #endregion
+
+        #region privateTestHelpers
+
 
         private void TestCorrectUser(User user)
         {
@@ -59,10 +77,19 @@ namespace DigitalVoterList.Election
             if (!this.CorrectUser(user)) throw new PermissionException(_user, "You must be logged as this user");
         }
 
-        private bool WorksHere(VotingVenue v, string msg = "You can't perform this action, as you don't work in the right voting venue, or have global access")
+        private void TestWorksHere(VotingVenue votingVenue)
         {
-            return _user.Workplaces.Contains(v) || this.ActionPermitted(SystemAction.AllVotingPlaces);
+            if (!this.PermittedToWorkHere(votingVenue)) throw new PermissionException(_user, "You don't work at this voting venue");
         }
+
+        private void TestPermission(SystemAction a, string msg)
+        {
+            if (!this.ActionPermitted(a)) throw new PermissionException(a, _user, msg);
+        }
+
+        #endregion
+
+        #region proxyfunctions
 
         public Citizen LoadCitizen(int id)
         {
@@ -134,16 +161,11 @@ namespace DigitalVoterList.Election
             _dao.UpdateVoterCards();
         }
 
-        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching)
+        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching = SearchMatching.Similair)
         {
             Contract.Requires(this.ActionPermitted(SystemAction.FindPerson));
             this.TestPermission(SystemAction.FindPerson, "you don't have permission to search for citizens");
             return _dao.FindCitizens(data, matching);
-        }
-
-        public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data)
-        {
-            return FindCitizens(data, SearchMatching.Similair);
         }
 
         public List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching)
@@ -153,21 +175,11 @@ namespace DigitalVoterList.Election
             return _dao.FindUsers(data, matching);
         }
 
-        public List<User> FindUsers(Dictionary<UserSearchParam, object> data)
-        {
-            return FindUsers(data, SearchMatching.Similair);
-        }
-
         public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data, SearchMatching matching)
         {
             Contract.Requires(this.ActionPermitted(SystemAction.FindVoterCard));
             this.TestPermission(SystemAction.FindVoterCard, "You don't have permission to search for votercards");
             return _dao.FindVoterCards(data, matching);
-        }
-
-        public List<VoterCard> FindVoterCards(Dictionary<VoterCardSearchParam, object> data)
-        {
-            return FindVoterCards(data, SearchMatching.Similair);
         }
 
         public void Save(User user)
@@ -187,7 +199,7 @@ namespace DigitalVoterList.Election
         public void SetHasVoted(Citizen citizen, string cprKey)
         {
             Contract.Requires(this.ActionPermitted(SystemAction.SetHasVoted));
-            Contract.Requires(this.WorksHere(citizen.VotingPlace));
+            Contract.Requires(this.PermittedToWorkHere(citizen.VotingPlace));
             this.TestPermission(SystemAction.SetHasVoted, "You don't have permission register voting");
             this.TestWorksHere(citizen.VotingPlace);
             _dao.SetHasVoted(citizen, cprKey);
@@ -248,5 +260,7 @@ namespace DigitalVoterList.Election
             this.TestPermission(SystemAction.PrintVoterCards, "You don't have permission to print votercards.");
             _dao.PrintVoterCards(voterCardPrinter);
         }
+
+        #endregion
     }
 }

@@ -84,7 +84,7 @@ namespace DigitalVoterList.Controllers
             var result = DAOFactory.CurrentUserDAO.FindCitizens(new Dictionary<CitizenSearchParam, object>()
                                                                         {
                                                                             {CitizenSearchParam.Cpr,cprDate + cprDigits}
-                                                                        });
+                                                                        }, SearchMatching.Similair);
             if (result.Count == 0)
             {
                 ShowWarning("No person found with the supplied CPR.");

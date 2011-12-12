@@ -7,12 +7,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace DigitalVoterList.Election
 {
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// A person responsible of helping out at an election
@@ -23,7 +23,7 @@ namespace DigitalVoterList.Election
         private HashSet<VotingVenue> _workplaces;
         private DateTime? _lastSuccessfullValidationTime;
 
-        public string Cpr { get; private set; }
+        public new string Cpr { get; private set; }
 
         /// <summary>
         /// What user has this login?
@@ -69,20 +69,19 @@ namespace DigitalVoterList.Election
         /// <param name="uname">The username to validate</param>
         /// <param name="pwd">The password to validate</param>
         /// <returns>True on success. False otherwise.</returns>
-        public bool FetchPermissions(string uname, string pwd)
+        public void FetchPermissions(string uname, string pwd) //todo: This return a succes boolean.. shouldn't it be made 
         {
-            IDataAccessObject dao = DAOFactory.getDAO(this);
+            //Contract.Requires(DAOFactory.getDAO(this).ValidateUser(uname, HashPassword(pwd)));
+
+            //if (DAOFactory.getDAO(this).ValidateUser(uname, HashPassword(pwd))) //Secuity contract broken. todo:..
+
+            var dao = DAOFactory.getDAO(this);
             string pwdHash = HashPassword(pwd);
             Debug.WriteLine("PwdHash: " + pwdHash);
             Debug.WriteLine("UserSalt: " + UserSalt);
-            if (dao.ValidateUser(uname, pwdHash))
-            {
-                _lastSuccessfullValidationTime = new DateTime();
-                _permissions = dao.GetPermissions(this);
-                _workplaces = dao.GetWorkplaces(this);
-                return true;
-            }
-            return false;
+            _lastSuccessfullValidationTime = new DateTime();
+            _permissions = dao.GetPermissions(this);
+            _workplaces = dao.GetWorkplaces(this);
         }
 
         /// <summary>
@@ -120,7 +119,7 @@ namespace DigitalVoterList.Election
         /// <summary>
         /// The user's id in the database
         /// </summary>
-        public int DbId { get; private set; }
+        public new int DbId { get; private set; }
 
         public int PersonDbId
         {
@@ -177,6 +176,7 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="a">The SystemAction to check for permission</param>
         /// <returns>True if the user has the permission. False if not.</returns>
+        [Pure]
         public bool HasPermission(SystemAction a)
         {
             return Validated && _permissions.Contains(a);
@@ -187,6 +187,7 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="v">The voting venue to check for</param>
         /// <returns>True if the user works here. False if not</returns>
+        [Pure]
         public bool WorksHere(VotingVenue v)
         {
             return Validated && _workplaces.Contains(v);
@@ -216,6 +217,7 @@ namespace DigitalVoterList.Election
         /// true if the specified object is equal to the current object; otherwise, false.
         /// </returns>
         /// <param name="obj">The object to compare with the current object.</param>
+        [Pure]
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
@@ -229,6 +231,7 @@ namespace DigitalVoterList.Election
             return Equals(obj as User);
         }
 
+        [Pure]
         private string HashPassword(string password) //todo: public or private?
         {
             string salted = UserSalt + password + "AX7530G7FR";
@@ -243,14 +246,7 @@ namespace DigitalVoterList.Election
             return output.ToString();
         }
 
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(Username != null);
-            Contract.Invariant(Title != null);
-            Contract.Invariant(UserSalt != null);
-        }
-
+        [Pure]
         public bool Equals(User other)
         {
             if (ReferenceEquals(null, other))
@@ -264,6 +260,7 @@ namespace DigitalVoterList.Election
             return base.Equals(other) && Equals(other._permissions, this._permissions) && Equals(other._workplaces, this._workplaces) && other._lastSuccessfullValidationTime.Equals(this._lastSuccessfullValidationTime) && Equals(other.UserSalt, this.UserSalt) && other.Valid.Equals(this.Valid) && other.DbId == this.DbId;
         }
 
+        [Pure]
         public override int GetHashCode()
         {
             unchecked
