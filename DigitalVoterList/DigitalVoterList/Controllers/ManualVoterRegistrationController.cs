@@ -123,7 +123,7 @@ namespace DigitalVoterList.Controllers
             {
                 _view.VoterIdentification.VoterCprDigits.Focus();
 
-                var validationController = new ManuVoterValidationController(validationView, c);
+                var validationController = new ManualVoterValidationController(_view, _citizen);
                 validationController.Show();
 
             }
