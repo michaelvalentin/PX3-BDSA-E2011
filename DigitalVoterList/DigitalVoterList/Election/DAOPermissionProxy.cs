@@ -98,13 +98,6 @@ namespace DigitalVoterList.Election
             return _dao.LoadCitizen(id);
         }
 
-        public Citizen LoadCitizen(string cpr)
-        {
-            Contract.Requires(this.ActionPermitted(SystemAction.LoadPerson));
-            this.TestPermission(SystemAction.LoadPerson, "You dont have permission to load information about citizens");
-            return _dao.LoadCitizen(cpr);
-        }
-
         public User LoadUser(string username)
         {
             return _dao.LoadUser(username);
