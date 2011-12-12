@@ -5,6 +5,7 @@
  */
 
 using System.Windows;
+using System.Windows.Controls;
 using DigitalVoterList.Election;
 using DigitalVoterList.Views;
 
@@ -47,6 +48,7 @@ namespace DigitalVoterList.Controllers
         private void CheckCpr(object sender, EventArgs e)
         {
             _view.VoterIdentification.CprSuccessImage.Visibility = Visibility.Hidden;
+            CheckAbilityToVote();
             string cprDigits = _view.VoterIdentification.VoterCprDigits.Password;
 
             if (cprDigits.Length != 4 || Citizen == null) { return; }
@@ -85,40 +87,58 @@ namespace DigitalVoterList.Controllers
 
         protected override void RegisterVoter(object sender, EventArgs e)
         {
-            if (Citizen != null)
-            {
-                try
-                {
-                    IDataAccessObject dao = DAOFactory.CurrentUserDAO;
-                    if (Citizen.HasVoted)
-                    {
-                        ShowError("Voter has allready voted!");
-                        return;
-                    }
-                    if (!Citizen.EligibleToVote)
-                    {
-                        ShowError("Citizen is not eligible to vote!");
-                        return;
-                    }
-                    string cprDigits = _view.VoterIdentification.VoterCprDigits.Password;
-                    if (!Citizen.Cpr.Substring(6, 4).Equals(cprDigits))
-                    {
-                        ShowError("CPR-Digits are incorrect!");
-                        return;
-                    }
-                    DAOFactory.CurrentUserDAO.SetHasVoted(Citizen, cprDigits);
-                    ShowSuccess("Citizen registered!");
-                }
-                catch (Exception ex)
-                {
-                    //TODO: Log the exception for security / maintainance...
-                    ShowError("An unexpected error occured. Please try again.");
-                }
-            }
-            else
+            if (Citizen == null)
             {
                 ShowWarning("No person found with the inserted information");
+                return;
             }
+            if (Citizen.HasVoted)
+            {
+                ShowError("Voter has allready voted!");
+                return;
+            }
+            if (!Citizen.EligibleToVote)
+            {
+                ShowError("Citizen is not eligible to vote!");
+                return;
+            }
+            string cprDigits = _view.VoterIdentification.VoterCprDigits.Password;
+            if (!Citizen.Cpr.Substring(6, 4).Equals(cprDigits))
+            {
+                ShowError("CPR-Digits are incorrect!");
+                return;
+            }
+            try
+            {
+                DAOFactory.CurrentUserDAO.SetHasVoted(Citizen, cprDigits);
+                ShowSuccess("Citizen registered!");
+                Disable(_view.RegisterVoterButton);
+            }
+            catch (Exception ex)
+            {
+                //TODO: Log the exception for security / maintainance...
+                ShowError("An unexpected error occured. Please try again.");
+            }
+        }
+
+        protected override void CheckAbilityToVote()
+        {
+            Button regBtn = _view.RegisterVoterButton;
+            Disable(regBtn);
+            if (Citizen == null) return;
+            if (Citizen.HasVoted)
+            {
+                ShowError("Citizen has already voted!");
+                return;
+            }
+            if (!Citizen.EligibleToVote)
+            {
+                ShowError("Citizen is not eligible to vote!");
+                return;
+            }
+            if (_view.VoterIdentification.VoterCprDigits.Password.Length != 4) return;
+            if (!_view.VoterIdentification.VoterCprDigits.Password.Equals(Citizen.Cpr.Substring(6, 4))) return;
+            Enable(regBtn);
         }
     }
 }

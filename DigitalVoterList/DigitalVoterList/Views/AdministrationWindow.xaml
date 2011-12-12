@@ -1,8 +1,0 @@
-﻿<Window x:Class="DigitalVoterList.Views.AdministrationWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="PX3 Administration" Height="300" Width="300">
-    <Grid>
-        
-    </Grid>
-</Window>

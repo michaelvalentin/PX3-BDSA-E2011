@@ -64,8 +64,8 @@ INSERT INTO `voting_venue` (`id`, `address`, `name`) VALUES
 (1, 'Dyssegårdsvej 34', 'Dyssegårdskolens aula'),
 (2, 'Lærkevej 2', 'Gotenfods Gymnasiums gymnastiksal'),
 (7, 'Bakkedals vej 23', 'Aurehøj Gymnasiums fællessal');
+INSERT INTO `person` (`id`, `e`, `address`, `cpr`, `eligible_to_vote`, `has_voted`, `place_of_birth`, `passport_number`, `voting_venue_id`) VALUES
 
-INSERT INTO `person` (`id`, `name`, `address`, `cpr`, `eligible_to_vote`, `has_voted`, `place_of_birth`, `passport_number`, `voting_venue_id`) VALUES
 (1, 'Jens Dahl Møllerhøj', 'Nørre Alle 75, 471', '2405901253', 1, 0, 'Gentofte Hospital', '5684895471', 7),
 (2, 'Christopher Nørgård Dall',NULL, '2303871234', 0, 0, 'Samsø Sygehus', '663780088', 2),
 (3, 'Mathilde Roed Birk', NULL, '1212534321', 1, 0, NULL, NULL, 1),
