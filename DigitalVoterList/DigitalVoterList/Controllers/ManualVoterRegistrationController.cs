@@ -29,7 +29,7 @@ namespace DigitalVoterList.Controllers
         public ManualVoterRegistrationController(VoterRegistrationView view)
             : base(view)
         {
-            _neededPermissions.Add(SystemAction.FindPerson);
+            _neededPermissions.Add(SystemAction.FindCitizen);
             _neededPermissions.Add(SystemAction.SetHasVotedManually);
 
             _view = view;

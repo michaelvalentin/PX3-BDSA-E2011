@@ -36,7 +36,7 @@ namespace DigitalVoterList.Controllers
         protected VoterRegistrationController(VoterRegistrationView view)
         {
             _neededPermissions.Add(SystemAction.ScanVoterCard);
-            _neededPermissions.Add(SystemAction.LoadPerson);
+            _neededPermissions.Add(SystemAction.LoadCitizen);
             _neededPermissions.Add(SystemAction.SetHasVoted);
 
             _view = view;
