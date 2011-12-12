@@ -101,16 +101,6 @@ namespace ParamTests
         }
 
         [Test]
-        public void TestLoadCitizenByCpr()
-        {
-            Person p = this._dao.LoadCitizen("2405901253");
-            Assert.That(p.Name.Equals("Jens Dahl Møllerhøj"));
-
-            Person p2 = this._dao.LoadCitizen("1212534321");
-            Assert.That(p2.Name.Equals("Mathilde Roed Birk"));
-        }
-
-        [Test]
         public void TestLoadUserById()
         {
             var u = this._dao.LoadUser(1);
@@ -198,7 +188,7 @@ namespace ParamTests
             Assert.That(result != null, "Has voted was not updated in database!");
 
             //Non-eligible voter...
-            Citizen c2 = _dao.LoadCitizen(2);
+            /*Citizen c2 = _dao.LoadCitizen(2);
             Assert.Throws(typeof(Exception), c2.SetHasVoted, "Uneligible voter can never vote!");
             checkHasVoted.Parameters.Clear();
             checkHasVoted.Parameters.AddWithValue("@id", 2);
@@ -211,7 +201,7 @@ namespace ParamTests
             checkHasVoted.Parameters.Clear();
             checkHasVoted.Parameters.AddWithValue("@id", 4);
             result = checkHasVoted.ExecuteScalar();
-            Assert.That(result != null, "Voter with id 4 should allready have voted");
+            Assert.That(result != null, "Voter with id 4 should allready have voted");*/
         }
 
         [Test]
@@ -327,6 +317,7 @@ namespace ParamTests
         }
 
         [Test]
+        [STAThread]
         public void TestPrintVoterCards()
         {
             var vp = new VoterCardPrinter();

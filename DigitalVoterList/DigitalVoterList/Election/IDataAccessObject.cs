@@ -26,13 +26,6 @@ namespace DigitalVoterList.Election
         Citizen LoadCitizen(int id);
 
         /// <summary>
-        /// What Citizen has this cpr?
-        /// </summary>
-        /// <param name="cpr">The CPR to search for</param>
-        /// <returns>A citizen that matches the given CPR</returns>
-        Citizen LoadCitizen(string cpr);
-
-        /// <summary>
         /// What user has this username?
         /// </summary>
         /// <param name="username">The username to search for</param>

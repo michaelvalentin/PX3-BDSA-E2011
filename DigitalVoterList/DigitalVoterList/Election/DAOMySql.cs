@@ -35,30 +35,6 @@ namespace DigitalVoterList.Election
         #region Implementation of IDataAccessObject
 
         [Pure]
-        public Citizen LoadCitizen(string cpr)
-        {
-            Contract.Requires(cpr != null);
-            return (Citizen)LoadWithTransaction(() => PriLoadCitizen(cpr));
-        }
-
-        [Pure]
-        private Citizen PriLoadCitizen(string cpr)
-        {
-            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
-            Contract.Requires(cpr != null);
-            Contract.Requires(1 == 1, "Person must exist in the database");
-            Contract.Requires(this.Transacting());
-            Contract.Ensures(Contract.Result<Person>() != null);
-
-            var i = FindCitizens(new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, cpr } }).Count; //todo this was part of a contract
-
-            MySqlCommand command = Prepare("SELECT id FROM person WHERE cpr=@cpr");
-            command.Parameters.AddWithValue("@cpr", cpr);
-            int id = Convert.ToInt32(ScalarQuery(command));
-            return PriLoadCitizen(id);
-        }
-
-        [Pure]
         public Citizen LoadCitizen(int id)
         {
             return (Citizen)LoadWithTransaction(() => PriLoadCitizen(id));
@@ -70,7 +46,7 @@ namespace DigitalVoterList.Election
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(PriExistsWithId("person", id), "Person must exist in the database to be loaded.");
             Contract.Requires(HasValidCpr(id), "A citizen must have a valid CPR number");
-            Contract.Ensures(Contract.Result<Person>() != null);
+            Contract.Ensures(Contract.Result<Citizen>() != null);
             MySqlCommand command = Prepare("SELECT " +
                                            "    *, v.name venue_name, v.address venue_address " +
                                            "FROM " +
@@ -148,7 +124,7 @@ namespace DigitalVoterList.Election
         {
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(tableName != null);
-            Contract.Requires(id > 0);
+            Contract.Requires(id > 0, "No ids are smaller than 1!");
             MySqlCommand cmd = Prepare("SELECT COUNT(*) FROM " + tableName + " WHERE id=@id;");
             cmd.Parameters.AddWithValue("@id", id);
             object found = ScalarQuery(cmd);
@@ -191,30 +167,6 @@ namespace DigitalVoterList.Election
             if (maybeId == null) return null;
             int id = Convert.ToInt32(maybeId);
             return PriLoadUser(id);
-        }
-
-        /// <summary>
-        /// What authenticated user exists with this username and password?
-        /// </summary>
-        /// <param name="username">The username to search for</param>
-        /// <param name="password">The passwordHash to validate with</param>
-        /// <returns>An authenticated user object, null if no user matched the details</returns>
-        [Pure]
-        public User LoadUser(string username, string passwordHash)
-        {
-            Contract.Requires(username != null, "The input username must not be null!");
-            Contract.Requires(passwordHash != null, "The input password must not be null!");
-            User u = null;
-            DoTransaction(() =>
-                              {
-                                  bool valid = PriValidateUser(username, passwordHash);
-                                  if (valid)
-                                  {
-                                      u = PriLoadUser(username);
-                                  }
-                              });
-            if (u != null) u.FetchPermissions(username, passwordHash);
-            return u;
         }
 
         /// <summary>
@@ -282,7 +234,7 @@ namespace DigitalVoterList.Election
         [Pure]
         private bool PriValidateUser(string username, string passwordHash)
         {
-            Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
+            Contract.Requires(Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(username != null, "The username must not be null!");
             Contract.Requires(passwordHash != null, "The password hash must not be null!");
             MySqlCommand cmd = Prepare("SELECT COUNT(*) FROM " +
@@ -342,7 +294,7 @@ namespace DigitalVoterList.Election
         }
 
         /// <summary>
-        /// Were does this user work?
+        /// Where does this user work?
         /// </summary>
         /// <param name="u">The user to get workplaces for</param>
         /// <returns>The voting venues where the user works</returns>
@@ -438,12 +390,10 @@ namespace DigitalVoterList.Election
         [Pure]
         public VoterCard LoadVoterCard(string idKey)
         {
-            MySqlCommand findCardId = Prepare("SELECT id FROM voter_card WHERE id_key=@idKey");
-            findCardId.Parameters.AddWithValue("@idKey", idKey);
-            object result = ScalarQuery(findCardId);
-            if (result == null) return null;
-            int cardId = Convert.ToInt32(result);
-            return PriLoadVoterCard(cardId);
+            List<VoterCard> result =
+                FindVoterCards(new Dictionary<VoterCardSearchParam, object>() { { VoterCardSearchParam.IdKey, idKey } },
+                               SearchMatching.Exact);
+            return result.Count > 0 ? result[0] : null;
         }
 
         /// <summary>
@@ -455,12 +405,17 @@ namespace DigitalVoterList.Election
         [Pure]
         public List<Citizen> FindCitizens(Dictionary<CitizenSearchParam, object> data, SearchMatching matching = SearchMatching.Similair)
         {
+            Contract.Requires(data != null);
+            Contract.Ensures(Contract.Result<List<Citizen>>() != null);
             return (List<Citizen>)LoadWithTransaction(() => PriFindCitizens(data, matching));
         }
 
         [Pure]
         private List<Citizen> PriFindCitizens(Dictionary<CitizenSearchParam, object> searchData, SearchMatching matching)
         {
+            Contract.Requires(Transacting(), "Must be within transaction");
+            Contract.Requires(searchData != null);
+            Contract.Ensures(Contract.Result<List<Citizen>>() != null);
             var searchParams = new Dictionary<string, string>()
 								   {
 									   {"address",null},
@@ -528,6 +483,8 @@ namespace DigitalVoterList.Election
         [Pure]
         public List<User> FindUsers(Dictionary<UserSearchParam, object> data, SearchMatching matching = SearchMatching.Similair)
         {
+            Contract.Requires(data != null);
+            Contract.Ensures(Contract.Result<List<Citizen>>() != null);
             return (List<User>)LoadWithTransaction(() => PriFindUsers(data, matching));
         }
 
@@ -555,7 +512,6 @@ namespace DigitalVoterList.Election
         {
             Contract.Requires(Transacting(), "Must be in transaction");
             Contract.Requires(searchData != null);
-
             Contract.Ensures(Contract.Result<List<VoterCard>>() != null);
             var searchParams = new Dictionary<string, string>()
 								   {
@@ -588,7 +544,7 @@ namespace DigitalVoterList.Election
                     resultIds.Add(rdr.GetInt32("id"));
                 }
             });
-            List<VoterCard> result = new List<VoterCard>();
+            var result = new List<VoterCard>();
             foreach (int id in resultIds)
             {
                 result.Add(PriLoadVoterCard(id));
@@ -879,13 +835,11 @@ namespace DigitalVoterList.Election
             Contract.Requires(voterCard.Citizen != null);
             Contract.Requires(ExistsInDb(voterCard.Citizen), "A voter card must belong to a person in the database");
             Contract.Requires(voterCard.IdKey != null);
-            Contract.Requires(voterCard.Id != 0, "Voter card id-key must be unique!"); //todo: contract needs (or find)
-            Contract.Requires(voterCard.Id >= 0, "VoterCard id must be greater");
-            Contract.Requires(voterCard.Id >= 0);
+            /*Contract.Requires(FindVoterCards(
+                new Dictionary<VoterCardSearchParam, object>() { { VoterCardSearchParam.IdKey, voterCard.IdKey } },
+                SearchMatching.Exact).Count == 0, "Voter card id-key must be unique!");*/
+            Contract.Requires(voterCard.Id >= 0, "VoterCard id must be greater than zero");
             Contract.Requires(!(voterCard.Id > 0) || ExistsInDb(voterCard));
-
-            var i = FindVoterCards(
-                new Dictionary<VoterCardSearchParam, object>() { { VoterCardSearchParam.IdKey, voterCard.IdKey } }).Count;
 
             if (voterCard.Id == 0)
             {
@@ -905,10 +859,10 @@ namespace DigitalVoterList.Election
             Contract.Requires(voterCard.Citizen != null);
             Contract.Requires(PriExistsWithId("person", voterCard.Citizen.DbId), "A voter card must belong to a person in the database");
             Contract.Requires(voterCard.IdKey != null);
-            Contract.Requires(FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
+            /*Contract.Requires(FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
 																		{
 																			{VoterCardSearchParam.IdKey,voterCard.IdKey}
-																		}).Count == 0, "Voter card id-key must be unique!");
+																		}).Count == 0, "Voter card id-key must be unique!");*/
             Contract.Requires(!(voterCard.Id > 0) || PriExistsWithId("voter_card", voterCard.Id));
             MySqlCommand saveVoterCard = Prepare("INSERT INTO " +
                                                  "  voter_card (" +
@@ -1052,7 +1006,7 @@ namespace DigitalVoterList.Election
         {
             Contract.Requires(Transacting(), "Must be done in a transaction");
             Contract.Requires(user != null);
-            Contract.Requires(ExistsInDb(user));
+            Contract.Requires(PriExistsWithId("user", user.DbId));
             Contract.Requires(newPasswordHash != null);
             MySqlCommand updatePassword = Prepare("UPDATE user SET password_hash=@pwdHash WHERE id=@id");
             updatePassword.Parameters.AddWithValue("@pwdHash", newPasswordHash);
@@ -1142,7 +1096,7 @@ namespace DigitalVoterList.Election
                     {
                         List<Citizen> listOfCitizens =
                             FindCitizens(
-                                new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, rawPerson.CPR } });
+                                new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, rawPerson.CPR } }, SearchMatching.Exact);
                         if ((listOfCitizens.Count > 0))
                         {
                             Citizen c = updateFunc(listOfCitizens[0], rawPerson);
@@ -1324,12 +1278,11 @@ namespace DigitalVoterList.Election
                 try
                 {
                     _transaction.Rollback();
-                    //todo: And retry? We can't just rollback the function, we need to try again..
                 }
-                catch (MySqlException excep)
+                catch (Exception excep)
                 {
+                    //todo: And retry? We can't just rollback the function, we need to try again..
                     // TODO: Make a logging function and maybe a security alert...
-                    throw;
                 }
                 throw;
             }
