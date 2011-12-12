@@ -35,7 +35,8 @@ namespace DigitalVoterList.Election
         ChangeOwnPassword,
         ChangeOthersPassword,
         MarkPeopleNotInRawDataUneligibleToVote,
-        UpdatePeople,
+        UpdateCitizens,
+        UpdateVoterCards,
 
         //DELETE
         MarkUserInvalid,

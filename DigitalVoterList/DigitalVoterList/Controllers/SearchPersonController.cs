@@ -15,7 +15,7 @@ namespace DigitalVoterList.Controllers
         private SearchPersonView _view;
         private SearchPersonWindow _window;
         private List<Person> _searchPerson;
-        public event EventHandler<SearchPersonEventArgs> PersonFound;
+        public Action<Citizen> PersonFound;
 
         public SearchPersonController(SearchPersonView view, SearchPersonWindow window)
         {
@@ -40,11 +40,11 @@ namespace DigitalVoterList.Controllers
             //TODO TEST IF IT IS WORKING WHEN DB IS UP? (FOCUS LOCKED TO WINDOW)
         }
 
-        private void FirePersonFoundEvent(Person p)
+        private void FireCitizenFoundEvent(Citizen c)
         {
-            PersonFound.Invoke(this, new SearchPersonEventArgs(p));
+            PersonFound.Invoke(c);
         }
-        
+
         /// <summary>
         /// Clear the listbox and the textblocks in the view
         /// </summary>
@@ -161,7 +161,7 @@ namespace DigitalVoterList.Controllers
         private Person SelectedListBoxItem()
         {
             Person p = _searchPerson.ElementAt(_view.mainListBox.SelectedIndex);
-            FirePersonFoundEvent(p);
+            //FireCitizenFoundEvent(p);
             Clear();
             return p;
         }

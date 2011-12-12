@@ -14,6 +14,7 @@
         <TextBox FontSize="14" Height="30" HorizontalAlignment="Left" Margin="108,80,0,0" Name="VoterCprBirthday" Text="" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="131" MaxLength="6"/>
         <Label Content="-" FontSize="16" FontWeight="Bold" Height="30" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="237,77,0,0" Name="label4" Padding="0" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="23" />
         <PasswordBox FontSize="14" Height="30" HorizontalAlignment="Right" Margin="0,80,622,0" Name="VoterCprDigits" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="80" MaxLength="4" />
+        <Image Height="20" Name="CprSuccessImage" Stretch="Fill" Width="20" Margin="342,85,598,7" Source="..\Resources\Icons\success.png" Visibility="Hidden" />
         <Label Content="Address" FontSize="16" FontWeight="Bold" Height="30" HorizontalAlignment="Left" HorizontalContentAlignment="Right" Margin="355,41,0,0" Name="_voterAddressLabel" Padding="0" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="100" />
         <TextBox FontSize="14" Height="110" HorizontalAlignment="Right" Name="VoterAddress" Text="" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="493" />
     </Grid>

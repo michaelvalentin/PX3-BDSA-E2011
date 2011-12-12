@@ -702,7 +702,7 @@ namespace DigitalVoterList.Election
             Contract.Requires(user.DbId >= 0, "DbId must be greater than or equal to zero");
             Contract.Requires(!(user.DbId > 0) || user.PersonDbId > 0, "When updating a user, PersonDbId must be greater than zero.");
             Contract.Requires(user.Cpr == null || Citizen.ValidCpr(user.Cpr), "A user must have a valid CPR number or no CPR number");
-            Contract.Requires(!(user.DbId > 0) || PriExistsWithId("user", user.DbId), "DbId > 0 => UserExists. Eg. if updating, the user to update must exist.");
+            Contract.Requires(!(user.DbId > 0) || this.ExistsInDb(user), "DbId > 0 => UserExists. Eg. if updating, the user to update must exist.");
             Contract.Requires(!(user.DbId > 0) || PriExistsWithId("person", user.PersonDbId), "DbId > 0 => userPersonExists. Eg. if updating, the users person to update must exist.");
             Contract.Requires(user.Username != null);
             Contract.Requires(user.Title != null);
@@ -1023,7 +1023,7 @@ namespace DigitalVoterList.Election
         public void ChangePassword(User user, string newPasswordHash, string oldPasswordHash)
         {
             Contract.Requires(user != null);
-            Contract.Requires(PriExistsWithId("user", user.DbId));
+            Contract.Requires(this.ExistsInDb(user));
             Contract.Requires(newPasswordHash != null);
             Contract.Requires(oldPasswordHash != null);
             Contract.Requires(ValidateUser(user.Username, oldPasswordHash));
@@ -1040,7 +1040,7 @@ namespace DigitalVoterList.Election
         public void ChangePassword(User user, string newPasswordHash)
         {
             Contract.Requires(user != null);
-            Contract.Requires(PriExistsWithId("user", user.DbId));
+            Contract.Requires(ExistsInDb(user));
             Contract.Requires(newPasswordHash != null);
             DoTransaction(() => PriChangePassword(user, newPasswordHash));
         }
@@ -1049,7 +1049,7 @@ namespace DigitalVoterList.Election
         {
             Contract.Requires(Transacting(), "Must be done in a transaction");
             Contract.Requires(user != null);
-            Contract.Requires(PriExistsWithId("user", user.DbId));
+            Contract.Requires(ExistsInDb(user));
             Contract.Requires(newPasswordHash != null);
             MySqlCommand updatePassword = Prepare("UPDATE user SET password_hash=@pwdHash WHERE id=@id");
             updatePassword.Parameters.AddWithValue("@pwdHash", newPasswordHash);

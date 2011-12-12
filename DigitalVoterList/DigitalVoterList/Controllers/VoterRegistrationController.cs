@@ -1,11 +1,10 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using DigitalVoterList.Election;
 using DigitalVoterList.Views;
-using System.Windows;
-using DigitalVoterList.Utilities;
 
 namespace DigitalVoterList.Controllers
 {
@@ -16,27 +15,15 @@ namespace DigitalVoterList.Controllers
     public abstract class VoterRegistrationController : ContentController
     {
 
-        private VoterRegistrationView _view;
+        private readonly VoterRegistrationView _view;
         private Citizen _citizen;
+        public Action CitizenChanged;
         public Citizen Citizen
         {
             get { return _citizen; }
             set
             {
-                if (_citizen != value)
-                {
-                    _citizen = value;
-                    OnCitizenChanged();
-                }
-            }
-        }
-        public event EventHandler CitizenChanged;
-
-        private void OnCitizenChanged()
-        {
-            if (CitizenChanged != null)
-            {
-                CitizenChanged.Invoke(this, new EventArgs());
+                SetCitizen(value);
             }
         }
 
@@ -51,6 +38,7 @@ namespace DigitalVoterList.Controllers
 
             Disable(_view.VoterIdentification.VoterName);
             Disable(_view.VoterIdentification.VoterAddress);
+            Disable(_view.RegisterVoterButton);
 
             _view.StatusImageSucces.Visibility = Visibility.Hidden;
             _view.StatusImageError.Visibility = Visibility.Hidden;
@@ -59,7 +47,82 @@ namespace DigitalVoterList.Controllers
             _view.VoterIdentification.VoterCardNumber.TextChanged += VoterCardNumberChanged;
             _view.RegisterVoterButton.Click += RegisterVoterWrapper;
             _view.RegisterVoterButton.KeyDown += RegisterVoterWrapper;
-            _view.RegisterVoterButton.Click += RegisterVoter;
+        }
+
+        public void SetCitizen(Citizen c)
+        {
+            if (c == _citizen) return;
+            if (c != null && c.Equals(_citizen)) return;
+            _citizen = c;
+            CitizenChanged.Invoke();
+            CheckAbilityToVote();
+            LoadVoterData();
+        }
+
+        private void CheckAbilityToVote()
+        {
+            if (Citizen != null)
+            {
+                if (!Citizen.EligibleToVote)
+                {
+                    ShowError("This citizen is not eligible to vote!");
+                }
+                if (Citizen.HasVoted)
+                {
+                    ShowError("This voter has already voted!");
+                }
+            }
+        }
+
+
+        private void RegisterVoterWrapper(object sender, EventArgs e)
+        {
+            if (e is KeyEventArgs && ((KeyEventArgs)e).Key != Key.Enter) return;
+            RegisterVoter(sender, e);
+        }
+
+        protected abstract void RegisterVoter(object sender, EventArgs e);
+
+        private void VoterCardNumberChanged(object sender, EventArgs e)
+        {
+            var voterCardNumberBox = (TextBox)sender;
+            if (voterCardNumberBox.Text.Length == 8)
+            {
+                VoterCard voterCard = DAOFactory.CurrentUserDAO.LoadVoterCard(voterCardNumberBox.Text);
+                if (voterCard != null && voterCard.Valid)
+                {
+                    Citizen = voterCard.Citizen;
+                }
+                else if (voterCard != null && !voterCard.Valid)
+                {
+                    ShowError("Voter card is invalid!");
+                }
+            }
+            voterCardNumberBox.Text = voterCardNumberBox.Text.ToUpper();
+            voterCardNumberBox.CaretIndex = 8;
+        }
+
+        private void LoadVoterData()
+        {
+            if (Citizen == null)
+            {
+                _view.VoterIdentification.VoterName.Text = "";
+                _view.VoterIdentification.VoterAddress.Text = "";
+                _view.VoterIdentification.VoterCprDigits.Password = "";
+                Citizen = null;
+            }
+            else
+            {
+                _view.VoterIdentification.VoterName.Text = Citizen.Name;
+                _view.VoterIdentification.VoterAddress.Text = Citizen.Address;
+            }
+            ClearStatusMessage();
+        }
+
+        protected void ClearStatusMessage()
+        {
+            _view.StatusText.Text = "";
+            HideImages();
         }
 
         protected void Disable(TextBox t)
@@ -91,81 +154,37 @@ namespace DigitalVoterList.Controllers
             _view.StatusImageWarning.Visibility = Visibility.Hidden;
         }
 
-        private void RegisterVoterWrapper(object sender, EventArgs e)
+        protected void ShowSuccess(string msg)
         {
-            if (e is KeyEventArgs && ((KeyEventArgs)e).Key != Key.Enter) return;
-            RegisterVoter(sender, e);
+            _view.StatusText.Text = msg;
+            _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(0, 140, 0));
+            _view.StatusImageSucces.Visibility = Visibility.Visible;
+            SetRegBtnState();
         }
 
-        protected void RegisterVoter(object sender, EventArgs e)
+        protected void ShowWarning(string msg)
         {
-            if (Citizen != null)
-            {
-                try
-                {
-                    //TODO: TEST IF REGISTERED
-                    DAOFactory.CurrentUserDAO.SetHasVoted(Citizen, _view.VoterIdentification.VoterCprDigits.Password);
-                    _view.StatusImageSucces.Visibility = Visibility.Visible;
-                    _view.StatusText.Text = "Citizen registered!";
-                }
-                catch (Exception ex)
-                {
-                    //TODO: throw ex;
-                    _view.StatusImageError.Visibility = Visibility.Visible;
-                    _view.StatusText.Text = ex.Message;
-                }
-            }
-            else
-            {
-                _view.StatusText.Text = "No person found with the inserted information";
-                _view.StatusImageWarning.Visibility = Visibility.Visible;
-            }
+            _view.StatusText.Text = msg;
+            _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(190, 0, 0));
+            _view.StatusImageWarning.Visibility = Visibility.Visible;
+            SetRegBtnState();
         }
 
-        private void VoterCardNumberChanged(object sender, EventArgs e)
+        protected void ShowError(string msg)
         {
-            TextBox voterCardNumberBox = (TextBox)sender;
-            Citizen = null;
-            if (voterCardNumberBox.Text.Length == 8)
-            {
-                IDataAccessObject dao = DAOFactory.CurrentUserDAO;
-                VoterCard voterCard = dao.LoadVoterCard(voterCardNumberBox.Text);
-                if (voterCard != null)
-                {
-                    Citizen = voterCard.Citizen;
-                    _view.VoterIdentification.VoterCprDigits.Focus();
-                }
-            }
-            voterCardNumberBox.Text = voterCardNumberBox.Text.ToUpper();
-            voterCardNumberBox.CaretIndex = 8;
-            LoadVoterData();
+            _view.StatusText.Text = msg;
+            _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(190, 0, 0));
+            _view.StatusImageError.Visibility = Visibility.Visible;
+            SetRegBtnState();
         }
 
-        private void LoadVoterData()
+        protected void SetRegBtnState()
         {
-            if (Citizen == null)
-            {
-                _view.VoterIdentification.VoterName.Text = "";
-                _view.VoterIdentification.VoterAddress.Text = "";
-                _view.VoterIdentification.VoterCprDigits.Password = "";
-                LoadVoterValidation(null);
-                Citizen = null;
-            }
-            else
-            {
-                _view.VoterIdentification.VoterName.Text = Citizen.Name;
-                _view.VoterIdentification.VoterAddress.Text = Citizen.Address;
-            }
-            ClearStatusMessage();
-            LoadVoterValidation(Citizen);
+            Disable(_view.RegisterVoterButton);
+            if (Citizen == null) return;
+            if (Citizen.HasVoted) return;
+            if (!Citizen.EligibleToVote) return;
+            Enable(_view.RegisterVoterButton);
         }
-
-        protected void ClearStatusMessage()
-        {
-            _view.StatusText.Text = "";
-            HideImages();
-        }
-
-        protected abstract void LoadVoterValidation(Citizen c);
     }
 }

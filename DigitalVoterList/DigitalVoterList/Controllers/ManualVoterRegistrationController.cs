@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using DigitalVoterList.Election;
 using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
-    using System.Diagnostics;
     using System.Windows;
     using System.Windows.Controls;
 
@@ -13,120 +15,126 @@ namespace DigitalVoterList.Controllers
     /// </summary>
     public class ManualVoterRegistrationController : VoterRegistrationController
     {
-        private VoterRegistrationView _view;
-        private SearchPersonController _searchController;
-        private SearchPersonView _searchView;
-        private SearchPersonWindow _searchWindow;
-        private Citizen _citizen;
+        private readonly VoterRegistrationView _view;
+        private readonly SearchPersonController _searchController;
+        private readonly SearchPersonView _searchView;
+        private readonly SearchPersonWindow _searchWindow;
 
         public ManualVoterRegistrationController(VoterRegistrationView view)
             : base(view)
         {
+            _neededPermissions.Add(SystemAction.FindPerson);
+            _neededPermissions.Add(SystemAction.SetHasVotedManually);
+
             _view = view;
             _searchView = new SearchPersonView();
             _searchWindow = new SearchPersonWindow();
             _searchController = new SearchPersonController(_searchView, _searchWindow);
-            _citizen = null;
-            Disable(_view.RegisterVoterButton);
-
-            _neededPermissions.Add(SystemAction.FindPerson);
-            _neededPermissions.Add(SystemAction.SetHasVotedManually);
 
             _view.VoterValidation.Children.Clear();
             _view.VoterValidation.Children.Add(new ManualVoterValidationView());
             _view.Height = 420;
 
-            _view.VoterIdentification.VoterCprDigits.PasswordChanged += CheckVoterValidationCpr;
-            _view.VoterIdentification.VoterCprBirthday.TextChanged += FocusToCpr;
+            _view.VoterIdentification.VoterCardNumber.TextChanged += (s, e) =>
+                {
+                    if (!((TextBox)s).Text.Equals(""))
+                    {
+                        _view.VoterIdentification.VoterCprBirthday.Text = "";
+                        _view.VoterIdentification.VoterCprDigits.Password = "";
+                    }
+                };
+            _view.VoterIdentification.VoterCprBirthday.TextChanged += (s, e) =>
+                {
+                    var t = (TextBox)s;
+                    if (t.Text.Length == 6)
+                    {
+                        _view.VoterIdentification.VoterCprDigits.Password = "";
+                        _view.VoterIdentification.VoterCprDigits.Focus();
+                    }
+                    if (!t.Text.Equals("")) _view.VoterIdentification.VoterCardNumber.Text = "";
+                    CheckCpr();
+                };
+            _view.VoterIdentification.VoterCprBirthday.TextChanged += DigitsOnlyText;
+            _view.VoterIdentification.VoterCprDigits.PasswordChanged += (s, e) =>
+                {
+                    if (!((PasswordBox)s).Password.Equals("")) _view.VoterIdentification.VoterCardNumber.Text = "";
+                    CheckCpr();
+                };
+            _view.VoterIdentification.VoterCprDigits.PasswordChanged += DigitsOnlyPassword;
+
+            _view.SearchVoterButton.Click += (s, e) => _searchWindow.Show();
             _searchController.PersonFound += SearchPersonFound;
-            _view.SearchVoterButton.Click += SearchEvent;
-            _view.RegisterVoterButton.Click += RegisterVoter;
-            //view.VoterIdentification.PreviewKeyDown += HideImages;
+
+            CitizenChanged += LoadVoterValidation;
         }
 
-        private void SearchEvent(object sender, EventArgs e)
+        private void CheckCpr()
         {
-            _searchWindow.Show();
-        }
-
-        private void SearchPersonFound(object sender, SearchPersonEventArgs e)
-        {
-            Person p = e.Person;
-            if (p != null)
+            string cprDate = _view.VoterIdentification.VoterCprBirthday.Text;
+            string cprDigits = _view.VoterIdentification.VoterCprDigits.Password;
+            if (cprDate.Length != 6 || cprDigits.Length != 4)
             {
-                _view.VoterIdentification.VoterName.Text = p.Name;
-                _view.VoterIdentification.VoterCprBirthday.Text = p.Cpr.Substring(0, 6);
-                _view.VoterIdentification.VoterAddress.Text = p.Address;
+                Citizen = null;
+                return;
             }
+            var result = DAOFactory.CurrentUserDAO.FindCitizens(new Dictionary<CitizenSearchParam, object>()
+                                                                        {
+                                                                            {CitizenSearchParam.Cpr,cprDate + cprDigits}
+                                                                        });
+            if (result.Count == 0)
+            {
+                ShowWarning("No person found with the supplied CPR.");
+                Citizen = null;
+                return;
+            }
+            Citizen = result[0];
+        }
+
+        private void DigitsOnlyPassword(object sender, EventArgs e)
+        {
+            var p = (PasswordBox)sender;
+            string input = p.Password;
+            string digits = Regex.Replace(input, "[^0-9]", "");
+            if (!input.Equals(digits))
+            {
+                p.Password = digits;
+            }
+        }
+
+        private void DigitsOnlyText(object sender, EventArgs e)
+        {
+            var t = (TextBox)sender;
+            int i = t.CaretIndex - 1;
+            string input = t.Text;
+            string digits = Regex.Replace(input, "[^0-9]", "");
+            if (!input.Equals(digits))
+            {
+                t.Text = digits;
+                t.CaretIndex = i;
+            }
+        }
+
+        private void SearchPersonFound(Citizen c)
+        {
+            //Citizen = c;
             _searchWindow.Close();
         }
 
-        protected override void LoadVoterValidation(Citizen c)
+        protected void LoadVoterValidation()
         {
             _view.VoterValidation.Children.Clear();
-            ManualVoterValidationView validationView = new ManualVoterValidationView();
+            var validationView = new ManualVoterValidationView();
             _view.VoterValidation.Children.Add(validationView);
-            if (c != null)
+            if (Citizen != null)
             {
-                ManualVoterValidationController mvc = new ManualVoterValidationController(validationView, c);
-                mvc.Show();
+                var mvc = new ManualVoterValidationController(validationView, Citizen);
+                mvc.Show(); //TODO: Skal være default behaviour for controller..
             }
         }
 
-        private void CheckVoterValidationCpr(object sender, RoutedEventArgs routedEventArgs)
+        protected override void RegisterVoter(object sender, EventArgs e)
         {
-            string birthday = _view.VoterIdentification.VoterCprBirthday.Text;
-            string digits = _view.VoterIdentification.VoterCprDigits.Password;
-            _citizen = null;
-
-            if (digits.Length == 4 && _view.VoterIdentification.VoterCardNumber.Text.Length == 0)
-            {
-                IDataAccessObject dao = DAOFactory.CurrentUserDAO;
-                ManualVoterValidationView validationView = new ManualVoterValidationView();
-
-                _view.VoterValidation.Children.Clear();
-                _view.VoterValidation.Children.Add(validationView);
-
-                _citizen = dao.LoadCitizen(birthday + digits);
-
-                if (this._citizen != null)
-                {
-                    ManualVoterValidationController mvc = new ManualVoterValidationController(validationView, _citizen);
-                    mvc.Show();
-                    Enable(_view.RegisterVoterButton);
-                    _view.RegisterVoterButton.Focus();
-                }
-                LoadVoterData();
-            }
-        }
-
-        private void LoadVoterData()
-        {
-            if (_citizen == null)
-            {
-                _view.VoterIdentification.VoterName.Text = "";
-                _view.VoterIdentification.VoterAddress.Text = "";
-                _view.VoterIdentification.VoterCprDigits.Password = "";
-                _citizen = null;
-            }
-            else
-            {
-                _view.VoterIdentification.VoterName.Text = _citizen.Name;
-                _view.VoterIdentification.VoterAddress.Text = _citizen.Address;
-            }
-            ClearStatusMessage();
-        }
-
-        private void FocusToCpr(object sender, TextChangedEventArgs textChangedEventArgs)
-        {
-            if (_view.VoterIdentification.VoterCprBirthday.Text.Length == 6)
-            {
-                _view.VoterIdentification.VoterCprDigits.Focus();
-
-                var validationController = new ManualVoterValidationController(_view, _citizen);
-                validationController.Show();
-
-            }
+            throw new NotImplementedException();
         }
     }
 }
