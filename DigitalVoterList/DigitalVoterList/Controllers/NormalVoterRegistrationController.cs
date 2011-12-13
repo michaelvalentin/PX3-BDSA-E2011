@@ -12,6 +12,7 @@ using DigitalVoterList.Views;
 namespace DigitalVoterList.Controllers
 {
     using System;
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// A controller to handle normal voter registration with cpr-digits as extra security measure and no ability to search.
@@ -24,6 +25,7 @@ namespace DigitalVoterList.Controllers
         public NormalVoterRegistrationController(VoterRegistrationView view)
             : base(view)
         {
+            Contract.Requires(view != null);
             _view = view;
             _view.Height = 314;
 

@@ -19,9 +19,9 @@ namespace DigitalVoterList.Controllers
     {
 
         public ElectionAdministrationController(ElectionAdministrationView view)
+            : base(view)
         {
             Contract.Requires(view != null);
-            View = view;
             _neededPermissions.Add(SystemAction.AllVotingPlaces);
             _neededPermissions.Add(SystemAction.LoadCitizen);
             _neededPermissions.Add(SystemAction.LoadVoterCard);

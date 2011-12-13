@@ -32,10 +32,14 @@ namespace DigitalVoterList.Election
         /// <returns>A validated user obejct, null if the login is not found.</returns>
         public static User GetUser(string username, string password)
         {
+            Contract.Requires(DAOFactory.Ready);
             IDataAccessObject dao = DAOFactory.CurrentUserDAO;
             User u = dao.LoadUser(username);
             if (u == null) return null;
-            u.FetchPermissions(username, password);
+            if (!dao.ValidateUser(username, password))
+            {
+                u.FetchPermissions(username, password);
+            }
             if (!u.Validated) return null;
             return u;
         }
@@ -67,7 +71,7 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="uname">The username to validate</param>
         /// <param name="pwd">The password to validate</param>
-        public void FetchPermissions(string uname, string pwd)
+        private void FetchPermissions(string uname, string pwd)
         {
             Contract.Requires(DAOFactory.getDAO(this).ValidateUser(uname, HashPassword(pwd)));
             var dao = DAOFactory.getDAO(this);

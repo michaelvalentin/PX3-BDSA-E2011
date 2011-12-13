@@ -11,6 +11,8 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Diagnostics.Contracts;
+
     /// <summary>
     /// A controller for managing the login process
     /// </summary>
@@ -20,6 +22,7 @@ namespace DigitalVoterList.Controllers
 
         public LoginController(LoginWindow view)
         {
+            Contract.Requires(view != null);
             _view = view;
             _view.LoginEvent += ValidateUser;
             _view.Show();

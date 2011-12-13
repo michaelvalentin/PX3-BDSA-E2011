@@ -4,6 +4,8 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Diagnostics.Contracts;
+
     using DigitalVoterList.Election;
 
     class SearchCitizenController
@@ -18,6 +20,8 @@ namespace DigitalVoterList.Controllers
 
         public SearchCitizenController(SearchCitizenView view)
         {
+            Contract.Requires(view != null);
+
             _view = view;
             _view.SearchResultsGrid.IsReadOnly = true;
 

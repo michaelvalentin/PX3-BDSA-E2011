@@ -14,14 +14,13 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// A controller for handling the registration of voters
     /// </summary>
     public abstract class VoterRegistrationController : ContentController
     {
-
-        private readonly VoterRegistrationView _view;
         private Citizen _citizen;
         public Action CitizenChanged;
         public Citizen Citizen
@@ -34,13 +33,12 @@ namespace DigitalVoterList.Controllers
         }
 
         protected VoterRegistrationController(VoterRegistrationView view)
+            : base(view)
         {
+            Contract.Requires(view != null);
             _neededPermissions.Add(SystemAction.ScanVoterCard);
             _neededPermissions.Add(SystemAction.LoadCitizen);
             _neededPermissions.Add(SystemAction.SetHasVoted);
-
-            _view = view;
-            View = _view;
 
             Disable(_view.VoterIdentification.VoterName);
             Disable(_view.VoterIdentification.VoterAddress);
@@ -53,6 +51,14 @@ namespace DigitalVoterList.Controllers
             _view.VoterIdentification.VoterCardNumber.TextChanged += VoterCardNumberChanged;
             _view.RegisterVoterButton.Click += RegisterVoterWrapper;
             _view.RegisterVoterButton.KeyDown += RegisterVoterWrapper;
+        }
+
+        private new VoterRegistrationView _view
+        {
+            get
+            {
+                return (VoterRegistrationView)View;
+            }
         }
 
         public void SetCitizen(Citizen c)

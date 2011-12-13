@@ -557,7 +557,7 @@ namespace DigitalVoterList.Election
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(citizen != null, "Input citizen must not be null!");
             Contract.Requires(citizen.DbId > 0, "DbId must be larger than zero to update");
-            Contract.Requires(PriExistsWithId("citizen", citizen.DbId), "DbId must be present in database in order to update anything");
+            Contract.Requires(PriExistsWithId("person", citizen.DbId), "DbId must be present in database in order to update anything");
             Contract.Requires(citizen.Cpr != null && Citizen.ValidCpr(citizen.Cpr), "A citizen must be saved with a valid CPR number");
             Contract.Requires(citizen.VotingPlace == null || PriExistsWithId("voting_venue", citizen.VotingPlace.DbId), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
             Contract.Ensures(LoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");

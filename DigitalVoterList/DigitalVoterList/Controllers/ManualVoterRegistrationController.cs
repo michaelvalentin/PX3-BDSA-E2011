@@ -13,6 +13,7 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Diagnostics.Contracts;
     using System.Windows.Controls;
 
     /// <summary>
@@ -29,6 +30,8 @@ namespace DigitalVoterList.Controllers
         public ManualVoterRegistrationController(VoterRegistrationView view)
             : base(view)
         {
+            Contract.Requires(view != null);
+
             _neededPermissions.Add(SystemAction.FindCitizen);
             _neededPermissions.Add(SystemAction.SetHasVotedManually);
 
