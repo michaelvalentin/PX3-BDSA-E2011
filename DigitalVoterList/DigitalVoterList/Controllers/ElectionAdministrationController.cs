@@ -23,7 +23,13 @@ namespace DigitalVoterList.Controllers
             View = view;
             _view = view;
             _neededPermissions.Add(SystemAction.AllVotingPlaces);
-            //TODO: Write more needed permissions...
+            _neededPermissions.Add(SystemAction.LoadCitizen);
+            _neededPermissions.Add(SystemAction.LoadVoterCard);
+            _neededPermissions.Add(SystemAction.FindCitizen);
+            _neededPermissions.Add(SystemAction.FindVotingVenue);
+            _neededPermissions.Add(SystemAction.UpdateCitizens);
+            _neededPermissions.Add(SystemAction.UpdateVoterCards);
+            _neededPermissions.Add(SystemAction.PrintVoterCards);
 
             _view.ImportDataBtn.Click += (s, e) => ImportData();
             _view.UpdateVoterCardsBtn.Click += (s, e) => UpdateVoterCards();
