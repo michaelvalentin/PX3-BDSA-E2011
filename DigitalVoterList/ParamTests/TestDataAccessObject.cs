@@ -263,7 +263,7 @@ namespace ParamTests
             result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>
                                                          {
                                                              {CitizenSearchParam.Cpr,"2405901253"}
-                                                         }, SearchMatching.Similair);
+                                                         }, SearchMatching.Exact);
             Assert.That(result.Count == 1, "Jens Dahl Møllerhøj could not be found via CPR");
             Assert.That(result[0].Name.Equals("Jens Dahl Møllerhøj"), "Person with CPR 2405901253 was not Jens Dahl Møllerhøj");
             result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>()
