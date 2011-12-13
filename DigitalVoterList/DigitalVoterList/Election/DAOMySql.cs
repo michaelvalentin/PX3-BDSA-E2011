@@ -875,11 +875,11 @@ namespace DigitalVoterList.Election
             Contract.Requires(voterCard.IdKey != null);
             Contract.Requires(PriExistsWithId("voter_card", voterCard.Id));
             MySqlCommand updateVoterCard = Prepare("UPDATE" +
-                                                   "    voter_card" +
+                                                   "    voter_card  " +
                                                    "SET" +
                                                    "    person_id=@personId," +
                                                    "    valid=@valid," +
-                                                   "    id_key=@idKey");
+                                                   "    id_key=@idKey;");
             var voterCardMapping = new Dictionary<string, string>()
 													{
 														{"personId",voterCard.Citizen.DbId.ToString()},

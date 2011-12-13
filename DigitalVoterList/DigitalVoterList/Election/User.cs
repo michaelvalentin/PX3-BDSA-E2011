@@ -35,10 +35,6 @@ namespace DigitalVoterList.Election
             User u = dao.LoadUser(username);
             if (u == null) return null;
             u.FetchPermissions(username, password);
-            if (!u.Validated) return null;
-            return u;
-
-            u.FetchPermissions(username, password);
             return u.Validated ? u : null;
         }
 

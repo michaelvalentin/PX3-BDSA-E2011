@@ -11,6 +11,7 @@ using DigitalVoterList.Utilities;
 
 namespace DigitalVoterList.Election
 {
+    using System.Text.RegularExpressions;
 
     /// <summary>
     /// A person with a valid and unique ID-number (CPR-number)
@@ -102,7 +103,7 @@ namespace DigitalVoterList.Election
         {
             Contract.Requires(cpr != null);
             int tempCpr;
-            if (cpr.Length == 10 && Int32.TryParse(cpr, out tempCpr))
+            if (Regex.IsMatch(cpr, @"^\d{10}$"))
             {
                 int day;
                 if (!Int32.TryParse(cpr.Substring(0, 2), out day)) return false;

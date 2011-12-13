@@ -42,7 +42,7 @@ namespace ParamTests
 
             //Login
             DAOFactory.ConnectionString = "SERVER=localhost;" +
-                                            "DATABASE=px3;" +
+                                            "DATABASE=px3-test;" +
                                             "UID=root;" +
                                             "PASSWORD=abcd1234;";
 
@@ -134,10 +134,10 @@ namespace ParamTests
             var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
             Assert.That(permissions.Count == 17);
 
-            var permissions2 = this._dao.GetPermissions(User.GetUser("slave", "asdf"));
+            var permissions2 = this._dao.GetPermissions(_dao.LoadUser(2));
             Assert.That(permissions2.Count == 0);
 
-            var permissions3 = this._dao.GetPermissions(User.GetUser("elec", "hemmelighed"));
+            var permissions3 = this._dao.GetPermissions(_dao.LoadUser(3));
             Assert.That(permissions3.Count == 3);
         }
 
@@ -147,7 +147,7 @@ namespace ParamTests
             var workplaces = this._dao.GetWorkplaces(VoterListApp.CurrentUser);
             Assert.That(workplaces.Count == 1);
 
-            var workplaces2 = this._dao.GetWorkplaces(User.GetUser("slave", "asdf"));
+            var workplaces2 = this._dao.GetWorkplaces(_dao.LoadUser(2));
             Assert.That(workplaces2.Count == 2);
         }
 
@@ -213,7 +213,7 @@ namespace ParamTests
             VoterCard votercard = this._dao.LoadVoterCard(5);
             Assert.That(votercard.IdKey.Equals("1HN8O9M9"));
             VoterCard votercard2 = this._dao.LoadVoterCard(1);
-            Assert.That(votercard2.IdKey.Equals("HR5F4D7"));
+            Assert.That(votercard2.IdKey.Equals("HR5F4D7D"));
         }
 
         [Test]
@@ -263,7 +263,7 @@ namespace ParamTests
             result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>
                                                          {
                                                              {CitizenSearchParam.Cpr,"2405901253"}
-                                                         }, SearchMatching.Similair);
+                                                         }, SearchMatching.Exact);
             Assert.That(result.Count == 1, "Jens Dahl Møllerhøj could not be found via CPR");
             Assert.That(result[0].Name.Equals("Jens Dahl Møllerhøj"), "Person with CPR 2405901253 was not Jens Dahl Møllerhøj");
             result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>()
