@@ -179,7 +179,7 @@ namespace DigitalVoterList.Controllers
             }
             catch (Exception ex)
             {
-                //TODO: Log the exception for security / maintainance...
+                //SKIPPEDTODO: Log the exception for security / maintainance...
                 ShowError("An unexpected error occured. Please try again.");
             }
         }
