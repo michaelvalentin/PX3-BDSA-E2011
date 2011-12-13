@@ -9,6 +9,6 @@
         <Button Content="Import Data" Height="49" HorizontalAlignment="Left" Margin="554,109,0,0" Name="ImportDataBtn" VerticalAlignment="Top" Width="249" FontSize="18" />
         <Button Content="Update Voter Cards" Height="49" HorizontalAlignment="Left" Margin="554,212,0,0" Name="UpdateVoterCardsBtn" VerticalAlignment="Top" Width="249" FontSize="18" />
         <Button Content="Print Voter Cards" Height="49" HorizontalAlignment="Left" Margin="554,315,0,0" Name="PrintVoterCardsBtn" VerticalAlignment="Top" Width="249" FontSize="18" />
-        <TextBlock Height="49" HorizontalAlignment="Left" Margin="143,212,0,0" Name="StatusTextBox" Text="" VerticalAlignment="Top" Width="355" Foreground="Red" ForceCursor="False" FontSize="16" />
+        <TextBlock Height="113" HorizontalAlignment="Left" Margin="105,182,0,0" Name="StatusTextBox" Text="" VerticalAlignment="Top" Width="355" Foreground="Red" ForceCursor="False" FontSize="16" TextWrapping="Wrap" />
     </Grid>
 </UserControl>

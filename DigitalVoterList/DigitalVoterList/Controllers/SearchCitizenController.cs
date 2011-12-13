@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Media;
 using DigitalVoterList.Views;
-using DigitalVoterList.Election;
 
 namespace DigitalVoterList.Controllers
 {
@@ -35,7 +35,7 @@ namespace DigitalVoterList.Controllers
             _view.SelectButton.Click += (s, e) => Select();
             _view.SearchResultsGrid.MouseDoubleClick += (s, e) => Select();
 
-            _view.addressTextBox.TextChanged += (s,e) => _view.statusTextBlock.Text = "";
+            _view.addressTextBox.TextChanged += (s, e) => _view.statusTextBlock.Text = "";
             _view.nameTextBox.TextChanged += (s, e) => _view.statusTextBlock.Text = "";
             _view.cprTextBox.TextChanged += (s, e) => _view.statusTextBlock.Text = "";
 
@@ -44,7 +44,7 @@ namespace DigitalVoterList.Controllers
         /// <summary>
         /// Clear the listbox and the textblocks in the view
         /// </summary>
-        private void Clear()
+        public void Clear()
         {
             _searchCitizen = null;
             LoadListBox();
@@ -75,11 +75,19 @@ namespace DigitalVoterList.Controllers
             }
             if (searchParams.Count > 0)
             {
-                _searchCitizen = DAOFactory.CurrentUserDAO.FindCitizens(searchParams, SearchMatching.Similair);
-                if (_searchCitizen.Count == 0)
+                try
                 {
-                    _view.statusTextBlock.Text = "No citizens found with the specified information";
-                    return;
+                    _searchCitizen = DAOFactory.CurrentUserDAO.FindCitizens(searchParams, SearchMatching.Similair);
+                    if (_searchCitizen.Count == 0)
+                    {
+                        _view.statusTextBlock.Text = "No citizens found with the specified information";
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _view.statusTextBlock.Text = ex.Message;
+                    _view.statusTextBlock.Foreground = new SolidColorBrush(Color.FromRgb(210, 0, 0));
                 }
             }
             LoadListBox();

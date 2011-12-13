@@ -38,7 +38,7 @@ namespace DigitalVoterList.Controllers
             _view = view;
             _searchView = new SearchCitizenView();
             _searchView.QuitButton.Click += (s, e) =>
-                { 
+                {
                     _currentSearchWindow.Close();
                     _view.VoterIdentification.VoterCardNumber.Focus();
                 };
@@ -92,26 +92,40 @@ namespace DigitalVoterList.Controllers
                 Citizen = null;
                 return;
             }
-            var result = DAOFactory.CurrentUserDAO.FindCitizens(new Dictionary<CitizenSearchParam, object>()
-                                                                        {
-                                                                            {CitizenSearchParam.Cpr,cprDate + cprDigits}
-                                                                        }, SearchMatching.Similair);
-            if (result.Count == 0)
+            try
             {
-                ShowWarning("No person found with the supplied CPR.");
-                Citizen = null;
-                return;
+                var result = DAOFactory.CurrentUserDAO.FindCitizens(new Dictionary<CitizenSearchParam, object>()
+                                                                            {
+                                                                                {CitizenSearchParam.Cpr,cprDate + cprDigits}
+                                                                            }, SearchMatching.Similair);
+                if (result.Count == 0)
+                {
+                    ShowWarning("No person found with the supplied CPR.");
+                    Citizen = null;
+                    return;
+                }
+                Citizen = result[0];
             }
-            Citizen = result[0];
+            catch (Exception ex)
+            {
+                ShowError(ex.Message);
+            }
         }
 
         private void ShowSearchVoterWindow()
         {
+            if (_currentSearchWindow != null)
+            {
+                _currentSearchWindow.Focus();
+                return;
+            }
             var win = new Window();
             win.Content = _searchView;
             win.Closed += (s, e) =>
             {
                 ((Window)s).Content = null;
+                _currentSearchWindow = null;
+                _searchController.Clear();
             };
             win.Height = _searchView.Height + 30;
             win.Width = _searchView.Width + 10;
@@ -183,13 +197,12 @@ namespace DigitalVoterList.Controllers
                 DAOFactory.CurrentUserDAO.SetHasVoted(Citizen);
                 ShowSuccess("Voter registered!");
                 Disable(_view.RegisterVoterButton);
-
                 _searchView.SearchResultsGrid.Items.Refresh();
             }
             catch (Exception ex)
             {
                 //SKIPPEDTODO: Log the exception for security / maintainance...
-                ShowError("An unexpected error occured. Please try again.");
+                ShowError(ex.Message);
             }
         }
 

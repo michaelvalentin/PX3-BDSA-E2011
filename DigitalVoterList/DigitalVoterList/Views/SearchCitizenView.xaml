@@ -9,7 +9,7 @@
         <TextBox Height="30" HorizontalAlignment="Left" Margin="168,12,0,0" Name="nameTextBox" VerticalAlignment="Top" Width="644" FontSize="14" />
         <TextBox Height="30" HorizontalAlignment="Left" Margin="168,64,0,0" Name="addressTextBox" VerticalAlignment="Top" Width="644" FontSize="14" />
         <TextBox Height="30" HorizontalAlignment="Left" Margin="168,116,0,0" Name="cprTextBox" VerticalAlignment="Top" Width="253" FontSize="14" />
-        <TextBlock Height="30" HorizontalAlignment="Left" Margin="491,116,0,0" Name="statusTextBlock" Text="" VerticalAlignment="Top" Width="321" FontSize="14" Foreground="Red"/>
+        <TextBlock Height="46" HorizontalAlignment="Left" Margin="462,116,0,0" Name="statusTextBlock" Text="" VerticalAlignment="Top" Width="350" FontSize="14" Foreground="Red" TextWrapping="Wrap" />
         <Label Content="Name" Height="46" HorizontalAlignment="Left" Margin="12,12,0,0" Name="nameLabel" VerticalAlignment="Top" Width="150" FontSize="16" FontWeight="Bold" />
         <Label Content="Address" FontSize="16" Height="46" HorizontalAlignment="Left" Margin="12,64,0,0" Name="addressLabel" VerticalAlignment="Top" Width="150" FontWeight="Bold" />
         <Label FontSize="16" Height="46" HorizontalAlignment="Left" Margin="12,116,0,0" Name="cprLabel" VerticalAlignment="Top" Width="150" Content="Cpr No." FontWeight="Bold" />

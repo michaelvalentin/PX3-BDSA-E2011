@@ -4,6 +4,7 @@
  * Date: 12-12-2011
  */
 
+using System.Windows.Media;
 using DigitalVoterList.Election;
 using DigitalVoterList.Election.Administration;
 using DigitalVoterList.Views;
@@ -56,10 +57,11 @@ namespace DigitalVoterList.Controllers
             {
                 var dataTransformer = new DataTransformer();
                 dataTransformer.TransformData();
+                ShowSuccess("Data was successfully imported.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _view.StatusTextBox.Text = "Failed to load data!";
+                ShowError(ex.Message + ". Data could not be imported.");
             }
         }
 
@@ -71,14 +73,13 @@ namespace DigitalVoterList.Controllers
             _view.StatusTextBox.Text = "";
             try
             {
-                throw new Exception();
                 DAOFactory.CurrentUserDAO.UpdateVoterCards();
+                ShowSuccess("Voter cards was successfully updated.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _view.StatusTextBox.Text = "Failed to update the voter cards in the database!";
+                ShowError(ex.Message + ". Voter cards could not be updated.");
             }
-            
         }
 
         /// <summary>
@@ -91,12 +92,26 @@ namespace DigitalVoterList.Controllers
             {
                 var printer = new VoterCardPrinter();
                 DAOFactory.CurrentUserDAO.PrintVoterCards(printer);
+                ShowSuccess("All voter cards printed successfully");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _view.StatusTextBox.Text = "Failed to print the voter cards!";
+                ShowError(ex.Message + ". Some voter cards may not have been printed.");
             }
-            
+        }
+
+        public void ShowSuccess(string msg, int fontSize = 14)
+        {
+            _view.StatusTextBox.Text = msg;
+            _view.StatusTextBox.Foreground = new SolidColorBrush(Color.FromRgb(0, 190, 0));
+            _view.StatusTextBox.FontSize = fontSize;
+        }
+
+        public void ShowError(string msg, int fontSize = 14)
+        {
+            _view.StatusTextBox.Text = msg;
+            _view.StatusTextBox.Foreground = new SolidColorBrush(Color.FromRgb(190, 0, 0));
+            _view.StatusTextBox.FontSize = fontSize;
         }
     }
 }

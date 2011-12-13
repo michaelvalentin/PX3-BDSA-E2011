@@ -19,9 +19,27 @@ namespace DigitalVoterList.Election.Administration
         {
             Contract.Requires(voterCard != null);
             PrintVoterCard printVoterCard = new PrintVoterCard(voterCard);
+
             PrintDialog dialog = new PrintDialog();
             if (dialog.ShowDialog() == true)
-            { dialog.PrintVisual(printVoterCard.printPage, "Print Voter Card"); }
+            {
+                dialog.PrintVisual(printVoterCard.printPage, "Print Voter Card");
+            }
         }
+
+        //WHY is there no simple way to print multiple pages from C#?!
+        /*public static void Print(List<VoterCard> voterCards)
+        {
+            var p = new StackPanel();
+            p.Children.Add(new SearchCitizenView());
+            p.Children.Add(new SearchCitizenView());
+            p.Children.Add(new SearchCitizenView());
+            p.Children.Add(new SearchCitizenView());
+            PrintDialog dialog = new PrintDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                dialog.PrintDocument(DocumentPaginator.);
+            }
+        }*/
     }
 }

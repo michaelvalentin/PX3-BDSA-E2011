@@ -119,7 +119,7 @@ namespace DigitalVoterList.Controllers
             catch (Exception ex)
             {
                 //SKIPPEDTODO: Log the exception for security / maintainance...
-                ShowError("An unexpected error occured. Please try again.");
+                ShowError(ex.Message);
             }
         }
 

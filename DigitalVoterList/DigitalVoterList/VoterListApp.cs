@@ -35,6 +35,25 @@ namespace DigitalVoterList
         [System.STAThread]
         public static void Main()
         {
+            /*
+            VoterCardPrinter.Print(new List<VoterCard>()
+                                       {
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true},
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true},
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true},
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true}, 
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true},
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true},
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true},
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true},
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true},
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true},
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true},
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true},
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true},
+                                           new VoterCard(){Id=1, IdKey="ABCD1234", Citizen = new Citizen(1,"1212971234"){Name="Test person",Address="En by et eller andet sted", VotingPlace = new VotingVenue(1, "Test valgsted","Test adresse på valgsted")}, ElectionEvent = Settings.Election, Valid = true}                                                                                                                                                                                                                                                                   
+                                       });
+            return;*/
             App = new Application();
             App.Startup += (o, e) =>
             {

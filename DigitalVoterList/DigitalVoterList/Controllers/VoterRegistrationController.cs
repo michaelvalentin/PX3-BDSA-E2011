@@ -84,14 +84,21 @@ namespace DigitalVoterList.Controllers
             var voterCardNumberBox = (TextBox)sender;
             if (voterCardNumberBox.Text.Length == 8)
             {
-                VoterCard voterCard = DAOFactory.CurrentUserDAO.LoadVoterCard(voterCardNumberBox.Text);
-                if (voterCard != null && voterCard.Valid)
+                try
                 {
-                    Citizen = voterCard.Citizen;
+                    VoterCard voterCard = DAOFactory.CurrentUserDAO.LoadVoterCard(voterCardNumberBox.Text);
+                    if (voterCard != null && voterCard.Valid)
+                    {
+                        Citizen = voterCard.Citizen;
+                    }
+                    else if (voterCard != null && !voterCard.Valid)
+                    {
+                        ShowError("Voter card is invalid!");
+                    }
                 }
-                else if (voterCard != null && !voterCard.Valid)
+                catch (Exception ex)
                 {
-                    ShowError("Voter card is invalid!");
+                    ShowError(ex.Message);
                 }
             }
             else
