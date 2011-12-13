@@ -5,42 +5,78 @@
  */
 
 using System;
+using System.Windows.Input;
 using System.Windows.Media;
 using DigitalVoterList.Election;
 using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Diagnostics.Contracts;
+
     /// <summary>
     /// A controller for managing the login process
     /// </summary>
     public class LoginController
     {
-        private LoginWindow _view;
+        private LoginWindow _window;
 
-        public LoginController(LoginWindow view)
+        public LoginController(LoginWindow window)
         {
-            _view = view;
-            _view.LoginEvent += ValidateUser;
-            _view.Show();
+            _window = window;
+            _window.LoginBtn.Click += (s, e) => Login();
+            _window.KeyDown += (s, e) =>
+                                 {
+                                     if (e.Key == Key.Enter) Login();
+                                 };
+            _window.Show();
         }
 
-        private void ValidateUser(Object sender, LoginEventArgs e)
+        private void Login()
         {
-            _view.StatusText.Text = "";
-            User u = User.GetUser(e.Username, e.Password);
-            if (u == null)
+            _window.StatusText.Text = "";
+            string uname = _window.Username.Text;
+            string pwd = _window.Password.Password;
+            if (String.IsNullOrWhiteSpace(uname))
             {
-                _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(225, 0, 0));
-                _view.StatusText.Text = "Wrong username/password.";
+                ShowError("Please enter a username");
+                return;
             }
-            else
+            if (String.IsNullOrWhiteSpace(pwd))
             {
-                _view.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(0, 235, 0));
-                _view.StatusText.Text = "Login was successfull. Loading the Digital Voter List.";
+                ShowError("Please enter a password");
+                return;
+            }
+            try
+            {
+                User u = User.GetUser(uname, pwd);
+                if (u == null)
+                {
+                    ShowError("Wrong username/password.");
+                    return;
+                }
+                ShowSuccess("Login was successfull. Loading the Digital Voter List.");
                 VoterListApp.RunApp(u);
-                _view.Close();
+                _window.Close();
             }
+            catch (Exception ex)
+            {
+                ShowError(ex.Message, 10);
+            }
+        }
+
+        private void ShowSuccess(string msg, int fontSize = 12)
+        {
+            _window.StatusText.Text = msg;
+            _window.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(0, 210, 0));
+            _window.StatusText.FontSize = fontSize;
+        }
+
+        private void ShowError(string msg, int fontSize = 12)
+        {
+            _window.StatusText.Text = msg;
+            _window.StatusText.Foreground = new SolidColorBrush(Color.FromRgb(210, 0, 0));
+            _window.StatusText.FontSize = fontSize;
         }
     }
 }

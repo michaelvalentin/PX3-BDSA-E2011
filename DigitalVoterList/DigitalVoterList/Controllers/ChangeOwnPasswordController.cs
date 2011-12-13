@@ -12,6 +12,7 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// A controller to handle change of password
@@ -22,6 +23,7 @@ namespace DigitalVoterList.Controllers
 
         public ChangeOwnPasswordController(ChangePasswordWindow view)
         {
+            Contract.Requires(view != null);
             _view = view;
             _view.SaveBtn.Click += ChangePassword;
             _view.SaveBtn.KeyDown += ChangePassword;

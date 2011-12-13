@@ -28,7 +28,7 @@ namespace DigitalVoterList.Election
         {
             /*
                 This method should calculate there a citizen should vote from his data. This might be calculated from a list of zipcodes in the database,
-             *  by looking at GPS coordinates or other stuff.
+             *  by looking at GPS coordinates or other stuff. In this example, every citizen votes at the same voting venue.
             */
 
             return new VotingVenue(1, "Dyssegårdskolens aula", "Dyssegårdsvej 34");
@@ -54,7 +54,7 @@ namespace DigitalVoterList.Election
             if (rawPerson.Nationality != "DNK") return false;
 
             //Person is dead
-            if (rawPerson.Alive == false) return false;
+            if (rawPerson.Dead == true) return false;
 
             return true;
         }

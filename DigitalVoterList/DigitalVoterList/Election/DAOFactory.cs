@@ -15,7 +15,23 @@ namespace DigitalVoterList.Election
     public static class DAOFactory
     {
         private static Dictionary<User, IDataAccessObject> daos = new Dictionary<User, IDataAccessObject>();
-        public static string ConnectionString { private get; set; }
+
+        public static bool Ready { get; private set; }
+
+        private static string _connectionString;
+
+        public static string ConnectionString
+        {
+            private get
+            {
+                return _connectionString;
+            }
+            set
+            {
+                _connectionString = value;
+                Ready = true;
+            }
+        }
 
         /// <summary>
         /// May i have the Data Access Object for this user?
@@ -24,12 +40,12 @@ namespace DigitalVoterList.Election
         /// <returns>A data access object ready to use</returns>
         public static IDataAccessObject getDAO(User u)
         {
-            Contract.Requires(ConnectionString != null);
+            Contract.Requires(Ready);
             Contract.Requires(u != null);
             Contract.Ensures(Contract.Result<IDataAccessObject>() != null);
             Contract.Ensures(daos.ContainsKey(u));
 
-            if (!daos.ContainsKey(u)) //Check if dao allready exists
+            if (!daos.ContainsKey(u)) //Check if dao already exists
             {
                 IDataAccessObject dao = DAOMySql.GetDAO(u, ConnectionString);
                 daos[u] = dao; //Create dao if it doesn't exist
@@ -42,7 +58,12 @@ namespace DigitalVoterList.Election
         /// </summary>
         public static IDataAccessObject CurrentUserDAO
         {
-            get { return getDAO(VoterListApp.CurrentUser); }
+            get
+            {
+                Contract.Requires(Ready);
+                Contract.Requires(VoterListApp.CurrentUser != null);
+                return getDAO(VoterListApp.CurrentUser);
+            }
         }
     }
 }

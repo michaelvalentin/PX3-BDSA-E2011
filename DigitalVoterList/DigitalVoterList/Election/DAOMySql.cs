@@ -557,7 +557,7 @@ namespace DigitalVoterList.Election
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(citizen != null, "Input citizen must not be null!");
             Contract.Requires(citizen.DbId > 0, "DbId must be larger than zero to update");
-            Contract.Requires(PriExistsWithId("citizen", citizen.DbId), "DbId must be present in database in order to update anything");
+            Contract.Requires(PriExistsWithId("person", citizen.DbId), "DbId must be present in database in order to update anything");
             Contract.Requires(citizen.Cpr != null && Citizen.ValidCpr(citizen.Cpr), "A citizen must be saved with a valid CPR number");
             Contract.Requires(citizen.VotingPlace == null || PriExistsWithId("voting_venue", citizen.VotingPlace.DbId), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
             Contract.Ensures(LoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");
@@ -1048,6 +1048,7 @@ namespace DigitalVoterList.Election
                         List<Citizen> listOfCitizens =
                             FindCitizens(
                                 new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, rawPerson.CPR } }, SearchMatching.Exact);
+                        Contract.Assert(listOfCitizens.Count <= 1, "More than one person found with the same CPR number");
                         if ((listOfCitizens.Count > 0))
                         {
                             Citizen c = updateFunc(listOfCitizens[0], rawPerson);
@@ -1186,12 +1187,18 @@ namespace DigitalVoterList.Election
                 else
                 {
                     _preparedStatements = new Dictionary<string, MySqlCommand>();
-
-                    RetryUtility.RetryAction(() =>
-                            {
-                                _connection = new MySqlConnection(_connectionString);
-                                _connection.Open();
-                            }, 5, 500);
+                    try
+                    {
+                        RetryUtility.RetryAction(() =>
+                                {
+                                    _connection = new MySqlConnection(_connectionString);
+                                    _connection.Open();
+                                }, 5, 500);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Could not establish connection to the central database. Please make sure you have access to the internet and try again. If the error repeats, please contact the support.", ex);
+                    }
                 }
                 return _connection;
             }
@@ -1204,28 +1211,38 @@ namespace DigitalVoterList.Election
         /// <param name="isolationLevel">The isolation level to use</param>
         private void DoTransaction(Action act, IsolationLevel isolationLevel = IsolationLevel.Serializable)
         {
-            RetryUtility.RetryAction(() =>
+            MySqlConnection conn = Connection;
+            try
             {
-                try
-                {
-                    _transaction = Connection.BeginTransaction(isolationLevel);
-                    act();
-                    _transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        _transaction.Rollback();
-                    }
-                    catch (Exception excep)
-                    {
-                        _connection = null; //If we can't rollback, clear the connection; something is very wrong...
-                        //SKIPPEDTODO: Make a logging function and maybe a security alert... 
-                    }
-                    throw;
-                }
-            }, 3, 700);
+                RetryUtility.RetryAction(() =>
+                                             {
+
+                                                 try
+                                                 {
+                                                     _transaction = conn.BeginTransaction(isolationLevel);
+                                                     act();
+                                                     _transaction.Commit();
+                                                 }
+                                                 catch (Exception ex)
+                                                 {
+                                                     try
+                                                     {
+                                                         _transaction.Rollback();
+                                                     }
+                                                     catch (Exception excep)
+                                                     {
+                                                         _connection = null;
+                                                         //If we can't rollback, clear the connection; something is very wrong...
+                                                         //SKIPPEDTODO: Make a logging function and maybe a security alert... 
+                                                     }
+                                                     throw;
+                                                 }
+                                             }, 3, 700);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Something unexpected went wrong. The error has been logged. Please try again.", ex);
+            }
             _transaction = null;
         }
 

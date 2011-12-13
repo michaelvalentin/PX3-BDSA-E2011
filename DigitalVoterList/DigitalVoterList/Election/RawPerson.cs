@@ -24,7 +24,7 @@ namespace DigitalVoterList.Election
 
         public string Birthplace { get; set; }
 
-        public bool Alive { get; set; }
+        public bool Dead { get; set; }
 
         public string Deathdate { get; set; }
 

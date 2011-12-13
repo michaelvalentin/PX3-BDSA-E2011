@@ -42,7 +42,7 @@ namespace ParamTests
 
             //Login
             DAOFactory.ConnectionString = "SERVER=localhost;" +
-                                            "DATABASE=px3-test;" +
+                                            "DATABASE=px3;" +
                                             "UID=root;" +
                                             "PASSWORD=abcd1234;";
 
@@ -132,7 +132,7 @@ namespace ParamTests
         public void TestGetPermissions()
         {
             var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
-            Assert.That(permissions.Count == 25);
+            Assert.That(permissions.Count == 17);
 
             var permissions2 = this._dao.GetPermissions(User.GetUser("slave", "asdf"));
             Assert.That(permissions2.Count == 0);
@@ -149,22 +149,6 @@ namespace ParamTests
 
             var workplaces2 = this._dao.GetWorkplaces(User.GetUser("slave", "asdf"));
             Assert.That(workplaces2.Count == 2);
-        }
-
-        [Test]
-        public void TestFindVoterCards()
-        {
-            int validVoterCards = _dao.FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
-                                                          {
-                                                              {VoterCardSearchParam.Valid,true}
-                                                          }, SearchMatching.Exact).Count;
-            Assert.That(validVoterCards == 3, "Couldn't find all 3 valid voter cards");
-            int withLetterHinKeyAndValid = _dao.FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
-                                                           {
-                                                               {VoterCardSearchParam.Valid,true},
-                                                               {VoterCardSearchParam.IdKey,"H"}
-                                                           }, SearchMatching.Similair).Count;
-            Assert.That(withLetterHinKeyAndValid == 2, "Couldn't find the 2 valid voter cards with letter H in idKey");
         }
 
         [Test]
@@ -253,8 +237,12 @@ namespace ParamTests
             Assert.That(Convert.ToInt32(o) == 16, "Did not import expected amount of people.");
 
             MySqlCommand selectData = new MySqlCommand("SELECT COUNT(*) FROM person WHERE name='Mik Thomasen'", this._conn);
-            var i = selectData.ExecuteScalar();
-            Assert.That(i.ToString() == "1", "Mik Thomasen was not insert into data");
+            var i = Convert.ToInt32(selectData.ExecuteScalar());
+            Assert.That(i == 1, "Mik Thomasen was not insert into data");
+
+            select = new MySqlCommand("SELECT COUNT(*) FROM person WHERE eligible_to_vote=1;", this._conn);
+            i = Convert.ToInt32(select.ExecuteScalar());
+            Assert.That(i > 5);
         }
 
         [Test]
@@ -274,7 +262,7 @@ namespace ParamTests
             result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>
                                                          {
                                                              {CitizenSearchParam.Cpr,"2405901253"}
-                                                         }, SearchMatching.Exact);
+                                                         }, SearchMatching.Similair);
             Assert.That(result.Count == 1, "Jens Dahl Møllerhøj could not be found via CPR");
             Assert.That(result[0].Name.Equals("Jens Dahl Møllerhøj"), "Person with CPR 2405901253 was not Jens Dahl Møllerhøj");
             result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>()
@@ -290,25 +278,6 @@ namespace ParamTests
                                            });
             Assert.That(result.Count == 1);
             Assert.That(result[0].Name.Equals("Jens Dahl Møllerhøj"), "Person was not Jens Dahl Møllerhøj");
-        }
-
-        [Test]
-        public void TestSaveNewVoterCard()
-        {
-            Citizen c = _dao.LoadCitizen(1);
-            VoterCard v = new VoterCard();
-            v.Citizen = c;
-            v.IdKey = "AXP956R3";
-            v.Valid = true;
-            _dao.Save(v);
-            MySqlCommand select = new MySqlCommand("SELECT * FROM voter_card WHERE id_key=@idKey", _conn);
-            select.Prepare();
-            select.Parameters.AddWithValue("@idKey", v.IdKey);
-            MySqlDataReader rdr = select.ExecuteReader();
-            Assert.That(rdr.Read(), "Voter-card should exist in database");
-            Assert.That(rdr.GetInt32("person_id") == 1, "Person id should be correct in DB");
-            Assert.That(rdr.GetInt32("valid") == 1, "Valid status should be correct in DB");
-            rdr.Close();
         }
 
         [Test]
@@ -341,7 +310,6 @@ namespace ParamTests
             var vp = new VoterCardPrinter();
             _dao.PrintVoterCards(vp);
         }
-
 
         #endregion
 

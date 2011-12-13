@@ -12,6 +12,7 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// A controller for asking random security questions for a given citizen
@@ -25,6 +26,8 @@ namespace DigitalVoterList.Controllers
 
         public RandomQuestionController(SecurityQuesitonView view, Citizen voter)
         {
+            Contract.Requires(view != null);
+            Contract.Requires(voter != null);
             _view = view;
             _questions = new Quiz[voter.SecurityQuestions.Count];
             voter.SecurityQuestions.CopyTo(_questions);

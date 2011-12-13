@@ -19,6 +19,7 @@ namespace DigitalVoterList.Election
     {
         public void TransformData()
         {
+            Contract.Requires(DAOFactory.Ready);
             DAOFactory.CurrentUserDAO.UpdatePeople(this.UpdateCitizen);
         }
 
@@ -49,7 +50,7 @@ namespace DigitalVoterList.Election
 
             if (!String.IsNullOrEmpty(rawPerson.Birthplace)) quizzes.Add(new Quiz("Where were you born?", rawPerson.Birthplace));
             if (!String.IsNullOrEmpty(rawPerson.Education)) quizzes.Add(new Quiz("What is your education?", rawPerson.Education));
-            if (!String.IsNullOrEmpty(rawPerson.Address) && !String.IsNullOrEmpty(rawPerson.AddressPrevious)) quizzes.Add(new Quiz("Where did you live before you moved to " + rawPerson.AddressPrevious + " ?", rawPerson.AddressPrevious));
+            if (!String.IsNullOrEmpty(rawPerson.Address) && !String.IsNullOrEmpty(rawPerson.AddressPrevious)) quizzes.Add(new Quiz("Where did you live before you moved to " + rawPerson.Address + " ?", rawPerson.AddressPrevious));
             if (!String.IsNullOrEmpty(rawPerson.TelephoneNumber)) quizzes.Add(new Quiz("What is your telephone number?", rawPerson.TelephoneNumber));
             if (!String.IsNullOrEmpty(rawPerson.Workplace)) quizzes.Add(new Quiz("Where do you work?", rawPerson.Workplace));
             if (!String.IsNullOrEmpty(rawPerson.City)) quizzes.Add(new Quiz("In what city do you live?", rawPerson.City));

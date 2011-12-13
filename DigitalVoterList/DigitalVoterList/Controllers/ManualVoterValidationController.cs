@@ -11,6 +11,7 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Diagnostics.Contracts;
 
     class ManualVoterValidationController
     {
@@ -18,6 +19,7 @@ namespace DigitalVoterList.Controllers
 
         public ManualVoterValidationController(ManualVoterValidationView view)
         {
+            Contract.Requires(view != null);
             _view = view;
             _view.QuestionsGrid.FontSize = 14;
         }
