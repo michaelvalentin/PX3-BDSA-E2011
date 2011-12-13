@@ -79,7 +79,7 @@ namespace DigitalVoterList.Controllers
 
             _view.SearchVoterButton.Click += (s, e) => ShowSearchVoterWindow();
             _searchController.CitizenFound += SearchCitizenFound;
-
+            _searchView.LostFocus += (s, e) => _searchView.Focus();
             CitizenChanged += LoadVoterValidation;
         }
 

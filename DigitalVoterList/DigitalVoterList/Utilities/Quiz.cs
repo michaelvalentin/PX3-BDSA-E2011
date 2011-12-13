@@ -33,6 +33,26 @@ namespace DigitalVoterList.Utilities
         /// </summary>
         public string Answer { get; private set; }
 
+        // override object.GetHashCode
+        public override int GetHashCode()
+        {
+            return 372 * Answer.GetHashCode() * Answer.GetHashCode();
+        }
+
+        public bool Equals(Quiz other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return base.Equals(other) && Answer.Equals(other.Answer) && Question.Equals(other.Question);
+        }
+
         [ContractInvariantMethod]
         private void ObjectInvariant()
         {
