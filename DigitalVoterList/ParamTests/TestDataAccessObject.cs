@@ -134,10 +134,10 @@ namespace ParamTests
             var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
             Assert.That(permissions.Count == 17);
 
-            var permissions2 = this._dao.GetPermissions(User.GetUser("slave", "asdf"));
+            var permissions2 = this._dao.GetPermissions(_dao.LoadUser(2));
             Assert.That(permissions2.Count == 0);
 
-            var permissions3 = this._dao.GetPermissions(User.GetUser("elec", "hemmelighed"));
+            var permissions3 = this._dao.GetPermissions(_dao.LoadUser(3));
             Assert.That(permissions3.Count == 3);
         }
 
