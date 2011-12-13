@@ -221,7 +221,7 @@ namespace ParamTests
         {
             VoterCard votercard = this._dao.LoadVoterCard("5HU9KQY4");
             Assert.That(votercard.Id == 3);
-            VoterCard votercard2 = this._dao.LoadVoterCard("HR5F4D7");
+            VoterCard votercard2 = this._dao.LoadVoterCard("HR5F4D7D");
             Assert.That(votercard2.Id == 1);
         }
 
