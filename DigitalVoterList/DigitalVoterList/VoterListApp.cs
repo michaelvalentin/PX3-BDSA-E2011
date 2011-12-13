@@ -37,7 +37,7 @@ namespace DigitalVoterList
             VoterListApp.App = app;
             app.Startup += (o, e) =>
             {
-                DAOFactory.ConnectionString = "SERVER=localhost;" +
+                DAOFactory.ConnectionString = "SERVER=ec2-107-20-53-16.compute-1.amazonaws.com;" +
                 "DATABASE=px3;" +
                 "UID=root;" +
                 "PASSWORD=abcd1234;";
