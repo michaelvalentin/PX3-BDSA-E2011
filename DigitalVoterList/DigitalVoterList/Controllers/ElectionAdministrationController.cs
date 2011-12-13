@@ -10,6 +10,7 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System;
     using System.Diagnostics.Contracts;
 
     /// <summary>
@@ -34,6 +35,7 @@ namespace DigitalVoterList.Controllers
             _view.ImportDataBtn.Click += (s, e) => ImportData();
             _view.UpdateVoterCardsBtn.Click += (s, e) => UpdateVoterCards();
             _view.PrintVoterCardsBtn.Click += (s, e) => PrintVoterCards();
+            _view.LostFocus += (s, e) => _view.StatusTextBox.Text = "";
         }
 
         private ElectionAdministrationView _view
@@ -44,21 +46,57 @@ namespace DigitalVoterList.Controllers
             }
         }
 
+        /// <summary>
+        /// Imports data from the raw person information to the correct tables in the database
+        /// </summary>
         private void ImportData()
         {
-            var dataTransformer = new DataTransformer();
-            dataTransformer.TransformData();
+            _view.StatusTextBox.Text = "";
+            try
+            {
+                var dataTransformer = new DataTransformer();
+                dataTransformer.TransformData();
+            }
+            catch (Exception)
+            {
+                _view.StatusTextBox.Text = "Failed to load data!";
+            }
         }
 
+        /// <summary>
+        /// Updates the votercards in the database
+        /// </summary>
         private void UpdateVoterCards()
         {
-            DAOFactory.CurrentUserDAO.UpdateVoterCards();
+            _view.StatusTextBox.Text = "";
+            try
+            {
+                throw new Exception();
+                DAOFactory.CurrentUserDAO.UpdateVoterCards();
+            }
+            catch (Exception)
+            {
+                _view.StatusTextBox.Text = "Failed to update the voter cards in the database!";
+            }
+            
         }
 
+        /// <summary>
+        /// Prints the votercards in the database
+        /// </summary>
         private void PrintVoterCards()
         {
-            var printer = new VoterCardPrinter();
-            DAOFactory.CurrentUserDAO.PrintVoterCards(printer);
+            _view.StatusTextBox.Text = "";
+            try
+            {
+                var printer = new VoterCardPrinter();
+                DAOFactory.CurrentUserDAO.PrintVoterCards(printer);
+            }
+            catch (Exception)
+            {
+                _view.StatusTextBox.Text = "Failed to print the voter cards!";
+            }
+            
         }
     }
 }
