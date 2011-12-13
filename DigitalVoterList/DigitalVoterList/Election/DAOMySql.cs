@@ -1186,12 +1186,18 @@ namespace DigitalVoterList.Election
                 else
                 {
                     _preparedStatements = new Dictionary<string, MySqlCommand>();
-
-                    RetryUtility.RetryAction(() =>
-                            {
-                                _connection = new MySqlConnection(_connectionString);
-                                _connection.Open();
-                            }, 5, 500);
+                    try
+                    {
+                        RetryUtility.RetryAction(() =>
+                                {
+                                    _connection = new MySqlConnection(_connectionString);
+                                    _connection.Open();
+                                }, 5, 500);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Could not establish connection to the central database. Please make sure you have access to the internet and try again. If the error repeats, please contact the support.", ex);
+                    }
                 }
                 return _connection;
             }
@@ -1204,28 +1210,38 @@ namespace DigitalVoterList.Election
         /// <param name="isolationLevel">The isolation level to use</param>
         private void DoTransaction(Action act, IsolationLevel isolationLevel = IsolationLevel.Serializable)
         {
-            RetryUtility.RetryAction(() =>
+            MySqlConnection conn = Connection;
+            try
             {
-                try
-                {
-                    _transaction = Connection.BeginTransaction(isolationLevel);
-                    act();
-                    _transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        _transaction.Rollback();
-                    }
-                    catch (Exception excep)
-                    {
-                        _connection = null; //If we can't rollback, clear the connection; something is very wrong...
-                        //SKIPPEDTODO: Make a logging function and maybe a security alert... 
-                    }
-                    throw;
-                }
-            }, 3, 700);
+                RetryUtility.RetryAction(() =>
+                                             {
+
+                                                 try
+                                                 {
+                                                     _transaction = conn.BeginTransaction(isolationLevel);
+                                                     act();
+                                                     _transaction.Commit();
+                                                 }
+                                                 catch (Exception ex)
+                                                 {
+                                                     try
+                                                     {
+                                                         _transaction.Rollback();
+                                                     }
+                                                     catch (Exception excep)
+                                                     {
+                                                         _connection = null;
+                                                         //If we can't rollback, clear the connection; something is very wrong...
+                                                         //SKIPPEDTODO: Make a logging function and maybe a security alert... 
+                                                     }
+                                                     throw;
+                                                 }
+                                             }, 3, 700);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Something unexpected went wrong. The error has been logged. Please try again.", ex);
+            }
             _transaction = null;
         }
 

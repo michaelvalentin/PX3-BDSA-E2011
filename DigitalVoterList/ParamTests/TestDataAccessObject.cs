@@ -152,22 +152,6 @@ namespace ParamTests
         }
 
         [Test]
-        public void TestFindVoterCards()
-        {
-            int validVoterCards = _dao.FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
-                                                          {
-                                                              {VoterCardSearchParam.Valid,true}
-                                                          }, SearchMatching.Exact).Count;
-            Assert.That(validVoterCards == 3, "Couldn't find all 3 valid voter cards");
-            int withLetterHinKeyAndValid = _dao.FindVoterCards(new Dictionary<VoterCardSearchParam, object>()
-                                                           {
-                                                               {VoterCardSearchParam.Valid,true},
-                                                               {VoterCardSearchParam.IdKey,"H"}
-                                                           }, SearchMatching.Similair).Count;
-            Assert.That(withLetterHinKeyAndValid == 2, "Couldn't find the 2 valid voter cards with letter H in idKey");
-        }
-
-        [Test]
         public void TestChangePassword()
         {
             User u = _dao.LoadUser(2);
@@ -290,25 +274,6 @@ namespace ParamTests
                                            });
             Assert.That(result.Count == 1);
             Assert.That(result[0].Name.Equals("Jens Dahl Møllerhøj"), "Person was not Jens Dahl Møllerhøj");
-        }
-
-        [Test]
-        public void TestSaveNewVoterCard()
-        {
-            Citizen c = _dao.LoadCitizen(1);
-            VoterCard v = new VoterCard();
-            v.Citizen = c;
-            v.IdKey = "AXP956R3";
-            v.Valid = true;
-            _dao.Save(v);
-            MySqlCommand select = new MySqlCommand("SELECT * FROM voter_card WHERE id_key=@idKey", _conn);
-            select.Prepare();
-            select.Parameters.AddWithValue("@idKey", v.IdKey);
-            MySqlDataReader rdr = select.ExecuteReader();
-            Assert.That(rdr.Read(), "Voter-card should exist in database");
-            Assert.That(rdr.GetInt32("person_id") == 1, "Person id should be correct in DB");
-            Assert.That(rdr.GetInt32("valid") == 1, "Valid status should be correct in DB");
-            rdr.Close();
         }
 
         [Test]
