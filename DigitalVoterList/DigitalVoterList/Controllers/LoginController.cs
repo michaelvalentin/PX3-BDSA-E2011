@@ -51,13 +51,11 @@ namespace DigitalVoterList.Controllers
                 if (u == null)
                 {
                     ShowError("Wrong username/password.");
+                    return;
                 }
-                else
-                {
-                    ShowSuccess("Login was successfull. Loading the Digital Voter List.");
-                    VoterListApp.RunApp(u);
-                    _window.Close();
-                }
+                ShowSuccess("Login was successfull. Loading the Digital Voter List.");
+                VoterListApp.RunApp(u);
+                _window.Close();
             }
             catch (Exception ex)
             {

@@ -4,7 +4,6 @@
  * Date: 12-12-2011
  */
 
-using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -20,7 +19,6 @@ namespace DigitalVoterList.Election
     {
         private HashSet<SystemAction> _permissions;
         private HashSet<VotingVenue> _workplaces;
-        private DateTime? _lastSuccessfullValidationTime;
 
         public new string Cpr { get; private set; }
 
@@ -29,15 +27,14 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="username">Username</param>
         /// <param name="password">Password</param>
-        /// <returns>A validated user obejct, null if the login is not found.</returns>
+        /// <returns>A validated user obejct, or null if the login is not found.</returns>
         public static User GetUser(string username, string password)
         {
             IDataAccessObject dao = DAOFactory.CurrentUserDAO;
             User u = dao.LoadUser(username);
             if (u == null) return null;
             u.FetchPermissions(username, password);
-            if (!u.Validated) return null;
-            return u;
+            return u.Validated ? u : null;
         }
 
         /// <summary>
@@ -51,7 +48,6 @@ namespace DigitalVoterList.Election
             DbId = id;
             _permissions = new HashSet<SystemAction>();
             _workplaces = new HashSet<VotingVenue>();
-            _lastSuccessfullValidationTime = null;
         }
 
         /// <summary>
@@ -69,12 +65,13 @@ namespace DigitalVoterList.Election
         /// <param name="pwd">The password to validate</param>
         public void FetchPermissions(string uname, string pwd)
         {
-            Contract.Requires(DAOFactory.getDAO(this).ValidateUser(uname, HashPassword(pwd)));
             var dao = DAOFactory.getDAO(this);
             string pwdHash = HashPassword(pwd);
-            _lastSuccessfullValidationTime = new DateTime();
-            _permissions = dao.GetPermissions(this);
-            _workplaces = dao.GetWorkplaces(this);
+            if (DAOFactory.getDAO(this).ValidateUser(uname, HashPassword(pwd)))
+            {
+                _permissions = dao.GetPermissions(this);
+                _workplaces = dao.GetWorkplaces(this);
+            }
         }
 
         /// <summary>
@@ -131,18 +128,7 @@ namespace DigitalVoterList.Election
         {
             get
             {
-                if (!Validated)
-                {
-                    return new HashSet<SystemAction>();
-                }
-                else
-                {
-                    if (_permissions != null)
-                    {
-                        return new HashSet<SystemAction>(_permissions);
-                    }
-                }
-                return new HashSet<SystemAction>();
+                return _permissions == null ? new HashSet<SystemAction>() : new HashSet<SystemAction>(_permissions);
             }
         }
 
@@ -153,14 +139,7 @@ namespace DigitalVoterList.Election
         {
             get
             {
-                if (!Validated)
-                {
-                    return new HashSet<VotingVenue>();
-                }
-                else
-                {
-                    return new HashSet<VotingVenue>(_workplaces);
-                }
+                return _workplaces == null ? new HashSet<VotingVenue>() : new HashSet<VotingVenue>(_workplaces);
             }
         }
 
@@ -190,16 +169,9 @@ namespace DigitalVoterList.Election
         {
             get
             {
-                DateTime now = new DateTime();
-                if (_lastSuccessfullValidationTime == null || now.Subtract((DateTime)_lastSuccessfullValidationTime).Minutes > 15)
-                {
-                    return false;
-                }
-                else
-                {
-                    _lastSuccessfullValidationTime = new DateTime();
-                    return true;
-                }
+                if (_permissions == null) return false;
+                if (_permissions.Count < 1) return false;
+                return true;
             }
         }
 
@@ -250,7 +222,7 @@ namespace DigitalVoterList.Election
             {
                 return true;
             }
-            return base.Equals(other) && Equals(other._permissions, this._permissions) && Equals(other._workplaces, this._workplaces) && other._lastSuccessfullValidationTime.Equals(this._lastSuccessfullValidationTime) && Equals(other.UserSalt, this.UserSalt) && other.Valid.Equals(this.Valid) && other.DbId == this.DbId;
+            return base.Equals(other) && Equals(other._permissions, this._permissions) && Equals(other._workplaces, this._workplaces) && Equals(other.UserSalt, this.UserSalt) && other.Valid.Equals(this.Valid) && other.DbId == this.DbId;
         }
 
         [Pure]
@@ -261,10 +233,6 @@ namespace DigitalVoterList.Election
                 int result = base.GetHashCode();
                 result = (result * 397) ^ (this._permissions != null ? this._permissions.GetHashCode() : 0);
                 result = (result * 397) ^ (this._workplaces != null ? this._workplaces.GetHashCode() : 0);
-                result = (result * 397) ^
-                         (this._lastSuccessfullValidationTime.HasValue
-                              ? this._lastSuccessfullValidationTime.Value.GetHashCode()
-                              : 0);
                 result = (result * 397) ^ (this.UserSalt != null ? this.UserSalt.GetHashCode() : 0);
                 result = (result * 397) ^ this.Valid.GetHashCode();
                 result = (result * 397) ^ this.DbId;
