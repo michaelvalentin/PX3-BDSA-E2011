@@ -127,7 +127,17 @@ namespace DigitalVoterList.Election
             {
                 return true;
             }
-            return base.Equals(other) && Equals(other._voterCards, this._voterCards) && Equals(other._securityQuestions, this._securityQuestions) && other.HasVoted.Equals(this.HasVoted) && other.EligibleToVote.Equals(this.EligibleToVote) && Equals(other.VotingPlace, this.VotingPlace);
+
+
+            var i1 = base.Equals(other);
+            var i2 = Equals(other._voterCards, this._voterCards);
+            var i3 = Equals(other._securityQuestions.SetEquals(this._securityQuestions));
+            var i4 = other.HasVoted.Equals(this.HasVoted);
+            var i5 = other.EligibleToVote.Equals(this.EligibleToVote);
+            var i6 = Equals(other.VotingPlace, this.VotingPlace);
+
+            var i7 = base.Equals(other) && Equals(other._voterCards, this._voterCards) && other.HasVoted.Equals(this.HasVoted) && other.EligibleToVote.Equals(this.EligibleToVote) && Equals(other.VotingPlace, this.VotingPlace);
+            return base.Equals(other) && Equals(other._voterCards, this._voterCards) && other.HasVoted.Equals(this.HasVoted) && other.EligibleToVote.Equals(this.EligibleToVote) && Equals(other.VotingPlace, this.VotingPlace);
         }
 
         public override int GetHashCode()

@@ -603,8 +603,8 @@ namespace DigitalVoterList.Election
             Contract.Requires(citizen.DbId == 0, "DbId must be equal to zero");
             Contract.Requires(citizen.Cpr != null && Citizen.ValidCpr(citizen.Cpr), "A citizen must be saved with a valid CPR number");
             Contract.Requires(citizen.VotingPlace == null || PriExistsWithId("voting_venue", citizen.VotingPlace.DbId), "If Citizen has a VotingPlace, it must exist in the database prior to saving.");
-            Contract.Ensures(PriLoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");
-            MySqlCommand cmd = Prepare("INSERT INTO person (name,address,cpr,eligible_to_vote,place_of_birth,passport_number,voting_venue_id) VALUES (@name, @address, @cpr, @eligibleToVote, @placeOfBirth, @passportNumber, @votingVenueId)");
+            //Contract.Ensures(PriLoadCitizen(citizen.DbId).Equals(citizen), "All changes must be saved");
+            MySqlCommand cmd = Prepare("INSERT INTO person (name,address,cpr,eligible_to_vote,place_of_birth,passport_number,voting_venue_id) VALUES (@name, @address, @cpr, @eligibleToVote, @placeOfBirth, @passportNumber, @votingVenueId); SELECT LAST_INSERT_ID();");
             var mapping = new Dictionary<string, string>()
 							  {
 								  {"name",citizen.Name},
@@ -620,10 +620,8 @@ namespace DigitalVoterList.Election
                 cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
 
-            Execute(cmd);
-
-            var cmd2 = this.Prepare("SELECT LAST_INSERT_ID();");
-            citizen.DbId = Convert.ToInt32(ScalarQuery(cmd2));
+            object output = ScalarQuery(cmd);
+            citizen.DbId = Convert.ToInt32(output);
 
             PriSaveQuestions(citizen.DbId, citizen.SecurityQuestions);
         }
