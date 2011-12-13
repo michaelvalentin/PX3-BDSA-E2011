@@ -71,7 +71,6 @@ namespace DigitalVoterList.Controllers
             _view.StatusTextBox.Text = "";
             try
             {
-                throw new Exception();
                 DAOFactory.CurrentUserDAO.UpdateVoterCards();
             }
             catch (Exception)

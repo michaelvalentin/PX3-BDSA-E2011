@@ -84,7 +84,7 @@ namespace DigitalVoterList.Controllers
             LoadListBox();
         }
 
-        public void LoadListBox()
+        private void LoadListBox()
         {
             var citizenData = new List<CitizenData>();
             if (_searchCitizen != null)
