@@ -35,7 +35,6 @@ namespace DigitalVoterList.Controllers
             _view.HasVoted.Text = c.HasVoted ? "Yes" : "No";
         }
 
-
         public void Clear()
         {
             _view.Cpr.Text = "";

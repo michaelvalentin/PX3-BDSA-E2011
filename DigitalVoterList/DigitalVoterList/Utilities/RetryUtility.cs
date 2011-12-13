@@ -21,9 +21,9 @@ namespace DigitalVoterList.Utilities
         /// Try this action (and retry if neces)!
         /// </summary>
         /// <param name="act">The action to try</param>
-        /// <param name="retries">The number of retries before giving up</param>
+        /// <param name="retries">The number of retries before giving up, 0 means infinite.</param>
         /// <param name="timeout">A timeout time in milliseconds to wait between each retry (0 means don't wait)</param>
-        public static void RetryAction(Action act, int retries, int timeout)
+        public static void RetryAction(Action act, int retries = 0, int timeout = 0)
         {
             act = act ?? (() => { });
             do

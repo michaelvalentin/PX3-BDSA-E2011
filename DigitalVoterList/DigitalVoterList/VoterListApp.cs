@@ -4,6 +4,7 @@
  * Date: 12-12-2011
  */
 
+using System;
 using System.Windows;
 using DigitalVoterList.Controllers;
 using DigitalVoterList.Election;
@@ -20,6 +21,7 @@ namespace DigitalVoterList
         private static User _currentUser;
         public static Application App;
         private static MainWindow _mainWindow;
+        private static LoginWindow _loginWindow;
 
         public static User CurrentUser
         {
@@ -33,18 +35,28 @@ namespace DigitalVoterList
         [System.STAThread]
         public static void Main()
         {
-            Application app = new Application();
-            VoterListApp.App = app;
-            app.Startup += (o, e) =>
+            App = new Application();
+            App.Startup += (o, e) =>
             {
-                DAOFactory.ConnectionString = "SERVER=ec2-107-20-53-16.compute-1.amazonaws.com;" +
+                DAOFactory.ConnectionString =
+                    //"SERVER=ec2-107-20-53-16.compute-1.amazonaws.com;" +
+                "SERVER=localhost;" +
                 "DATABASE=px3;" +
                 "UID=root;" +
                 "PASSWORD=abcd1234;";
-                User u = User.GetUser("mier", "12345");
-                RunApp(u);
+
+                RunApp(CurrentUser);
             };
-            app.Run();
+            try
+            {
+                App.Run();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + " Unfortunately the application couldn't be recovered, and is therefore restarting.");
+                System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+                Application.Current.Shutdown();
+            }
         }
 
         public static void RunApp(User user)
@@ -52,14 +64,22 @@ namespace DigitalVoterList
             _currentUser = user;
             if (user != null && user.Validated)
             {
-                _mainWindow = new MainWindow();
+                if (_mainWindow == null) _mainWindow = new MainWindow();
                 new MainWindowController(_mainWindow);
             }
             else
             {
-                //Show the login window
-                LoginWindow view = new LoginWindow();
-                new LoginController(view);
+                if (_loginWindow != null)
+                {
+                    _loginWindow.Close();
+                    _loginWindow = null;
+                }
+                _loginWindow = new LoginWindow();
+                _loginWindow.Closing += (s, e) =>
+                                            {
+                                                _loginWindow = null;
+                                            };
+                new LoginController(_loginWindow);
             }
         }
 

@@ -48,7 +48,7 @@ namespace DigitalVoterList.Controllers
         /// Search for a person with the information inserted in the textblocks and insert
         /// every person as an item in the listbox
         /// </summary>
-        public void Search()
+        private void Search()
         {
             var searchParams = new Dictionary<CitizenSearchParam, object>();
             if (_view.nameTextBox.Text != "")
@@ -90,7 +90,7 @@ namespace DigitalVoterList.Controllers
         /// <summary>
         /// Invoke the Citizen found event with the currently selected citizen from the search results
         /// </summary>
-        public void Select()
+        private void Select()
         {
             int index = _view.SearchResultsGrid.SelectedIndex;
             if (index < 0 || _searchCitizen == null || index >= _searchCitizen.Count) return;
