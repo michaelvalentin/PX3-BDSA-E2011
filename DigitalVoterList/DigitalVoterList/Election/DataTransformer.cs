@@ -19,6 +19,7 @@ namespace DigitalVoterList.Election
     {
         public void TransformData()
         {
+            Contract.Requires(DAOFactory.Ready);
             DAOFactory.CurrentUserDAO.UpdatePeople(this.UpdateCitizen);
         }
 

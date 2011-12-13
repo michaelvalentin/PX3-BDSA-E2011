@@ -42,7 +42,7 @@ namespace ParamTests
 
             //Login
             DAOFactory.ConnectionString = "SERVER=localhost;" +
-                                            "DATABASE=px3-test;" +
+                                            "DATABASE=px3;" +
                                             "UID=root;" +
                                             "PASSWORD=abcd1234;";
 

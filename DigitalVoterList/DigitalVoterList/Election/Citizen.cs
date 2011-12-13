@@ -20,13 +20,16 @@ namespace DigitalVoterList.Election
         public Citizen(int id, string cpr)
             : base(id)
         {
-            Contract.Requires(!string.IsNullOrEmpty(cpr));
+            Contract.Requires(cpr != null);
+            Contract.Requires(ValidCpr(cpr));
             Cpr = cpr;
         }
 
         public Citizen(int id, string cpr, bool hasVoted)
             : this(id, cpr)
         {
+            Contract.Requires(cpr != null);
+            Contract.Requires(ValidCpr(cpr));
             HasVoted = hasVoted;
         }
 
@@ -91,16 +94,19 @@ namespace DigitalVoterList.Election
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
         private void ObjectInvariant()
         {
-            Contract.Invariant(ValidCpr(Cpr));
+            //Contract.Invariant(ValidCpr(Cpr));
         }
 
         public static bool ValidCpr(string cpr)
         {
-            string tempCpr = cpr;
-            if (tempCpr.Length == 10)
+            Contract.Requires(cpr != null);
+            int tempCpr;
+            if (cpr.Length == 10 && Int32.TryParse(cpr, out tempCpr))
             {
-                int day = Int32.Parse(tempCpr.Substring(0, 2));
-                int month = Int32.Parse(tempCpr.Substring(2, 2));
+                int day;
+                if (!Int32.TryParse(cpr.Substring(0, 2), out day)) return false;
+                int month;
+                if (!Int32.TryParse(cpr.Substring(2, 2), out month)) return false;
                 if (!(day > 0 && day <= 31)) return false;
                 if (!(month > 0 && month <= 12)) return false;
 

@@ -23,6 +23,8 @@ namespace DigitalVoterList.Election
 
         public DAOPermissionProxy(User u, IDataAccessObject dao)
         {
+            Contract.Requires(u != null);
+            Contract.Requires(dao != null);
             _user = u;
             _dao = dao;
         }
