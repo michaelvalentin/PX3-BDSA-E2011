@@ -10,6 +10,7 @@ using DigitalVoterList.Election;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// General behavior for system controls
@@ -27,6 +28,7 @@ namespace DigitalVoterList.Controllers
 
         public bool HasPermissionToUse(User u)
         {
+            Contract.Requires(u != null);
             return u.Permissions.IsSupersetOf(_neededPermissions);
         }
     }

@@ -85,6 +85,7 @@ namespace DigitalVoterList.Election
 
         public void SetHasVoted()
         {
+            Contract.Requires(DAOFactory.Ready);
             IDataAccessObject dao = DAOFactory.CurrentUserDAO;
             dao.SetHasVoted(this);
             HasVoted = true;
@@ -94,7 +95,7 @@ namespace DigitalVoterList.Election
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
         private void ObjectInvariant()
         {
-            //Contract.Invariant(ValidCpr(Cpr));
+            Contract.Invariant(ValidCpr(Cpr));
         }
 
         public static bool ValidCpr(string cpr)
