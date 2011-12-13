@@ -42,7 +42,7 @@ namespace ParamTests
 
             //Login
             DAOFactory.ConnectionString = "SERVER=localhost;" +
-                                            "DATABASE=px3;" +
+                                            "DATABASE=px3-test;" +
                                             "UID=root;" +
                                             "PASSWORD=abcd1234;";
 
@@ -213,7 +213,7 @@ namespace ParamTests
             VoterCard votercard = this._dao.LoadVoterCard(5);
             Assert.That(votercard.IdKey.Equals("1HN8O9M9"));
             VoterCard votercard2 = this._dao.LoadVoterCard(1);
-            Assert.That(votercard2.IdKey.Equals("HR5F4D7"));
+            Assert.That(votercard2.IdKey.Equals("HR5F4D7D"));
         }
 
         [Test]

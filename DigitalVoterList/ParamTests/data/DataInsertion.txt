@@ -65,7 +65,7 @@ INSERT INTO `quiz` (`id`, `question`, `answer`, `person_id`) VALUES
 (7, '"Hvad hedder din far?"', '"Hans Olesen"', 4);
 
 INSERT INTO `voter_card` (`id`, `person_id`, `valid`, `id_key`) VALUES
-(1, 1, 1, 'HR5F4D7'),
+(1, 1, 1, 'HR5F4D7D'),
 (2, 2, 1, 'UIO8ONH7'),
 (3, 2, 0, '5HU9KQY4'),
 (4, 3, 1, '68JGU9NG'),
