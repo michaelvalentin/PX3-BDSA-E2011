@@ -34,10 +34,7 @@ namespace DigitalVoterList.Election
             IDataAccessObject dao = DAOFactory.CurrentUserDAO;
             User u = dao.LoadUser(username);
             if (u == null) return null;
-            if (!dao.ValidateUser(username, password))
-            {
-                u.FetchPermissions(username, password);
-            }
+            u.FetchPermissions(username, password);
             if (!u.Validated) return null;
             return u;
 

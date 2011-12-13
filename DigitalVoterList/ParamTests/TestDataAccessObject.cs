@@ -154,9 +154,10 @@ namespace ParamTests
         [Test]
         public void TestChangePassword()
         {
-            User u = _dao.LoadUser(2);
+            User u = _dao.LoadUser(3);
             u.ChangePassword("passwordWorking1234");
-            Assert.That(User.GetUser(u.Username, "passwordWorking1234").DbId == 2);
+            User u3 = User.GetUser(u.Username, "passwordWorking1234");
+            Assert.That(u3.DbId == 3);
         }
 
         [Test]
