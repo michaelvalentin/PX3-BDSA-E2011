@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using DigitalVoterList.Views;
+using DigitalVoterList.Election;
 
 namespace DigitalVoterList.Controllers
 {
-    using DigitalVoterList.Election;
-
     class SearchCitizenController
     {
         private SearchCitizenView _view;
@@ -37,7 +36,6 @@ namespace DigitalVoterList.Controllers
             _view.nameTextBox.Text = "";
             _view.addressTextBox.Text = "";
             _view.cprTextBox.Text = "";
-            _view.passportTextBox.Text = "";
         }
 
         /// <summary>
@@ -93,6 +91,9 @@ namespace DigitalVoterList.Controllers
             CitizenFound.Invoke(_searchCitizen[index]);
         }
 
+        /// <summary>
+        /// A struct to make the datagrid with the right columns
+        /// </summary>
         struct CitizenData
         {
             public string Name { get; set; }
