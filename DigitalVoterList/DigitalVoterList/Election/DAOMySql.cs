@@ -1048,6 +1048,7 @@ namespace DigitalVoterList.Election
                         List<Citizen> listOfCitizens =
                             FindCitizens(
                                 new Dictionary<CitizenSearchParam, object>() { { CitizenSearchParam.Cpr, rawPerson.CPR } }, SearchMatching.Exact);
+                        Contract.Assert(listOfCitizens.Count <= 1, "More than one person found with the same CPR number");
                         if ((listOfCitizens.Count > 0))
                         {
                             Citizen c = updateFunc(listOfCitizens[0], rawPerson);

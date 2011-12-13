@@ -132,7 +132,7 @@ namespace ParamTests
         public void TestGetPermissions()
         {
             var permissions = this._dao.GetPermissions(VoterListApp.CurrentUser);
-            Assert.That(permissions.Count == 25);
+            Assert.That(permissions.Count == 17);
 
             var permissions2 = this._dao.GetPermissions(User.GetUser("slave", "asdf"));
             Assert.That(permissions2.Count == 0);
@@ -262,7 +262,7 @@ namespace ParamTests
             result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>
                                                          {
                                                              {CitizenSearchParam.Cpr,"2405901253"}
-                                                         }, SearchMatching.Exact);
+                                                         }, SearchMatching.Similair);
             Assert.That(result.Count == 1, "Jens Dahl Møllerhøj could not be found via CPR");
             Assert.That(result[0].Name.Equals("Jens Dahl Møllerhøj"), "Person with CPR 2405901253 was not Jens Dahl Møllerhøj");
             result = _dao.FindCitizens(new Dictionary<CitizenSearchParam, object>()
