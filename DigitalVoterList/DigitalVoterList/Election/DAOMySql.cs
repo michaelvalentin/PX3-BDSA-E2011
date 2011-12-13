@@ -1,5 +1,5 @@
 ﻿/*
- * Authors:
+ * Authors: 
  * Team: PX3
  * Date: 12-12-2011
  */
@@ -1186,6 +1186,7 @@ namespace DigitalVoterList.Election
                 else
                 {
                     _preparedStatements = new Dictionary<string, MySqlCommand>();
+
                     RetryUtility.RetryAction(() =>
                             {
                                 _connection = new MySqlConnection(_connectionString);
@@ -1256,7 +1257,6 @@ namespace DigitalVoterList.Election
         /// <returns></returns>
         private MySqlCommand Prepare(string query)
         {
-            Debug.WriteLine("PREP STATEMENT: " + query);
             if (_preparedStatements.ContainsKey(query))
             {
                 var ps = _preparedStatements[query];

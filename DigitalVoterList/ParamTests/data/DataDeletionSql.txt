@@ -1,9 +1,0 @@
-DELETE FROM person;
-DELETE FROM action;
-DELETE FROM permission;
-DELETE FROM quiz;
-DELETE FROM raw_person_data;
-DELETE FROM user;
-DELETE FROM voter_card;
-DELETE FROM voting_venue;
-DELETE FROM workplace;
