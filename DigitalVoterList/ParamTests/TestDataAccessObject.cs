@@ -147,7 +147,7 @@ namespace ParamTests
             var workplaces = this._dao.GetWorkplaces(VoterListApp.CurrentUser);
             Assert.That(workplaces.Count == 1);
 
-            var workplaces2 = this._dao.GetWorkplaces(User.GetUser("slave", "asdf"));
+            var workplaces2 = this._dao.GetWorkplaces(_dao.LoadUser(2));
             Assert.That(workplaces2.Count == 2);
         }
 
