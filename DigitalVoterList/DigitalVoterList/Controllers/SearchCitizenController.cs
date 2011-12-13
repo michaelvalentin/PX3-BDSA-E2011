@@ -38,7 +38,6 @@ namespace DigitalVoterList.Controllers
             _view.addressTextBox.TextChanged += (s,e) => _view.statusTextBlock.Text = "";
             _view.nameTextBox.TextChanged += (s, e) => _view.statusTextBlock.Text = "";
             _view.cprTextBox.TextChanged += (s, e) => _view.statusTextBlock.Text = "";
-
         }
 
         /// <summary>
@@ -57,7 +56,7 @@ namespace DigitalVoterList.Controllers
         /// Search for a person with the information inserted in the textblocks and insert
         /// every person as an item in the listbox
         /// </summary>
-        private void Search()
+        public void Search()
         {
             _view.statusTextBlock.Text = "";
             var searchParams = new Dictionary<CitizenSearchParam, object>();
@@ -85,7 +84,7 @@ namespace DigitalVoterList.Controllers
             LoadListBox();
         }
 
-        public void LoadListBox()
+        private void LoadListBox()
         {
             var citizenData = new List<CitizenData>();
             if (_searchCitizen != null)

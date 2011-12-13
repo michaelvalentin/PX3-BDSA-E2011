@@ -79,7 +79,7 @@ namespace DigitalVoterList.Controllers
 
             _view.SearchVoterButton.Click += (s, e) => ShowSearchVoterWindow();
             _searchController.CitizenFound += SearchCitizenFound;
-
+            _searchView.LostFocus += (s, e) => _searchView.Focus();
             CitizenChanged += LoadVoterValidation;
         }
 
@@ -184,7 +184,7 @@ namespace DigitalVoterList.Controllers
                 ShowSuccess("Voter registered!");
                 Disable(_view.RegisterVoterButton);
 
-                _searchView.SearchResultsGrid.Items.Refresh();
+                _searchController.Search();
             }
             catch (Exception ex)
             {

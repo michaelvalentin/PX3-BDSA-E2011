@@ -46,18 +46,18 @@ namespace DigitalVoterList
                 "PASSWORD=abcd1234;";*/
 
                 //EU AWS
-                DAOFactory.ConnectionString =
+                /*DAOFactory.ConnectionString =
                 "SERVER=ec2-79-125-81-60.eu-west-1.compute.amazonaws.com;" +
                 "DATABASE=px3;" +
                 "UID=px3;" +
-                "PASSWORD=abcd1234;";
+                "PASSWORD=abcd1234;"*/;
 
                 //LOCAL
-                /*DAOFactory.ConnectionString = 
+                DAOFactory.ConnectionString = 
                 "SERVER=localhost;" +
                 "DATABASE=px3;" +
                 "UID=root;" +
-                "PASSWORD=abcd1234;";*/
+                "PASSWORD=abcd1234;";
 
                 RunApp(CurrentUser);
             };
