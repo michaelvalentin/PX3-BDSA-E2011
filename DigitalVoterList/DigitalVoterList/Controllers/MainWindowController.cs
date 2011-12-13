@@ -11,6 +11,8 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Diagnostics.Contracts;
+
     /// <summary>
     /// A controller for the main window
     /// </summary>
@@ -21,6 +23,8 @@ namespace DigitalVoterList.Controllers
 
         public MainWindowController(MainWindow view)
         {
+            Contract.Requires(view != null);
+
             _view = view;
             _view.Show();
 

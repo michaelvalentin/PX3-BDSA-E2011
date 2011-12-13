@@ -14,7 +14,7 @@ namespace DigitalVoterList.Controllers
     using System;
 
     /// <summary>
-    /// TODO: Update summary.
+    /// A controller to handle normal voter registration with cpr-digits as extra security measure and no ability to search.
     /// </summary>
     public class NormalVoterRegistrationController : VoterRegistrationController
     {
@@ -116,7 +116,7 @@ namespace DigitalVoterList.Controllers
             }
             catch (Exception ex)
             {
-                //TODO: Log the exception for security / maintainance...
+                //SKIPPEDTODO: Log the exception for security / maintainance...
                 ShowError("An unexpected error occured. Please try again.");
             }
         }

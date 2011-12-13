@@ -10,24 +10,38 @@ using DigitalVoterList.Views;
 
 namespace DigitalVoterList.Controllers
 {
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// Controller for collection administration
     /// </summary>
     public class ElectionAdministrationController : ContentController
     {
-        private ElectionAdministrationView _view;
 
         public ElectionAdministrationController(ElectionAdministrationView view)
         {
+            Contract.Requires(view != null);
             View = view;
-            _view = view;
             _neededPermissions.Add(SystemAction.AllVotingPlaces);
-            //TODO: Write more needed permissions...
+            _neededPermissions.Add(SystemAction.LoadCitizen);
+            _neededPermissions.Add(SystemAction.LoadVoterCard);
+            _neededPermissions.Add(SystemAction.FindCitizen);
+            _neededPermissions.Add(SystemAction.FindVotingVenue);
+            _neededPermissions.Add(SystemAction.UpdateCitizens);
+            _neededPermissions.Add(SystemAction.UpdateVoterCards);
+            _neededPermissions.Add(SystemAction.PrintVoterCards);
 
             _view.ImportDataBtn.Click += (s, e) => ImportData();
             _view.UpdateVoterCardsBtn.Click += (s, e) => UpdateVoterCards();
             _view.PrintVoterCardsBtn.Click += (s, e) => PrintVoterCards();
+        }
+
+        private ElectionAdministrationView _view
+        {
+            get
+            {
+                return (ElectionAdministrationView)View;
+            }
         }
 
         private void ImportData()

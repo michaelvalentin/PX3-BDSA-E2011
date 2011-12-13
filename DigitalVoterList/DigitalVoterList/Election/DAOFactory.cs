@@ -45,7 +45,7 @@ namespace DigitalVoterList.Election
             Contract.Ensures(Contract.Result<IDataAccessObject>() != null);
             Contract.Ensures(daos.ContainsKey(u));
 
-            if (!daos.ContainsKey(u)) //Check if dao allready exists
+            if (!daos.ContainsKey(u)) //Check if dao already exists
             {
                 IDataAccessObject dao = DAOMySql.GetDAO(u, ConnectionString);
                 daos[u] = dao; //Create dao if it doesn't exist
@@ -58,7 +58,12 @@ namespace DigitalVoterList.Election
         /// </summary>
         public static IDataAccessObject CurrentUserDAO
         {
-            get { return getDAO(VoterListApp.CurrentUser); }
+            get
+            {
+                Contract.Requires(Ready);
+                Contract.Requires(VoterListApp.CurrentUser != null);
+                return getDAO(VoterListApp.CurrentUser);
+            }
         }
     }
 }

@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -68,17 +67,11 @@ namespace DigitalVoterList.Election
         /// </summary>
         /// <param name="uname">The username to validate</param>
         /// <param name="pwd">The password to validate</param>
-        /// <returns>True on success. False otherwise.</returns>
-        public void FetchPermissions(string uname, string pwd) //todo: This return a succes boolean.. shouldn't it be made 
+        public void FetchPermissions(string uname, string pwd)
         {
-            //Contract.Requires(DAOFactory.getDAO(this).ValidateUser(uname, HashPassword(pwd)));
-
-            //if (DAOFactory.getDAO(this).ValidateUser(uname, HashPassword(pwd))) //Secuity contract broken. todo:..
-
+            Contract.Requires(DAOFactory.getDAO(this).ValidateUser(uname, HashPassword(pwd)));
             var dao = DAOFactory.getDAO(this);
             string pwdHash = HashPassword(pwd);
-            Debug.WriteLine("PwdHash: " + pwdHash);
-            Debug.WriteLine("UserSalt: " + UserSalt);
             _lastSuccessfullValidationTime = new DateTime();
             _permissions = dao.GetPermissions(this);
             _workplaces = dao.GetWorkplaces(this);
