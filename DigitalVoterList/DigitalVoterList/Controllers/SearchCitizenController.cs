@@ -6,6 +6,8 @@ using DigitalVoterList.Election;
 namespace DigitalVoterList.Controllers
 {
     using System.Diagnostics.Contracts;
+    using System.Windows.Input;
+
     using DigitalVoterList.Election;
 
     class SearchCitizenController
@@ -23,12 +25,20 @@ namespace DigitalVoterList.Controllers
             Contract.Requires(view != null);
 
             _view = view;
-            _view.SearchResultsGrid.IsReadOnly = true;
 
             _view.SearchButton.Click += (s, e) => Search();
+            _view.KeyDown += (s, e) =>
+                                    {
+                                        if (e.Key == Key.Enter) Search();
+                                    };
 
             _view.SelectButton.Click += (s, e) => Select();
             _view.SearchResultsGrid.MouseDoubleClick += (s, e) => Select();
+
+            _view.addressTextBox.TextChanged += (s,e) => _view.statusTextBlock.Text = "";
+            _view.nameTextBox.TextChanged += (s, e) => _view.statusTextBlock.Text = "";
+            _view.cprTextBox.TextChanged += (s, e) => _view.statusTextBlock.Text = "";
+
         }
 
         /// <summary>
@@ -49,6 +59,7 @@ namespace DigitalVoterList.Controllers
         /// </summary>
         private void Search()
         {
+            _view.statusTextBlock.Text = "";
             var searchParams = new Dictionary<CitizenSearchParam, object>();
             if (_view.nameTextBox.Text != "")
             {
@@ -62,11 +73,19 @@ namespace DigitalVoterList.Controllers
             {
                 searchParams.Add(CitizenSearchParam.Cpr, _view.cprTextBox.Text);
             }
-            if (searchParams.Count > 0) _searchCitizen = DAOFactory.CurrentUserDAO.FindCitizens(searchParams, SearchMatching.Similair);
+            if (searchParams.Count > 0)
+            {
+                _searchCitizen = DAOFactory.CurrentUserDAO.FindCitizens(searchParams, SearchMatching.Similair);
+                if (_searchCitizen.Count == 0)
+                {
+                    _view.statusTextBlock.Text = "No citizens found with the specified information";
+                    return;
+                }
+            }
             LoadListBox();
         }
 
-        private void LoadListBox()
+        public void LoadListBox()
         {
             var citizenData = new List<CitizenData>();
             if (_searchCitizen != null)

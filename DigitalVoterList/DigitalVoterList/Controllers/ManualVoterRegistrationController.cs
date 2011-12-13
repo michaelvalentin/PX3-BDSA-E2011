@@ -37,7 +37,11 @@ namespace DigitalVoterList.Controllers
 
             _view = view;
             _searchView = new SearchCitizenView();
-            _searchView.QuitButton.Click += (s, e) => _currentSearchWindow.Close();
+            _searchView.QuitButton.Click += (s, e) =>
+                { 
+                    _currentSearchWindow.Close();
+                    _view.VoterIdentification.VoterCardNumber.Focus();
+                };
             _searchController = new SearchCitizenController(_searchView);
 
             _view.VoterValidation.Children.Clear();
@@ -171,7 +175,7 @@ namespace DigitalVoterList.Controllers
             }
             if (Citizen.HasVoted)
             {
-                ShowError("Citizen has allready voted");
+                ShowError("Citizen has already voted");
                 return;
             }
             try
@@ -179,6 +183,8 @@ namespace DigitalVoterList.Controllers
                 DAOFactory.CurrentUserDAO.SetHasVoted(Citizen);
                 ShowSuccess("Voter registered!");
                 Disable(_view.RegisterVoterButton);
+
+                _searchView.SearchResultsGrid.Items.Refresh();
             }
             catch (Exception ex)
             {

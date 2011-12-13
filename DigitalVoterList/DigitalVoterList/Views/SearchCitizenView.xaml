@@ -4,7 +4,7 @@
              Height="500" Width="960">
     <Grid>
         <ScrollViewer CanContentScroll="True" Margin="0,168,0,0">
-            <DataGrid Width="940" Height="330" Name="SearchResultsGrid" />
+            <DataGrid Width="940" Height="330" Name="SearchResultsGrid" SelectionMode="Single" IsReadOnly="True" />
         </ScrollViewer>
         <TextBox Height="30" HorizontalAlignment="Left" Margin="168,12,0,0" Name="nameTextBox" VerticalAlignment="Top" Width="644" FontSize="14" />
         <TextBox Height="30" HorizontalAlignment="Left" Margin="168,64,0,0" Name="addressTextBox" VerticalAlignment="Top" Width="644" FontSize="14" />
