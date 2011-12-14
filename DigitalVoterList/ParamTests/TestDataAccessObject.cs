@@ -1,4 +1,11 @@
-﻿
+﻿/*
+ * Authors: Jens
+ * Team: PX3
+ * Date: 12-12-2011
+ * Rights: LBushkin@http://stackoverflow.com/questions/1563191/c-sharp-cleanest-way-to-write-retry-logic
+ */
+
+
 using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;

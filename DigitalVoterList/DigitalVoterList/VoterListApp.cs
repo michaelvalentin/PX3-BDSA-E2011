@@ -1,5 +1,5 @@
 ﻿/*
- * Authors:
+ * Authors: Jens
  * Team: PX3
  * Date: 12-12-2011
  */
@@ -52,10 +52,11 @@ namespace DigitalVoterList
                 "SERVER=ec2-79-125-81-60.eu-west-1.compute.amazonaws.com;" +
                 "DATABASE=px3;" +
                 "UID=px3;" +
-                "PASSWORD=abcd1234;"*/;
+                "PASSWORD=abcd1234;"*/
+                ;
 
                 //LOCAL
-                DAOFactory.ConnectionString = 
+                DAOFactory.ConnectionString =
                 "SERVER=localhost;" +
                 "DATABASE=px3;" +
                 "UID=root;" +
