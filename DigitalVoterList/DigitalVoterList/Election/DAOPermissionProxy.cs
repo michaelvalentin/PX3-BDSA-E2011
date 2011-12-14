@@ -1,5 +1,5 @@
 ﻿/*
- * Authors: Jens
+ * Authors: Jens, Michael
  * Team: PX3
  * Date: 12-12-2011
  */

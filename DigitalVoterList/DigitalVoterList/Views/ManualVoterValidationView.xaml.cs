@@ -1,5 +1,5 @@
 ﻿/*
- * Authors: Morten
+ * Authors: Morten, Michael
  * Team: PX3
  * Date: 12-12-2011
  */
