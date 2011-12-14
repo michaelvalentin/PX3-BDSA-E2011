@@ -1,5 +1,5 @@
 ﻿/*
- * Authors:
+ * Authors: Morten
  * Team: PX3
  * Date: 12-12-2011
  */
@@ -102,7 +102,6 @@ namespace DigitalVoterList.Election
         public static bool ValidCpr(string cpr)
         {
             Contract.Requires(cpr != null);
-            int tempCpr;
             if (Regex.IsMatch(cpr, @"^\d{10}$"))
             {
                 int day;

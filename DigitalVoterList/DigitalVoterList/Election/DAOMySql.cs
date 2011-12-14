@@ -597,7 +597,6 @@ namespace DigitalVoterList.Election
 
         private void PriSaveNew(Citizen citizen)
         {
-            var idAssigned = 0;
             Contract.Requires(this.Transacting(), "This method must be performed in a transaction.");
             Contract.Requires(citizen != null, "Input citizen must not be null!");
             Contract.Requires(citizen.DbId == 0, "DbId must be equal to zero");
@@ -1066,7 +1065,7 @@ namespace DigitalVoterList.Election
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1107,7 +1106,7 @@ namespace DigitalVoterList.Election
                     DoTransaction(() => PriSaveNew(v));
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1157,7 +1156,7 @@ namespace DigitalVoterList.Election
                     printer.Print(v);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1227,13 +1226,13 @@ namespace DigitalVoterList.Election
                                                      act();
                                                      _transaction.Commit();
                                                  }
-                                                 catch (Exception ex)
+                                                 catch (Exception)
                                                  {
                                                      try
                                                      {
                                                          _transaction.Rollback();
                                                      }
-                                                     catch (Exception excep)
+                                                     catch (Exception)
                                                      {
                                                          _connection = null;
                                                          //If we can't rollback, clear the connection; something is very wrong...

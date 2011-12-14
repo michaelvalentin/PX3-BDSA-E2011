@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Authors: Morten
+ * Team: PX3
+ * Date: 12-12-2011
+ */
+
+using System;
 
 namespace DigitalVoterList.Election.Administration
 {

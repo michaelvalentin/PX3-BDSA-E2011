@@ -1,5 +1,5 @@
 ﻿/*
- * Authors:
+ * Authors: Morten
  * Team: PX3
  * Date: 12-12-2011
  */
@@ -53,7 +53,7 @@ namespace DigitalVoterList.Controllers
             _view.RegisterVoterButton.KeyDown += RegisterVoterWrapper;
         }
 
-        private new VoterRegistrationView _view
+        private VoterRegistrationView _view
         {
             get
             {

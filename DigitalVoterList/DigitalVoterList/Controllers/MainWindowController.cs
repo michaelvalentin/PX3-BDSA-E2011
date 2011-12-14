@@ -1,5 +1,5 @@
 ﻿/*
- * Authors:
+ * Authors: Morten
  * Team: PX3
  * Date: 12-12-2011
  */
@@ -45,6 +45,7 @@ namespace DigitalVoterList.Controllers
 
             _view.Exit.Click += (s, e) => VoterListApp.App.Shutdown();
             _view.LogOut.Click += (s, e) => VoterListApp.LogOut();
+            _view.Closed += (s, e) => { if (VoterListApp.ShutdownAllowed) VoterListApp.App.Shutdown(); };
         }
 
         public void UpdateMenuAccess()

@@ -1,5 +1,5 @@
 ﻿/*
- * Authors:
+ * Authors: Morten
  * Team: PX3
  * Date: 12-12-2011
  */
@@ -16,7 +16,6 @@ namespace DigitalVoterList.Views
         public MainWindow()
         {
             InitializeComponent();
-            Closed += (s, e) => VoterListApp.App.Shutdown();
         }
     }
 }
